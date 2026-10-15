@@ -87,6 +87,9 @@ type CatalogRelease func(*sql.Selector)
 // Conversation is the predicate function for conversation builders.
 type Conversation func(*sql.Selector)
 
+// ConversationForm is the predicate function for conversationform builders.
+type ConversationForm func(*sql.Selector)
+
 // ConversationMessage is the predicate function for conversationmessage builders.
 type ConversationMessage func(*sql.Selector)
 

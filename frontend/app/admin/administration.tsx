@@ -10,11 +10,21 @@ export default function AdministrationEntry() {
   if (!identity) return null;
   return (
     <>
-      <nav className="catalog-actions" aria-label="Administration views">
-        <Link to="/admin">Operations overview</Link>
+      <nav className="admin-view-nav" aria-label="Administration views">
+        <Link
+          to="/admin"
+          aria-current={params.get("view") !== "audit" ? "page" : undefined}
+        >
+          Operations overview
+        </Link>
         <Link to="/admin/customers">Customers & staff</Link>
         {identity.session.capabilities.includes("owner") && (
-          <Link to="/admin?view=audit">Audit & recovery review</Link>
+          <Link
+            to="/admin?view=audit"
+            aria-current={params.get("view") === "audit" ? "page" : undefined}
+          >
+            Audit & recovery review
+          </Link>
         )}
       </nav>
       {params.get("view") === "audit" ? <Governance /> : <OperationsOverview />}

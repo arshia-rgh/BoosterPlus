@@ -263,7 +263,7 @@ it("hides delivery after a denied write and allows fresh input after explicit re
     ),
   ).not.toBeChecked();
 });
-it("preserves an ordinary handoff draft across local hiding while protected inputs unmount", () => {
+it("preserves ordinary delivery instructions while keeping credential entry exclusively in chat", () => {
   const reload = vi.fn(),
     data = {
       state: "pending",
@@ -295,7 +295,10 @@ it("preserves an ordinary handoff draft across local hiding while protected inpu
   fireEvent.change(screen.getByLabelText("Buyer ownership checklist"), {
     target: { value: "Ordinary draft to retain" },
   });
-  expect(screen.getByText("Protected upload field")).toBeVisible();
+  expect(screen.queryByText("Protected upload field")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Prepare or view access in chat" }),
+  ).toHaveAttribute("href", "/?section=messages&channel=support");
   rendered.rerender(view(false));
   expect(screen.queryByText("Protected upload field")).not.toBeInTheDocument();
   expect(screen.getByLabelText("Buyer ownership checklist")).toHaveValue(
@@ -336,7 +339,12 @@ it("conceals buyer access when delivery is hidden or payment eligibility changes
     </MemoryRouter>
   );
   const rendered = render(view(true, true));
-  expect(screen.getByText("Protected reveal control")).toBeVisible();
+  expect(
+    screen.queryByText("Protected reveal control"),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "View account access in chat" }),
+  ).toHaveAttribute("href", "/?section=messages&channel=support");
   rendered.rerender(view(false, true));
   expect(
     screen.queryByText("Protected reveal control"),

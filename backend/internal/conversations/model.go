@@ -72,6 +72,7 @@ type View struct {
 
 // Message never exposes a private sender ID to the customer API.
 type Message struct {
+	FormID      string    `json:"form_id,omitempty"`
 	Purpose     string    `json:"purpose"`
 	Attachments []string  `json:"attachments,omitempty"`
 	ID          string    `json:"id"`

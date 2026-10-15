@@ -1,3 +1,4 @@
+import "../catalog/form-rhythm.css";
 import type { Location } from "react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "../portal-router";

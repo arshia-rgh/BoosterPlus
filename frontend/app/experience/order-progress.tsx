@@ -57,7 +57,7 @@ export default function OrderProgress({ detail }: { detail: Detail }) {
         ? "Your account purchase is complete"
         : "Your account handoff is underway";
     description =
-      "Review the ownership checklist and protected account delivery below. Keep recovery details out of chat.";
+      "Review delivery, then open Messages for protected access. Never put credentials in a normal message.";
   }
   if (
     detail.order.kind === "shop" &&
@@ -70,6 +70,10 @@ export default function OrderProgress({ detail }: { detail: Detail }) {
     description =
       "Follow staff updates and reviewed proof in Delivery and Messages.";
   }
+  const compact =
+    detail.order.kind === "custom" &&
+    !detail.contract &&
+    ["submitted", "needs_information", "rejected"].includes(detail.order.state);
   const terminal = ["rejected", "cancelled", "expired"].includes(
     detail.order.state,
   );
@@ -84,9 +88,13 @@ export default function OrderProgress({ detail }: { detail: Detail }) {
           : 0;
   return (
     <section className="order-guidance" aria-label="Order progress">
-      <p className="eyebrow">YOUR NEXT STEP</p>
-      <h2>{title}</h2>
-      <p>{description}</p>
+      {!compact && (
+        <>
+          <p className="eyebrow">YOUR NEXT STEP</p>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </>
+      )}
       {!terminal && (
         <ol className="order-steps">
           {[

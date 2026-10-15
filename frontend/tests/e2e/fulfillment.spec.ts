@@ -1,3 +1,4 @@
+import { requestAccessForm } from "./chat-form-journey";
 import { integratedCapture } from "./integrated-capture";
 import { z } from "zod";
 import { test, expect, type Page } from "@playwright/test";
@@ -94,13 +95,6 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       page.getByText(/Needs review. Required fulfillment/),
     ).toBeVisible();
     await handoff(accountID);
-    await buyer
-      .getByLabel("Temporary game login instructions", { exact: true })
-      .fill("Synthetic temporary credential for browser qualification only");
-    await buyer
-      .getByRole("button", { name: "Save temporary game access", exact: true })
-      .click();
-    await expect(buyer.getByText(/^Status: active/)).toBeVisible();
     await page
       .getByRole("button", { name: "Enable shared coordination", exact: true })
       .click();
@@ -110,6 +104,25 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await page
       .getByRole("button", { name: "Refresh fulfillment", exact: true })
       .click();
+    await page
+      .getByRole("button", { name: "Enable shared coordination", exact: true })
+      .click();
+    const earlyChat = page.getByRole("link", {
+      name: "Open coordination conversation",
+      exact: true,
+    });
+    await expect(earlyChat).toBeVisible();
+    const earlyHref = await earlyChat.getAttribute("href");
+    if (!earlyHref) throw new Error("Missing synthetic coordination path");
+    await earlyChat.click();
+    await requestAccessForm(
+      page,
+      buyer,
+      "game_access",
+      earlyHref.replace("/admin/", "/"),
+      "Synthetic temporary credential for browser qualification only",
+    );
+    await page.goto(`/admin/orders/${accountID}?section=fulfillment`);
     await page
       .getByRole("button", { name: "Calculate delivery forecast", exact: true })
       .click();
@@ -135,9 +148,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       }),
     ).toHaveCount(0);
     await expect(page.getByText(/Estimated finish window:/)).toHaveCount(1);
-    await buyer
-      .getByRole("button", { name: "Refresh fulfillment", exact: true })
-      .click();
+    await buyer.goto(`/orders/${accountID}?section=progress`);
     await expect(buyer.getByText(/Estimated finish window:/)).toBeVisible();
     await expect(
       buyer.getByRole("button", { name: "Apply delivery forecast" }),
@@ -195,9 +206,15 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     expect(
       (await staff.request.get(`/api/v1/orders/${accountID}`)).status(),
     ).toBe(401);
-    await staff.getByRole("link", { name: "Game access", exact: true }).click();
     await staff
-      .getByRole("button", { name: "Reveal game access", exact: true })
+      .getByRole("link", { name: "Messages & proof", exact: true })
+      .click();
+    await staff
+      .getByRole("button", { name: "View form", exact: true })
+      .last()
+      .click();
+    await staff
+      .getByRole("button", { name: "Reveal protected details", exact: true })
       .click();
     await expect(
       staff.getByText(
@@ -206,8 +223,9 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       ),
     ).toBeVisible();
     await staff
-      .getByRole("button", { name: "Hide game access", exact: true })
+      .getByRole("button", { name: "Hide details now", exact: true })
       .click();
+    await staff.getByRole("button", { name: "Close form" }).click();
     await staff
       .getByRole("link", {
         name: "Messages & proof",
@@ -367,7 +385,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await buyer
       .getByRole("button", { name: "Refresh fulfillment", exact: true })
       .click();
-    await expect(buyer.getByText(/^Status: deleted/)).toBeVisible();
+    await expect(buyer.getByText(/Status: completed/)).toBeVisible();
     await expect(
       buyer.getByLabel("Temporary game login instructions"),
     ).toHaveCount(0);
@@ -462,7 +480,10 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       staff.getByRole("heading", { name: "confirmed", exact: true }),
     ).toBeVisible();
     await expect(
-      staff.getByRole("button", { name: "Reveal game access", exact: true }),
+      staff.getByRole("button", {
+        name: "Reveal protected details",
+        exact: true,
+      }),
     ).toHaveCount(0);
     await staff.getByRole("link", { name: "Progress", exact: true }).click();
     await staff

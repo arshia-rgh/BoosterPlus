@@ -156,9 +156,6 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 			}
 			update.SetDraft(data)
 			if action == "publish" {
-				if e = requireSellerHandover(ctx, tx, offer, s.instant()); e != nil {
-					return e
-				}
 				game, gameErr := tx.Game.Get(ctx, row.GameID)
 				if gameErr != nil {
 					return gameErr

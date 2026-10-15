@@ -17,6 +17,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
 // Store keeps private communication independent from payment and credential storage.
@@ -24,6 +25,7 @@ type Store struct {
 	client *ent.Client
 	auth   *identity.Service
 	now    func() time.Time
+	keys   *vault.Keyring
 }
 
 // New uses a test-injected clock only when supplied by the server's constructor.
@@ -31,7 +33,14 @@ func New(client *ent.Client, auth *identity.Service, now func() time.Time) *Stor
 	if now == nil {
 		now = time.Now
 	}
-	return &Store{client, auth, now}
+	return &Store{client: client, auth: auth, now: now}
+}
+
+// NewWithVault enables protected forms using the existing runtime keyring.
+func NewWithVault(client *ent.Client, auth *identity.Service, keys *vault.Keyring, now func() time.Time) *Store {
+	s := New(client, auth, now)
+	s.keys = keys
+	return s
 }
 func capability(admin bool) string {
 	if admin {

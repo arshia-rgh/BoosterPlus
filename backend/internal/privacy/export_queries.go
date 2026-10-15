@@ -12,6 +12,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
@@ -63,6 +64,8 @@ func exportRows(ctx context.Context, tx *ent.Tx, userID, section, after string) 
 		return exportSellerOffer(ctx, tx, userID, after)
 	case "conversations":
 		return exportConversation(ctx, tx, userID, after)
+	case "forms":
+		return exportForms(ctx, tx, userID, after)
 	case "messages":
 		return exportConversationMessage(ctx, tx, userID, after)
 	case "receipts":
@@ -556,6 +559,30 @@ func exportFulfillment(ctx context.Context, tx *ent.Tx, userID, after string) ([
 			return nil, readErr
 		}
 		out = append(out, record)
+	}
+	return out, nil
+}
+
+func exportForms(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[string]any, error) {
+	q := tx.ConversationForm.Query().Where(conversationform.RecipientIDEQ(userID)).Order(ent.Asc(conversationform.FieldID)).Limit(101)
+	if after != "" {
+		q.Where(conversationform.IDGT(after))
+	}
+	rows, err := q.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := []map[string]any{}
+	for _, row := range rows {
+		answers := map[string]string{}
+		for _, field := range row.Fields {
+			key, keyOK := field["key"].(string)
+			secure, secureOK := field["secure"].(bool)
+			if keyOK && secureOK && !secure && key != "" {
+				answers[key] = row.Answers[key]
+			}
+		}
+		out = append(out, map[string]any{"id": row.ID, "conversation_id": row.ConversationID, "title": row.Title, "description": row.Description, "fields": row.Fields, "answers": answers, "state": row.State, "created_at": row.CreatedAt, "answered_at": row.AnsweredAt, "expires_at": row.ExpiresAt})
 	}
 	return out, nil
 }

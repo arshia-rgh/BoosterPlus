@@ -22,7 +22,7 @@ func TestSellingProgressAcceptedDraftAndSecureHandover(t *testing.T) {
 	f := resaleDraftDB(t, "consignment", false)
 	ctx := t.Context()
 	progress, err := f.resale.Progress(ctx, f.base.other, f.offer.SubmissionID, false)
-	if err != nil || progress.Handover.State != "missing" || progress.ListingState != "draft" || !slices.Contains(progress.Blockers, "handover") || !slices.Contains(progress.Blockers, "listing_details") {
+	if err != nil || progress.Handover.State != "missing" || progress.ListingState != "draft" || slices.Contains(progress.Blockers, "handover") || !slices.Contains(progress.Blockers, "listing_details") {
 		t.Fatal("missing actionable draft status", progress, err)
 	}
 	if _, err = f.resale.Progress(ctx, f.base.buyer, f.offer.SubmissionID, false); !ent.IsNotFound(err) {
@@ -34,9 +34,7 @@ func TestSellingProgressAcceptedDraftAndSecureHandover(t *testing.T) {
 	if _, err = f.resale.ChangeOffer(ctx, f.base.admin, f.offer.ID, "verify_control", true, resale.OfferChange{Version: f.offer.Version, Note: "No ownership verification is required.", Accept: true}); !errors.Is(err, resale.ErrInvalid) {
 		t.Fatal("obsolete verification still active", err)
 	}
-	if _, err = f.resale.ChangeListing(ctx, f.base.admin, f.listing.ID, "publish", resale.ListingInput{Version: f.listing.Version, Product: resaleProduct(), PublicReviewed: true}); !errors.Is(err, resale.ErrConflict) {
-		t.Fatal("published without handover", err)
-	}
+
 	now := time.Unix(f.base.auth.clock.Load(), 0)
 	if _, err = f.resale.SubmitSellerSecret(ctx, f.base.other, f.offer.ID, resale.SecretInput{RequestKey: uuid.NewString(), Value: []byte("isolated account handover"), ExpiresAt: now.Add(time.Hour)}); err != nil {
 		t.Fatal(err)

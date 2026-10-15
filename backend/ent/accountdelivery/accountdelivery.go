@@ -13,6 +13,8 @@ const (
 	Label = "account_delivery"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldFormID holds the string denoting the form_id field in the database.
+	FieldFormID = "form_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldListingID holds the string denoting the listing_id field in the database.
@@ -46,6 +48,7 @@ const (
 // Columns holds all SQL columns for accountdelivery fields.
 var Columns = []string{
 	FieldID,
+	FieldFormID,
 	FieldOrderID,
 	FieldListingID,
 	FieldBuyerID,
@@ -72,6 +75,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultFormID holds the default value on creation for the "form_id" field.
+	DefaultFormID string
+	// FormIDValidator is a validator for the "form_id" field. It is called by the builders before save.
+	FormIDValidator func(string) error
 	// OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
 	OrderIDValidator func(string) error
 	// ListingIDValidator is a validator for the "listing_id" field. It is called by the builders before save.
@@ -110,6 +117,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByFormID orders the results by the form_id field.
+func ByFormID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFormID, opts...).ToFunc()
 }
 
 // ByOrderID orders the results by the order_id field.

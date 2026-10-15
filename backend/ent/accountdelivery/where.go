@@ -64,6 +64,11 @@ func IDContainsFold(id string) predicate.AccountDelivery {
 	return predicate.AccountDelivery(sql.FieldContainsFold(FieldID, id))
 }
 
+// FormID applies equality check predicate on the "form_id" field. It's identical to FormIDEQ.
+func FormID(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldEQ(FieldFormID, v))
+}
+
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v string) predicate.AccountDelivery {
 	return predicate.AccountDelivery(sql.FieldEQ(FieldOrderID, v))
@@ -127,6 +132,71 @@ func CreatedAt(v time.Time) predicate.AccountDelivery {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.AccountDelivery {
 	return predicate.AccountDelivery(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// FormIDEQ applies the EQ predicate on the "form_id" field.
+func FormIDEQ(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldEQ(FieldFormID, v))
+}
+
+// FormIDNEQ applies the NEQ predicate on the "form_id" field.
+func FormIDNEQ(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldNEQ(FieldFormID, v))
+}
+
+// FormIDIn applies the In predicate on the "form_id" field.
+func FormIDIn(vs ...string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldIn(FieldFormID, vs...))
+}
+
+// FormIDNotIn applies the NotIn predicate on the "form_id" field.
+func FormIDNotIn(vs ...string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldNotIn(FieldFormID, vs...))
+}
+
+// FormIDGT applies the GT predicate on the "form_id" field.
+func FormIDGT(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldGT(FieldFormID, v))
+}
+
+// FormIDGTE applies the GTE predicate on the "form_id" field.
+func FormIDGTE(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldGTE(FieldFormID, v))
+}
+
+// FormIDLT applies the LT predicate on the "form_id" field.
+func FormIDLT(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldLT(FieldFormID, v))
+}
+
+// FormIDLTE applies the LTE predicate on the "form_id" field.
+func FormIDLTE(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldLTE(FieldFormID, v))
+}
+
+// FormIDContains applies the Contains predicate on the "form_id" field.
+func FormIDContains(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldContains(FieldFormID, v))
+}
+
+// FormIDHasPrefix applies the HasPrefix predicate on the "form_id" field.
+func FormIDHasPrefix(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldHasPrefix(FieldFormID, v))
+}
+
+// FormIDHasSuffix applies the HasSuffix predicate on the "form_id" field.
+func FormIDHasSuffix(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldHasSuffix(FieldFormID, v))
+}
+
+// FormIDEqualFold applies the EqualFold predicate on the "form_id" field.
+func FormIDEqualFold(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldEqualFold(FieldFormID, v))
+}
+
+// FormIDContainsFold applies the ContainsFold predicate on the "form_id" field.
+func FormIDContainsFold(v string) predicate.AccountDelivery {
+	return predicate.AccountDelivery(sql.FieldContainsFold(FieldFormID, v))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.

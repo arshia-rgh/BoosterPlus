@@ -10,7 +10,7 @@ import { useResource } from "../orders/resource";
 import { Assignment, ExecutionActions } from "./actions";
 import Handoff from "./handoff";
 import { active, workSchema } from "./model";
-import { CustomerSecret, StaffSecret } from "./secrets";
+import { Link } from "../portal-router";
 export default function FulfillmentPanel({
   detail,
   admin,
@@ -66,13 +66,6 @@ export default function FulfillmentPanel({
                 {active(work) && (
                   <ForecastControls work={work} reload={refresh} />
                 )}
-                {visible && !resource.loading && (
-                  <StaffSecret
-                    key={`secret-${String(work.access_version)}`}
-                    work={work}
-                    admin
-                  />
-                )}
                 {active(work) && (
                   <Assignment
                     id={work.order_id}
@@ -94,10 +87,14 @@ export default function FulfillmentPanel({
                   />
                 )}{" "}
                 {visible && work.mode === "account" && (
-                  <CustomerSecret
-                    key={`secret-${String(work.access_version)}`}
-                    work={work}
-                  />
+                  <p>
+                    <Link
+                      to="?section=messages&channel=coordination"
+                      preventScrollReset
+                    >
+                      Share requested access in chat
+                    </Link>
+                  </p>
                 )}
               </>
             )}

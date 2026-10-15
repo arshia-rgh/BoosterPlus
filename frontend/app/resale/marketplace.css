@@ -397,3 +397,22 @@
   line-height: 1.5;
   font-weight: 400;
 }
+
+.account-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: radial-gradient(ellipse at 50% 25%, #326c4c, #0b251d 75%);
+  text-align: center;
+  padding: 1.5rem;
+}
+.account-placeholder-mark {
+  font-size: 3rem;
+  color: #9ce8bb;
+}
+.account-image-placeholder small {
+  color: #b1c5ba;
+  font-weight: 400;
+}

@@ -3,6 +3,10 @@ package payments
 import (
 	"context"
 
+	"entgo.io/ent/dialect/sql"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
@@ -164,7 +168,14 @@ func (s *Store) closeCaseBookings(ctx context.Context, tx *ent.Tx, id string) er
 	return nil
 }
 func (s *Store) deleteCaseSecrets(ctx context.Context, tx *ent.Tx, p *identity.Principal, id string) error {
-	rows, err := tx.SecretBundle.Query().Where(secretbundle.PurposeIn(secretbundle.PurposeGameAccess, secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id), secretbundle.StateEQ(secretbundle.StateActive)).Limit(101).All(ctx)
+	if _, err := tx.ConversationForm.Update().Where(conversationform.ResourceIDEQ(id), conversationform.StateNEQ(conversationform.StateCancelled)).SetState(conversationform.StateCancelled).ClearAnswers().AddVersion(1).SetUpdatedAt(s.instant()).Save(ctx); err != nil {
+		return err
+	}
+
+	rows, err := tx.SecretBundle.Query().Where(secretbundle.Or(secretbundle.And(secretbundle.PurposeIn(secretbundle.PurposeGameAccess, secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id)), secretbundle.And(secretbundle.PurposeEQ(secretbundle.PurposeChatForm), func(q *sql.Selector) {
+		forms := sql.Table("conversation_forms")
+		q.Where(sql.In(q.C("resource_id"), sql.Select(forms.C("id")).From(forms).Where(sql.EQ(forms.C("resource_id"), id))))
+	})), secretbundle.StateEQ(secretbundle.StateActive)).Limit(101).All(ctx)
 	if err != nil {
 		return err
 	}

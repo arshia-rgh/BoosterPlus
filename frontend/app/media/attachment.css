@@ -3,3 +3,32 @@
   width: 100%;
   max-width: 16rem;
 }
+
+.attachment-filename {
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+input[type="file"] {
+  max-width: 100%;
+  min-width: 0;
+}
+input[type="file"]::file-selector-button {
+  border: 1px solid #628775;
+  border-radius: 0.5rem;
+  background: #1e4434;
+  color: #e3f3eb;
+  padding: 0.7rem;
+  margin-inline-end: 0.6rem;
+  cursor: pointer;
+}
+.attachment-limits {
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+}
+.seller-image-step fieldset {
+  padding: 0;
+  border: 0;
+}
+.seller-image-step fieldset > legend {
+  font-size: 0.9rem;
+}

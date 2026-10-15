@@ -268,9 +268,7 @@ export function UploadImage({
     >
       {!compact && label === "Image attachment" && <h3>Attach an image</h3>}
       <p id={guidance}>
-        JPEG, PNG, or WebP, up to 4 MB (4,194,304 bytes) and 4 million pixels.
-        Remove personal information before uploading. Do not upload game
-        credentials.
+        JPEG, PNG or WebP · up to 4 MB. Remove private details first.
       </p>
       {
         <label>
@@ -295,7 +293,14 @@ export function UploadImage({
           />
         </label>
       }
-      {file && <p>{file.name}</p>}
+      {file && <p className="attachment-filename">{file.name}</p>}
+      <details className="attachment-limits">
+        <summary>Image limits</summary>
+        <p>
+          Maximum 4,194,304 bytes and 4 million pixels. Never upload passwords
+          or recovery codes.
+        </p>
+      </details>
       {preview?.file === file && (
         <figure className="attachment-preview">
           <img src={preview.url} alt="Selected attachment preview" />

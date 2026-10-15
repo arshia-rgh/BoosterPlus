@@ -71,16 +71,12 @@ function DirectoryView({
       <h2 ref={heading} tabIndex={-1}>
         Customers & staff
       </h2>
-      <p>
-        Search verified identities in pages of 50. Directory access is audited.
-        Staff access is provisioned separately from customer accounts. Only
-        owners can create staff access or change admin roles.
-      </p>
-      <p>
-        If this action needs fresh verification, confirm it in the dialog here.
-      </p>
+      <p>Search customer and staff accounts. Workspace access is separate.</p>
       {identity.session.capabilities.includes("owner") && (
-        <StaffInvitation refresh={resource.reload} />
+        <details className="staff-invitation-disclosure">
+          <summary>Add staff access</summary>
+          <StaffInvitation refresh={resource.reload} />
+        </details>
       )}
       <form
         className="orders-filters"

@@ -109,6 +109,11 @@ func Body(v string) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldEQ(FieldBody, v))
 }
 
+// FormID applies equality check predicate on the "form_id" field. It's identical to FormIDEQ.
+func FormID(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldEQ(FieldFormID, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldEQ(FieldCreatedAt, v))
@@ -707,6 +712,71 @@ func BodyEqualFold(v string) predicate.ConversationMessage {
 // BodyContainsFold applies the ContainsFold predicate on the "body" field.
 func BodyContainsFold(v string) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldContainsFold(FieldBody, v))
+}
+
+// FormIDEQ applies the EQ predicate on the "form_id" field.
+func FormIDEQ(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldEQ(FieldFormID, v))
+}
+
+// FormIDNEQ applies the NEQ predicate on the "form_id" field.
+func FormIDNEQ(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldNEQ(FieldFormID, v))
+}
+
+// FormIDIn applies the In predicate on the "form_id" field.
+func FormIDIn(vs ...string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldIn(FieldFormID, vs...))
+}
+
+// FormIDNotIn applies the NotIn predicate on the "form_id" field.
+func FormIDNotIn(vs ...string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldNotIn(FieldFormID, vs...))
+}
+
+// FormIDGT applies the GT predicate on the "form_id" field.
+func FormIDGT(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldGT(FieldFormID, v))
+}
+
+// FormIDGTE applies the GTE predicate on the "form_id" field.
+func FormIDGTE(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldGTE(FieldFormID, v))
+}
+
+// FormIDLT applies the LT predicate on the "form_id" field.
+func FormIDLT(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldLT(FieldFormID, v))
+}
+
+// FormIDLTE applies the LTE predicate on the "form_id" field.
+func FormIDLTE(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldLTE(FieldFormID, v))
+}
+
+// FormIDContains applies the Contains predicate on the "form_id" field.
+func FormIDContains(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldContains(FieldFormID, v))
+}
+
+// FormIDHasPrefix applies the HasPrefix predicate on the "form_id" field.
+func FormIDHasPrefix(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldHasPrefix(FieldFormID, v))
+}
+
+// FormIDHasSuffix applies the HasSuffix predicate on the "form_id" field.
+func FormIDHasSuffix(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldHasSuffix(FieldFormID, v))
+}
+
+// FormIDEqualFold applies the EqualFold predicate on the "form_id" field.
+func FormIDEqualFold(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldEqualFold(FieldFormID, v))
+}
+
+// FormIDContainsFold applies the ContainsFold predicate on the "form_id" field.
+func FormIDContainsFold(v string) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldContainsFold(FieldFormID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

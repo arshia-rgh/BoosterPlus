@@ -402,8 +402,8 @@ footer {
 .catalog-label,
 .catalog-input {
   display: grid;
-  gap: 0.5rem;
-  margin: 1.2rem 0;
+  gap: 0.4rem;
+  margin: 0.85rem 0;
 }
 .catalog-label input,
 .catalog-label select,
@@ -835,4 +835,16 @@ footer {
 }
 .record-id {
   overflow-wrap: anywhere;
+}
+
+/* Shared readable form rhythm and nonvisual labels in every workspace. */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
 }

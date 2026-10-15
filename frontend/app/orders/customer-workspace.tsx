@@ -271,8 +271,7 @@ export default function CustomerWorkspace({
                       {detail.estimate.outcome === "estimated"
                         ? `Original estimate: ${detail.estimate.currency} ${minorDisplay(detail.estimate.amount_minor)}. `
                         : ""}
-                      Administrator review is required before this request
-                      becomes payable.
+                      Final pricing follows staff review.
                     </p>
                   )}
                   {contract && (

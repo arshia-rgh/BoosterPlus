@@ -5483,6 +5483,176 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/conversations/{id}/forms/{form}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recipient-bound conversation form read. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    get: operations["memberChatFormRead"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/forms/legacy": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recipient-bound conversation form legacy. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    get: operations["memberChatFormLegacy"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/forms/{form}/reveal": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recipient-bound conversation form reveal. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    post: operations["memberChatFormReveal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/forms/{form}/reply": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recipient-bound conversation form reply. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    post: operations["memberChatFormReply"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms/{form}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recipient-bound conversation form read. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    get: operations["staffChatFormRead"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms/legacy": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recipient-bound conversation form legacy. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    get: operations["staffChatFormLegacy"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms/{form}/reveal": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recipient-bound conversation form reveal. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    post: operations["staffChatFormReveal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms/options": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recipient-bound conversation form options. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    get: operations["staffChatFormOptions"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recipient-bound conversation form create. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    post: operations["staffChatFormCreate"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/forms/{form}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Recipient-bound conversation form cancel. Protected actions require fresh verification; sensitive values never appear in messages or notifications. */
+    post: operations["staffChatFormCancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6298,7 +6468,9 @@ export interface components {
       created_at: string;
       attachments?: string[];
       /** @enum {string} */
-      purpose: "message" | "proof";
+      purpose: "message" | "proof" | "form" | "form_reply";
+      /** Format: uuid */
+      form_id?: string;
     };
     ConversationMessages: {
       messages: components["schemas"]["ConversationMessage"][];
@@ -7392,6 +7564,8 @@ export interface components {
       acknowledged_at: string | null;
       /** Format: date-time */
       dispute_until: string | null;
+      form_id?: string;
+      conversation_id?: string;
     };
     AccountDeliveryChange: {
       version: number;
@@ -8405,6 +8579,89 @@ export interface components {
         received_at: string | null;
       };
     };
+    ChatFormField: {
+      key: string;
+      label: string;
+      /** @enum {string} */
+      kind: "text" | "multiline" | "select";
+      required: boolean;
+      secure: boolean;
+      options?: string[];
+    };
+    ChatFormCreate: {
+      /** Format: uuid */
+      request_key: string;
+      /** @enum {string} */
+      mode: "request" | "share";
+      /** @enum {string} */
+      purpose: "information" | "game_access" | "seller_access" | "buyer_access";
+      /** @enum {string} */
+      recipient: "customer" | "booster";
+      share_with_booster?: boolean;
+      title: string;
+      description?: string;
+      fields: components["schemas"]["ChatFormField"][];
+      answers?: {
+        [key: string]: string;
+      };
+      /** Format: date-time */
+      expires_at: string;
+    };
+    ChatFormReply: {
+      version: number;
+      /** Format: uuid */
+      request_key: string;
+      answers: {
+        [key: string]: string;
+      };
+    };
+    ChatFormCancel: {
+      version: number;
+    };
+    ChatForm: {
+      id: string;
+      title: string;
+      description: string;
+      mode: string;
+      purpose: string;
+      recipient: string;
+      audience: string;
+      state: string;
+      version: number;
+      fields: components["schemas"]["ChatFormField"][];
+      answers: {
+        [key: string]: string;
+      };
+      has_secure: boolean;
+      can_respond: boolean;
+      can_reveal: boolean;
+      can_cancel: boolean;
+      /** Format: date-time */
+      expires_at: string;
+      /** Format: date-time */
+      answered_at: string | null;
+    };
+    ChatFormOptions: {
+      open: boolean;
+      booster: boolean;
+      purposes: {
+        key: string;
+        label: string;
+        modes: string[];
+        max_hours: number;
+      }[];
+    };
+    ChatFormLegacy: {
+      links: {
+        label: string;
+        path: string;
+      }[];
+    };
+    ChatFormSecret: {
+      /** @description Encrypted answers are revealed only after current access and fresh verification checks; plaintext is never cached. */
+      value: string;
+    };
+    EmptyCommand: Record<string, never>;
   };
   responses: never;
   parameters: never;
@@ -24040,6 +24297,547 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  memberChatFormRead: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatForm"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  memberChatFormLegacy: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatFormLegacy"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  memberChatFormReveal: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmptyCommand"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatFormSecret"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  memberChatFormReply: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChatFormReply"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatForm"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatForm"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormLegacy: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatFormLegacy"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormReveal: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmptyCommand"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatFormSecret"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormOptions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatFormOptions"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormCreate: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChatFormCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatForm"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffChatFormCancel: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        form: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChatFormCancel"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatForm"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
         };
       };
     };

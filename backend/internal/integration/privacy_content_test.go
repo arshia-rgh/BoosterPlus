@@ -115,7 +115,7 @@ func TestPrivacyExportOwnProjectionAndAuditFailure(t *testing.T) {
 			t.Fatal(e)
 		}
 	}
-	for _, section := range []string{"profile", "orders", "quotes", "contracts", "order_events", "submissions", "offers", "conversations", "messages", "receipts", "transfers", "reviews", "favorites", "alerts", "notifications", "cases", "bookings", "media", "case_events", "submission_events", "fulfillment"} {
+	for _, section := range []string{"profile", "orders", "quotes", "contracts", "order_events", "submissions", "offers", "conversations", "messages", "forms", "receipts", "transfers", "reviews", "favorites", "alerts", "notifications", "cases", "bookings", "media", "case_events", "submission_events", "fulfillment"} {
 		page, e := s.Export(ctx, f.buyer, privacy.ExportInput{Section: section})
 		if e != nil || page.AuditID == "" {
 			t.Fatal(section, e)

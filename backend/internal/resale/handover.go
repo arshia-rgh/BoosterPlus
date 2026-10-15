@@ -10,6 +10,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/chataccess"
 )
 
 // HandoverState describes receipt of protected details, never verified ownership.
@@ -48,6 +49,15 @@ func SellerHandover(ctx context.Context, tx *ent.Tx, offer *ent.SellerOffer, now
 		result.Locked = true
 		return result, nil
 	}
+	receipt, e := chataccess.Receipt(ctx, tx.Client(), "seller_access", offer.ID, offer.SellerID, "", returnedAt, now)
+	if e == nil {
+		result.State = "received"
+		result.ReceivedAt = receipt.AnsweredAt
+		return result, nil
+	}
+	if !ent.IsNotFound(e) {
+		return result, e
+	}
 	bundle, err := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(offer.ID), secretbundle.OwnerIDEQ(offer.SellerID)).Select(secretbundle.FieldID, secretbundle.FieldState, secretbundle.FieldExpiresAt).Only(ctx)
 	if ent.IsNotFound(err) {
 		return result, nil
@@ -75,15 +85,4 @@ func SellerHandover(ctx context.Context, tx *ent.Tx, offer *ent.SellerOffer, now
 	}
 	result.State, result.ReceivedAt = "received", &written.CreatedAt
 	return result, nil
-}
-
-func requireSellerHandover(ctx context.Context, tx *ent.Tx, offer *ent.SellerOffer, now time.Time) error {
-	state, err := SellerHandover(ctx, tx, offer, now)
-	if err != nil {
-		return err
-	}
-	if state.State != "received" {
-		return ErrConflict
-	}
-	return nil
 }

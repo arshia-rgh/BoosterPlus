@@ -30,7 +30,6 @@ const sections = [
   { id: "details", label: "Account details" },
   { id: "messages", label: "Messages & photos" },
   { id: "agreement", label: "Sale agreement" },
-  { id: "handover", label: "Secure handover" },
   { id: "payout", label: "Payout" },
   { id: "activity", label: "Activity" },
 ];
@@ -53,6 +52,17 @@ function Workspace({
   const navigate = useNavigate();
   const location: Location<unknown> = useLocation();
   const identity = useContext(AuthorizedIdentity);
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    if (query.get("section") === "handover") {
+      query.set("section", "messages");
+      void navigate("?" + query.toString(), {
+        replace: true,
+        state: location.state,
+        preventScrollReset: true,
+      });
+    }
+  }, [location.search, location.state, navigate]);
   const progress = useSellingProgress(row.id, admin, row.version);
   const refresh = () => {
     reload();
@@ -83,14 +93,7 @@ function Workspace({
                 : "Your account sales",
         }}
         sections={sections}
-        keepMounted={[
-          "overview",
-          "details",
-          "messages",
-          "agreement",
-          "handover",
-          "payout",
-        ]}
+        keepMounted={["overview", "details", "messages", "agreement", "payout"]}
         status={
           <>
             <strong>{row.title}</strong>
@@ -184,9 +187,9 @@ function Workspace({
               <>
                 <h3>Messages & photos</h3>
                 <p>
-                  Private to the seller and administrators. Buyer support and
-                  booster coordination are separate. Use Secure handover for
-                  login and recovery details.
+                  Private to you and PLAYORA staff. Use protected fields in a
+                  requested form for account access; never send credentials as a
+                  normal message.
                 </p>
                 <Thread
                   conversationID={value.conversation_id}
@@ -196,7 +199,7 @@ function Workspace({
                 />
               </>
             )}
-            {["agreement", "handover", "payout"].includes(section) && (
+            {["agreement", "payout"].includes(section) && (
               <SellerOffers
                 progress={progress}
                 id={row.id}
@@ -204,13 +207,7 @@ function Workspace({
                 state={row.state}
                 admin={admin}
                 changed={refresh}
-                view={
-                  section === "handover"
-                    ? "handover"
-                    : section === "payout"
-                      ? "payout"
-                      : "agreement"
-                }
+                view={section === "payout" ? "payout" : "agreement"}
                 visible={visible && !loading && !suspended}
               />
             )}

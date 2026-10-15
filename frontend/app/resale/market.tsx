@@ -256,7 +256,16 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
                     title={`${row.product.title} — listing preview`}
                   />
                 ) : (
-                  <div className="account-image-placeholder">{row.game}</div>
+                  <div className="account-image-placeholder">
+                    <span
+                      aria-hidden="true"
+                      className="account-placeholder-mark"
+                    >
+                      ◈
+                    </span>
+                    <strong>{row.game}</strong>
+                    <small>No account screenshot</small>
+                  </div>
                 )}
                 <p>
                   {row.game} · {row.product.region}

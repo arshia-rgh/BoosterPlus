@@ -1,0 +1,60 @@
+.catalog-label > p,
+.catalog-input > p {
+  margin: 0;
+  line-height: 1.5;
+}
+.catalog-label > .quiet,
+.catalog-input > .quiet {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.catalog-label .catalog-input,
+.catalog-input .catalog-label {
+  margin: 0;
+}
+fieldset {
+  min-inline-size: 0;
+}
+:is(
+  .admin-record-content,
+  .order-task-controls,
+  .seller-image-step fieldset,
+  .sale-workspace fieldset,
+  .account-listing-editor,
+  .account-listing-editor fieldset
+) {
+  border: 0;
+  padding: 0;
+}
+:is(.admin-record-content, .order-task-controls) > legend {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.form-actions,
+.catalog-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+/* Adjacent legacy actions keep a click gap until their group can be simplified. */
+.button + .button,
+.button + a:not(.button),
+a + .button {
+  margin-inline-start: 0.5rem;
+}
+.record-status .status {
+  align-self: center;
+  line-height: 1.4;
+}
+.identity-page:has(.record-shell) > .page-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

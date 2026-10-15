@@ -68,8 +68,8 @@ export const publicationBlocker = (
   switch (code) {
     case "handover":
       return {
-        label: "Share account access securely",
-        section: "handover",
+        label: "View requested information",
+        section: "messages",
         actor: admin ? "Seller" : "You",
       };
     case "seller_payment":
@@ -240,21 +240,6 @@ export function saleNextStep(
       1,
     );
   }
-  if (!admin && p.handover.state !== "received")
-    return step(
-      p.handover.state === "expired"
-        ? "Update expired account details"
-        : p.handover.state === "refresh_required"
-          ? "Update access before relisting"
-          : "Share account access securely",
-      p.handover.state === "refresh_required"
-        ? "The previous sale was cancelled. Share current account access before the listing can return."
-        : "Use the protected field so PLAYORA can prepare the account for sale.",
-      "handover",
-      "Share account access",
-      "You",
-      2,
-    );
   if (admin && !p.listing_id)
     return step(
       "Prepare the public listing",
@@ -262,15 +247,6 @@ export function saleNextStep(
       "listing",
       "Prepare listing",
       "You",
-      2,
-    );
-  if (admin && p.blockers.includes("handover"))
-    return step(
-      "Waiting for secure account access",
-      "The seller needs to share current account details. You can keep preparing the listing.",
-      "listing",
-      "Continue listing",
-      "Seller",
       2,
     );
   if (
@@ -318,7 +294,7 @@ export function saleNextStep(
         : "PLAYORA is preparing your listing",
     admin
       ? "Complete the items below, preview the saved listing and publish."
-      : "Your agreement and secure details are received. The remaining steps are shown below.",
+      : "Your agreement is accepted. PLAYORA is completing the listing checks below.",
     admin ? "listing" : "messages",
     admin ? "Continue listing" : "Message the team",
     admin ? "You" : "PLAYORA",
@@ -418,7 +394,9 @@ export function SaleProgress({
       : section === "catalog"
         ? "/admin/catalog"
         : `?section=${section}`;
-  const blockers = [...new Set(p.blockers)];
+  const blockers = [...new Set(p.blockers)].filter(
+    (code) => code !== "handover",
+  );
   return (
     <section
       className="sale-progress"

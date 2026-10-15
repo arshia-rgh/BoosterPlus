@@ -68,6 +68,8 @@ type Tx struct {
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
 	Conversation *ConversationClient
+	// ConversationForm is the client for interacting with the ConversationForm builders.
+	ConversationForm *ConversationFormClient
 	// ConversationMessage is the client for interacting with the ConversationMessage builders.
 	ConversationMessage *ConversationMessageClient
 	// ConversationRead is the client for interacting with the ConversationRead builders.
@@ -320,6 +322,7 @@ func (tx *Tx) init() {
 	tx.CaseEvent = NewCaseEventClient(tx.config)
 	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
 	tx.Conversation = NewConversationClient(tx.config)
+	tx.ConversationForm = NewConversationFormClient(tx.config)
 	tx.ConversationMessage = NewConversationMessageClient(tx.config)
 	tx.ConversationRead = NewConversationReadClient(tx.config)
 	tx.Coupon = NewCouponClient(tx.config)

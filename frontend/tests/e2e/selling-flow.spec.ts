@@ -28,13 +28,13 @@ test.afterAll(async () => {
   await server.close();
 });
 for (const width of [320, 390, 768, 1280]) {
-  test(`seller next step, secure handover and admin listing return at ${String(width)}px`, async ({
+  test(`seller next step and publication without credential blocking at ${String(width)}px`, async ({
     page,
   }, info) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(`${origin}/sell/${id}?stage=accepted`);
     await expect(
-      page.getByRole("heading", { name: "Share account access securely" }),
+      page.getByRole("heading", { name: "PLAYORA is preparing your listing" }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Before this account can go live" }),
@@ -44,28 +44,18 @@ for (const width of [320, 390, 768, 1280]) {
       path: info.outputPath("seller-next.png"),
       fullPage: true,
     });
-    await page
-      .getByRole("link", { name: "Share account access", exact: true })
-      .click();
-    await page
-      .getByLabel("Protected transfer details")
-      .fill("synthetic isolated access");
-    await page.getByLabel("Protected details expiry").fill("2027-10-16T12:00");
-    await page
-      .getByRole("button", { name: "Store protected transfer" })
-      .click();
     await expect(
-      page.getByText("Secure account details received.", { exact: true }),
-    ).toBeVisible();
-    await page.getByRole("link", { name: "Overview", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: "PLAYORA is preparing your listing" }),
-    ).toBeVisible();
+      page.getByRole("link", { name: "Secure handover", exact: true }),
+    ).toHaveCount(0);
+    await page
+      .getByRole("link", { name: "Message the team", exact: true })
+      .click();
+    await expect(page).toHaveURL(/section=messages$/);
     await page.goto(
       `${origin}/admin/submissions/${id}?stage=listing_missing_handover`,
     );
     await expect(
-      page.getByRole("heading", { name: "Waiting for secure account access" }),
+      page.getByRole("heading", { name: "Finish and publish the listing" }),
     ).toBeVisible();
     await page.screenshot({
       path: info.outputPath("admin-next.png"),
@@ -92,21 +82,15 @@ for (const width of [320, 390, 768, 1280]) {
     await expect(
       page.getByRole("button", { name: "Publish account listing" }),
     ).toBeDisabled();
-    await page
-      .getByRole("link", { name: "Share account access securely", exact: true })
-      .click();
-    await expect(page).toHaveURL(
-      new RegExp(`/admin/submissions/${id}\\?section=handover$`),
-    );
+    await expect(
+      page.getByRole("link", {
+        name: "Share account access securely",
+        exact: true,
+      }),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: "Verify ownership control" }),
     ).toHaveCount(0);
-    await page
-      .getByRole("link", { name: "← Account listing", exact: true })
-      .click();
-    await expect(page).toHaveURL(
-      new RegExp(`/admin/accounts/${listing}\\?section=publication$`),
-    );
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth + 1,
@@ -180,8 +164,8 @@ test("progress states remain truthful and recoverable", async ({
     ["needs_information", "Update the requested details"],
     ["offered", "Review your sale proposal"],
     ["expired", "The proposal has expired"],
-    ["expired_handover", "Update expired account details"],
-    ["returned", "Update access before relisting"],
+    ["expired_handover", "PLAYORA is preparing your listing"],
+    ["returned", "PLAYORA is preparing your listing"],
     ["published", "Live in Accounts"],
     ["reserved", "A buyer is checking out"],
     ["sold", "Your account has sold"],

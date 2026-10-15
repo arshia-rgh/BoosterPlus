@@ -1,7 +1,4 @@
-import {
-  PrepareListing,
-  type useSellingProgress,
-} from "../submissions/selling-progress";
+import { type useSellingProgress } from "../submissions/selling-progress";
 import { Loading } from "../ui/loading";
 import { useManualPayoutConfirmation } from "../payments/manual-payout";
 import { SellerPriceInput, SellerBreakdown } from "./commission-fields";
@@ -34,12 +31,10 @@ import {
   agreementDefaultsSchema,
   offerSchema,
   offersSchema,
-  secretSchema,
   type Offer,
   type SellerTerms,
 } from "./model";
 import { denied } from "../support/chat-state";
-import { SecretReveal, SecretUpload } from "./secret";
 
 import "./marketplace.css";
 function SellerOfferError({
@@ -359,24 +354,6 @@ function Proposal({
     </FieldValidation>
   );
 }
-function SellerBundle({ id, changed }: { id: string; changed: () => void }) {
-  const resource = useResource(`/seller-offers/${id}/secret`, secretSchema);
-  return (
-    <>
-      <ErrorNotice error={resource.error} />
-      {resource.data && (
-        <SecretUpload
-          path={`/seller-offers/${id}/secret`}
-          version={resource.data.version}
-          changed={() => {
-            resource.reload();
-            changed();
-          }}
-        />
-      )}
-    </>
-  );
-}
 const offerHistorySchema = z.object({
   events: z.array(
     z.object({
@@ -431,13 +408,11 @@ function OfferHistory({ id, admin }: { id: string; admin: boolean }) {
   );
 }
 function OfferRecord({
-  progress,
   offer,
   admin,
   owner,
   changed,
   view = "all",
-  visible = true,
 }: {
   progress?: ReturnType<typeof useSellingProgress> | undefined;
   view?: "all" | "agreement" | "handover";
@@ -615,77 +590,6 @@ function OfferRecord({
             }
           </fieldset>
         )}
-      {offer.state === "accepted" && view !== "agreement" && (
-        <>
-          {progress?.error ? (
-            <>
-              <ErrorNotice error={progress.error} />
-              <Action onClick={progress.reload}>Retry handover status</Action>
-            </>
-          ) : !progress?.data ? (
-            <Loading compact label="Loading secure handover status" />
-          ) : (
-            <>
-              <p role="status">
-                {progress.data.handover.state === "received"
-                  ? "Secure account details received."
-                  : progress.data.handover.state === "expired"
-                    ? "The protected details expired. Share current details again before publication."
-                    : progress.data.handover.state === "refresh_required"
-                      ? "This account was returned from a previous sale. Share updated account details before relisting."
-                      : admin
-                        ? "Waiting for the seller to share account access securely."
-                        : "Share the account access included in your agreement using the protected field below."}
-              </p>
-              {progress.data.handover.locked && (
-                <p>
-                  These details are locked while the listing or payout is
-                  active. Contact the team if access changes.
-                </p>
-              )}
-              {visible &&
-                !admin &&
-                !progress.data.handover.locked &&
-                (progress.data.handover.state === "received" ? (
-                  <details>
-                    <summary>Update shared account details</summary>
-                    <SellerBundle id={offer.id} changed={changed} />
-                  </details>
-                ) : (
-                  <SellerBundle id={offer.id} changed={changed} />
-                ))}
-              {visible &&
-                owner &&
-                progress.data.handover.state === "received" && (
-                  <SecretReveal
-                    path={`/admin/seller-offers/${offer.id}/secret/reveal`}
-                  />
-                )}
-              {admin && !owner && (
-                <p>Only the owner can reveal protected account details.</p>
-              )}
-              {admin &&
-                (progress.data.listing_id ? (
-                  <Link
-                    className="button compact"
-                    to={`/admin/accounts/${progress.data.listing_id}?section=details`}
-                    state={{
-                      submissionID: offer.submission_id,
-                      submissionSection: "handover",
-                    }}
-                  >
-                    Continue listing
-                  </Link>
-                ) : (
-                  <PrepareListing
-                    offerID={offer.id}
-                    submissionID={offer.submission_id}
-                  />
-                ))}
-            </>
-          )}
-        </>
-      )}
       <Action
         onClick={() => {
           setHistory((v) => !v);
@@ -758,13 +662,13 @@ export function SellerPayouts({
 }
 export default function SellerOffers({
   progress,
+  visible = true,
   id,
   version,
   state,
   admin,
   changed,
   view = "all",
-  visible = true,
 }: {
   view?: "all" | "agreement" | "handover" | "payout";
   visible?: boolean;
@@ -838,9 +742,7 @@ export default function SellerOffers({
     );
   return (
     <section aria-label="Seller agreements">
-      <h2>
-        {view === "handover" ? "Secure account handover" : "Seller agreements"}
-      </h2>
+      <h2>Seller agreements</h2>
       {view !== "all" &&
         current?.offers.some((offer) => offer.state === "accepted") && (
           <p>
@@ -856,11 +758,11 @@ export default function SellerOffers({
                 {" "}
                 ·{" "}
                 <Link
-                  to="?section=handover"
+                  to="?section=messages"
                   state={location.state}
                   preventScrollReset
                 >
-                  Continue to secure handover
+                  Open sale conversation
                 </Link>
               </>
             )}

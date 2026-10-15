@@ -146,6 +146,9 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 		if int64(steps) > current {
 			return errors.New("rollback exceeds applied migrations")
 		}
+		if current >= 43 && current-int64(steps) < 43 {
+			return errors.New("private chat form replies are forward-only; rollback across schema 43 requires a separately verified pre-migration restore")
+		}
 		if current >= 42 && current-int64(steps) < 42 {
 			return errors.New("manual payout receipts are forward-only; rollback across schema 42 requires a separately verified pre-migration restore")
 		}

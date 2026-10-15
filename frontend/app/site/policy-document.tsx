@@ -59,18 +59,6 @@ export default function PolicyDocument({
       ) : (
         <>
           <PolicyText text={data.text} prefix="account-clause" />
-          {data.sections.map((section) => (
-            <section
-              key={section.kind}
-              aria-labelledby={`policy-${section.kind}`}
-            >
-              <h2 id={`policy-${section.kind}`}>{section.title}</h2>
-              <PolicyText
-                text={section.text}
-                prefix={`policy-${section.kind}-clause`}
-              />
-            </section>
-          ))}
         </>
       )}
       <div className="catalog-actions">

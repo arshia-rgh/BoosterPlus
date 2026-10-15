@@ -18,6 +18,9 @@ import { DownloadImage } from "../media/attachment";
 import { kindLabel, readingPosition, stateLabel } from "./chat-state";
 import { useChat } from "./use-chat";
 import Composer from "./composer";
+import { ChatFormCard } from "./forms/card";
+import { LegacyChatAccess } from "./forms/legacy";
+import { CreateChatForm } from "./forms/create";
 import StaffControls from "./staff-controls";
 import "./chat.css";
 
@@ -485,6 +488,7 @@ function ThreadSession({
                   admin={admin}
                   booster={booster}
                 />
+                <LegacyChatAccess base={base} />
                 {admin && (
                   <StaffControls
                     thread={chat.thread}
@@ -638,7 +642,18 @@ function ThreadSession({
                               })}
                             </time>
                           </div>
-                          <p>{message.body}</p>
+                          {message.form_id ? (
+                            <ChatFormCard
+                              base={base}
+                              id={message.form_id}
+                              revision={chat.thread?.sequence ?? 0}
+                              changed={() => {
+                                void refresh();
+                              }}
+                            />
+                          ) : (
+                            <p>{message.body}</p>
+                          )}
                           {message.attachments?.map((file) => (
                             <DownloadImage key={file} id={file} admin={admin} />
                           ))}
@@ -659,6 +674,16 @@ function ThreadSession({
           <span className="sr-only" role="status">
             {announcement}
           </span>
+          {admin && visible && !chat.error && !chat.loading && (
+            <div className="chat-form-toolbar">
+              <CreateChatForm
+                base={base}
+                changed={() => {
+                  void refresh();
+                }}
+              />
+            </div>
+          )}
           <Composer
             base={base}
             admin={admin}

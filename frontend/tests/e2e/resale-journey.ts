@@ -1,5 +1,5 @@
+import { requestAccessForm, sendBuyerAccess } from "./chat-form-journey";
 import { hostedCheckout } from "./hosted-checkout";
-import { integratedCapture } from "./integrated-capture";
 import { authURL } from "./identity-fixtures";
 import { createHmac, randomUUID } from "node:crypto";
 import {
@@ -202,39 +202,18 @@ export async function resaleJourney(
     await expect(
       seller.getByText("Offer: accepted", { exact: true }),
     ).toBeVisible();
-    await seller
-      .getByRole("link", { name: "Secure handover", exact: true })
-      .click();
-    await integratedCapture(
-      seller,
-      `seller-handover-${info.project.name}`,
-      seller.getByLabel("Protected transfer details"),
-    );
-    await seller
-      .getByLabel("Protected transfer details")
-      .fill("synthetic seller-origin ownership bundle");
-    await seller
-      .getByLabel("Protected details expiry")
-      .fill(new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16));
-    await seller
-      .getByRole("button", { name: "Store protected transfer" })
-      .click();
     await expect(
-      seller.getByText("Secure account details received.", { exact: true }),
-    ).toBeVisible();
-    await page.goto(`/admin/submissions/${id}?section=handover`);
-    await page
-      .getByRole("button", { name: "Reveal protected details" })
-      .click();
-    await expect(
-      page.getByText("synthetic seller-origin ownership bundle", {
-        exact: true,
-      }),
-    ).toBeVisible();
-    await page.getByRole("button", { name: "Hide protected details" }).click();
-    await expect(
-      page.getByRole("button", { name: "Verify ownership control" }),
+      seller.getByRole("link", { name: "Secure handover", exact: true }),
     ).toHaveCount(0);
+    await page.goto(`/admin/submissions/${id}?section=messages`);
+    await requestAccessForm(
+      page,
+      seller,
+      "seller_access",
+      `/sell/${id}?section=messages`,
+      "synthetic seller-origin ownership bundle",
+    );
+    await page.goto(`/admin/submissions/${id}?section=overview`);
     await page
       .getByRole("button", { name: "Prepare listing", exact: true })
       .click();
@@ -496,20 +475,9 @@ export async function resaleJourney(
       .getByRole("navigation", { name: "Order sections" })
       .getByRole("link", { name: "Delivery", exact: true })
       .click();
+    await page.goto(`/admin/orders/${order}?section=messages&channel=support`);
+    await sendBuyerAccess(page, "synthetic distinct buyer ownership bundle");
     await page.goto(`/admin/orders/${order}?section=fulfillment`);
-    await page
-      .getByLabel("Protected transfer details")
-      .fill("synthetic distinct buyer ownership bundle");
-    await page
-      .getByLabel("Protected details expiry")
-      .fill(new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16));
-    const stored = page.waitForResponse(
-      (r) => r.request().method() === "POST" && r.url().endsWith("/secret"),
-    );
-    await page
-      .getByRole("button", { name: "Store protected transfer" })
-      .click();
-    expect((await stored).status()).toBe(200);
     await page
       .getByLabel("Buyer ownership checklist")
       .fill(
@@ -526,7 +494,14 @@ export async function resaleJourney(
       .getByRole("button", { name: "Refresh account delivery" })
       .click();
     await buyer
-      .getByRole("button", { name: "Reveal protected details" })
+      .getByRole("link", { name: "View account access in chat" })
+      .click();
+    await buyer
+      .getByRole("button", { name: "View form", exact: true })
+      .last()
+      .click();
+    await buyer
+      .getByRole("button", { name: "Reveal protected details", exact: true })
       .click();
     await expect(
       buyer.getByText("synthetic distinct buyer ownership bundle", {
@@ -536,7 +511,12 @@ export async function resaleJourney(
     await expect(
       buyer.getByText("synthetic seller-origin ownership bundle"),
     ).toHaveCount(0);
-    await buyer.getByRole("button", { name: "Hide protected details" }).click();
+    await buyer.getByRole("button", { name: "Hide details now" }).click();
+    await buyer.getByRole("button", { name: "Close form" }).click();
+    await buyer
+      .getByRole("navigation", { name: "Order sections" })
+      .getByRole("link", { name: "Delivery", exact: true })
+      .click();
     await buyer
       .getByLabel("Your acknowledgement note")
       .fill("I received and tested ownership using the agreed checklist.");

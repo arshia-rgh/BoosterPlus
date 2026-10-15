@@ -28,6 +28,20 @@ func (_u *AccountDeliveryUpdate) Where(ps ...predicate.AccountDelivery) *Account
 	return _u
 }
 
+// SetFormID sets the "form_id" field.
+func (_u *AccountDeliveryUpdate) SetFormID(v string) *AccountDeliveryUpdate {
+	_u.mutation.SetFormID(v)
+	return _u
+}
+
+// SetNillableFormID sets the "form_id" field if the given value is not nil.
+func (_u *AccountDeliveryUpdate) SetNillableFormID(v *string) *AccountDeliveryUpdate {
+	if v != nil {
+		_u.SetFormID(*v)
+	}
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *AccountDeliveryUpdate) SetState(v string) *AccountDeliveryUpdate {
 	_u.mutation.SetState(v)
@@ -220,6 +234,11 @@ func (_u *AccountDeliveryUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AccountDeliveryUpdate) check() error {
+	if v, ok := _u.mutation.FormID(); ok {
+		if err := accountdelivery.FormIDValidator(v); err != nil {
+			return &ValidationError{Name: "form_id", err: fmt.Errorf(`ent: validator failed for field "AccountDelivery.form_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := accountdelivery.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "AccountDelivery.state": %w`, err)}
@@ -249,6 +268,9 @@ func (_u *AccountDeliveryUpdate) sqlSave(ctx context.Context) (_node int, err er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.FormID(); ok {
+		_spec.SetField(accountdelivery.FieldFormID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(accountdelivery.FieldState, field.TypeString, value)
@@ -310,6 +332,20 @@ type AccountDeliveryUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AccountDeliveryMutation
+}
+
+// SetFormID sets the "form_id" field.
+func (_u *AccountDeliveryUpdateOne) SetFormID(v string) *AccountDeliveryUpdateOne {
+	_u.mutation.SetFormID(v)
+	return _u
+}
+
+// SetNillableFormID sets the "form_id" field if the given value is not nil.
+func (_u *AccountDeliveryUpdateOne) SetNillableFormID(v *string) *AccountDeliveryUpdateOne {
+	if v != nil {
+		_u.SetFormID(*v)
+	}
+	return _u
 }
 
 // SetState sets the "state" field.
@@ -517,6 +553,11 @@ func (_u *AccountDeliveryUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AccountDeliveryUpdateOne) check() error {
+	if v, ok := _u.mutation.FormID(); ok {
+		if err := accountdelivery.FormIDValidator(v); err != nil {
+			return &ValidationError{Name: "form_id", err: fmt.Errorf(`ent: validator failed for field "AccountDelivery.form_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := accountdelivery.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "AccountDelivery.state": %w`, err)}
@@ -563,6 +604,9 @@ func (_u *AccountDeliveryUpdateOne) sqlSave(ctx context.Context) (_node *Account
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.FormID(); ok {
+		_spec.SetField(accountdelivery.FieldFormID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(accountdelivery.FieldState, field.TypeString, value)

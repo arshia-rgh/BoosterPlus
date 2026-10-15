@@ -43,6 +43,7 @@ it("recovers outside hidden message components on reconnect and keeps denied dat
   const refusal = new APIError("Access ended");
   refusal.status = 403;
   vi.mocked(get).mockImplementation((path) => {
+    if (path.endsWith("/forms/legacy")) return Promise.resolve({ links: [] });
     if (revoked) return Promise.reject(refusal);
     if (!connected) return Promise.reject(new Error("Offline"));
     if (path === "/conversations")
@@ -132,6 +133,7 @@ it("recovers when online arrives before the initial request reports failure", as
     updated_at: "2026-09-10T00:00:00Z",
   };
   vi.mocked(get).mockImplementation((path) => {
+    if (path.endsWith("/forms/legacy")) return Promise.resolve({ links: [] });
     if (path === "/conversations")
       return Promise.resolve({ conversations: [], next: "" });
     if (path.includes("/messages"))
@@ -187,6 +189,7 @@ it("captures the latest reading position before an outage even when the scroll e
   let offline = false;
   const date = "2026-09-25T10:00:00Z";
   vi.mocked(get).mockImplementation((path) => {
+    if (path.endsWith("/forms/legacy")) return Promise.resolve({ links: [] });
     if (path === "/conversations")
       return Promise.resolve({ conversations: [], next: "" });
     if (offline) return Promise.reject(new Error("Offline"));

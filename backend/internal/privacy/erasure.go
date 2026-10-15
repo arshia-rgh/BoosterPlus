@@ -58,6 +58,8 @@ func (s *Store) erase(ctx context.Context, tx *ent.Tx, target *ent.User) error {
 		{"DELETE FROM auth_flows WHERE user_id=?", []any{id}},
 		{"UPDATE auth_recoveries SET new_email='',state='redacted',case_reference='' WHERE user_id=?", []any{id}},
 		{"UPDATE conversation_messages SET body='[Removed following an approved privacy request]',sender_label='Removed account',attachments=JSON_ARRAY() WHERE sender_id=? AND purpose='message' AND id NOT IN (SELECT message_id FROM case_events WHERE message_id<>'')", []any{id}},
+		{"UPDATE secret_bundles SET state='deleted',encrypted_payload=NULL,wrapped_key=NULL,key_version='',version=version+1,updated_at=? WHERE purpose='chat_form' AND resource_id IN (SELECT id FROM conversation_forms WHERE recipient_id=? OR answered_by=?)", []any{s.now(), id, id}},
+		{"UPDATE conversation_forms SET answers=JSON_OBJECT(),state='cancelled',version=version+1,updated_at=? WHERE recipient_id=? OR answered_by=?", []any{s.now(), id, id}},
 		{"UPDATE conversations SET subject='Archived private conversation' WHERE user_id=?", []any{id}},
 		{"UPDATE account_submissions SET title='Archived submission',answers=JSON_OBJECT(),ownership_notes='',current_note='' WHERE user_id=?", []any{id}},
 		{"UPDATE submission_events SET message='[Removed following an approved privacy request]' WHERE submission_id IN (SELECT id FROM account_submissions WHERE user_id=?)", []any{id}},

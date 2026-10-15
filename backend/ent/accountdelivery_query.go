@@ -262,12 +262,12 @@ func (_q *AccountDeliveryQuery) Clone() *AccountDeliveryQuery {
 // Example:
 //
 //	var v []struct {
-//		OrderID string `json:"order_id,omitempty"`
+//		FormID string `json:"form_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AccountDelivery.Query().
-//		GroupBy(accountdelivery.FieldOrderID).
+//		GroupBy(accountdelivery.FieldFormID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *AccountDeliveryQuery) GroupBy(field string, fields ...string) *AccountDeliveryGroupBy {
@@ -285,11 +285,11 @@ func (_q *AccountDeliveryQuery) GroupBy(field string, fields ...string) *Account
 // Example:
 //
 //	var v []struct {
-//		OrderID string `json:"order_id,omitempty"`
+//		FormID string `json:"form_id,omitempty"`
 //	}
 //
 //	client.AccountDelivery.Query().
-//		Select(accountdelivery.FieldOrderID).
+//		Select(accountdelivery.FieldFormID).
 //		Scan(ctx, &v)
 func (_q *AccountDeliveryQuery) Select(fields ...string) *AccountDeliverySelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

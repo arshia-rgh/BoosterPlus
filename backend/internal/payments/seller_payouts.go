@@ -148,16 +148,17 @@ func (s *Store) sellerEligible(ctx context.Context, tx *ent.Tx, row *ent.MoneyTr
 	if terms.Amount != row.Amount || terms.Currency != row.Currency || terms.Network != row.Network {
 		return time.Time{}, ErrConflict
 	}
-	handover, err := resale.SellerHandover(ctx, tx, offer, s.instant())
-	if err != nil {
-		return time.Time{}, err
-	}
-	if handover.State != "received" || handover.ReceivedAt == nil {
-		return time.Time{}, ErrConflict
-	}
-	anchor := *handover.ReceivedAt
+	var anchor time.Time
 	switch terms.Model {
 	case "buy_first":
+		handover, err := resale.SellerHandover(ctx, tx, offer, s.instant())
+		if err != nil {
+			return time.Time{}, err
+		}
+		if handover.State != "received" || handover.ReceivedAt == nil {
+			return time.Time{}, ErrConflict
+		}
+		anchor = *handover.ReceivedAt
 	case "consignment":
 		listing, err := tx.AccountListing.Query().Where(accountlisting.OfferIDEQ(offer.ID), accountlisting.StateEQ("sold")).Only(ctx)
 		if err != nil {

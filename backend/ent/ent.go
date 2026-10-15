@@ -39,6 +39,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
@@ -173,6 +174,7 @@ func checkColumn(t, c string) error {
 			caseevent.Table:                caseevent.ValidColumn,
 			catalogrelease.Table:           catalogrelease.ValidColumn,
 			conversation.Table:             conversation.ValidColumn,
+			conversationform.Table:         conversationform.ValidColumn,
 			conversationmessage.Table:      conversationmessage.ValidColumn,
 			conversationread.Table:         conversationread.ValidColumn,
 			coupon.Table:                   coupon.ValidColumn,

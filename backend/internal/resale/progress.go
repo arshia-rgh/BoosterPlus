@@ -101,9 +101,6 @@ func (s *Store) Progress(ctx context.Context, p *identity.Principal, id string, 
 		if !available {
 			result.Blockers = append(result.Blockers, "game_unavailable")
 		}
-		if result.Handover.State != "received" {
-			result.Blockers = append(result.Blockers, "handover")
-		}
 		if terms.Model == "buy_first" && result.PayoutState != "confirmed" {
 			result.Blockers = append(result.Blockers, "seller_payment")
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/chataccess"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
@@ -70,6 +71,9 @@ func (s *Store) secretPolicy(ctx context.Context, tx *ent.Tx, p *identity.Princi
 	return identity.ErrForbidden
 }
 func (s *Store) revokeInTx(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.Order, reason string) error {
+	if err := chataccess.Revoke(ctx, tx, row.ID, "game_access", p.User.ID, reason, s.now()); err != nil {
+		return err
+	}
 	bundle, err := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeGameAccess), secretbundle.ResourceIDEQ(row.ID), secretbundle.OwnerIDEQ(row.UserID), secretbundle.StateEQ(secretbundle.StateActive)).Only(ctx)
 	if ent.IsNotFound(err) {
 		return nil

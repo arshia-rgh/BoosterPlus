@@ -45,10 +45,7 @@ export function BlocksEditor({
       tabIndex={-1}
     >
       <h3>Article body</h3>
-      <p>
-        Use structured blocks. Text is rendered literally; HTML, scripts and
-        embedded widgets are not supported.
-      </p>
+      <p>Add text, images or other content blocks.</p>
       <Select
         name="new_block_kind"
         label="New block type"
@@ -202,7 +199,7 @@ export function BlocksEditor({
               />
             </>
           )}
-          <div className="catalog-actions">
+          <div className="catalog-actions news-block-actions">
             <Action
               disabled={value.length >= 100}
               onClick={() => {

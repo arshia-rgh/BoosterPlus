@@ -333,6 +333,18 @@ func (f ConversationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConversationMutation", m)
 }
 
+// The ConversationFormFunc type is an adapter to allow the use of ordinary
+// function as ConversationForm mutator.
+type ConversationFormFunc func(context.Context, *ent.ConversationFormMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConversationFormFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConversationFormMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConversationFormMutation", m)
+}
+
 // The ConversationMessageFunc type is an adapter to allow the use of ordinary
 // function as ConversationMessage mutator.
 type ConversationMessageFunc func(context.Context, *ent.ConversationMessageMutation) (ent.Value, error)

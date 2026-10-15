@@ -65,6 +65,7 @@ func problem(next endpoint) endpoint {
 
 // Register attaches separate customer and administrative capabilities.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerForms(mux)
 	mux.HandleFunc("POST /api/v1/admin/fulfillment/{id}/conversation", s.auth.ProtectRate("admin", "fulfillment-sharing", 60, time.Hour, problem(func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		var input struct {
 			Version int `json:"version"`

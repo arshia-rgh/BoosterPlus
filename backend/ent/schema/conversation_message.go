@@ -26,8 +26,9 @@ func (ConversationMessage) Fields() []ent.Field {
 		field.String("request_key").MaxLen(36).Immutable(),
 		field.String("request_hash").MaxLen(64).Immutable(),
 		field.JSON("attachments", []string{}).Optional().Immutable(),
-		field.Enum("purpose").Values("message", "proof").Default("message").Immutable(),
+		field.Enum("purpose").Values("message", "proof", "form", "form_reply").Default("message").Immutable(),
 		field.String("body").MaxLen(4000).Immutable(),
+		field.String("form_id").MaxLen(36).Default("").Immutable(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}
 }

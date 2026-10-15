@@ -12,6 +12,7 @@ var (
 	// AccountDeliveriesColumns holds the columns for the "account_deliveries" table.
 	AccountDeliveriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "form_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "order_id", Type: field.TypeString, Size: 36},
 		{Name: "listing_id", Type: field.TypeString, Size: 36},
 		{Name: "buyer_id", Type: field.TypeString, Size: 36},
@@ -35,7 +36,7 @@ var (
 			{
 				Name:    "account_order_delivery",
 				Unique:  true,
-				Columns: []*schema.Column{AccountDeliveriesColumns[1]},
+				Columns: []*schema.Column{AccountDeliveriesColumns[2]},
 			},
 		},
 	}
@@ -855,6 +856,56 @@ var (
 			},
 		},
 	}
+	// ConversationFormsColumns holds the columns for the "conversation_forms" table.
+	ConversationFormsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "conversation_id", Type: field.TypeString, Size: 36},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "recipient_id", Type: field.TypeString, Size: 36},
+		{Name: "booster_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "mode", Type: field.TypeEnum, Enums: []string{"request", "share"}},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"information", "game_access", "seller_access", "buyer_access"}},
+		{Name: "resource_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "title", Type: field.TypeString, Size: 120},
+		{Name: "description", Type: field.TypeString, Size: 500, Default: ""},
+		{Name: "fields", Type: field.TypeJSON},
+		{Name: "answers", Type: field.TypeJSON, Nullable: true},
+		{Name: "has_secure", Type: field.TypeBool, Default: false},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"open", "answered", "cancelled"}, Default: "open"},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "response_key", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "response_hash", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "answered_by", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "answered_at", Type: field.TypeTime, Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ConversationFormsTable holds the schema information for the "conversation_forms" table.
+	ConversationFormsTable = &schema.Table{
+		Name:       "conversation_forms",
+		Columns:    ConversationFormsColumns,
+		PrimaryKey: []*schema.Column{ConversationFormsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "conversation_form_request",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationFormsColumns[1], ConversationFormsColumns[2], ConversationFormsColumns[15]},
+			},
+			{
+				Name:    "conversation_form_thread",
+				Unique:  false,
+				Columns: []*schema.Column{ConversationFormsColumns[1], ConversationFormsColumns[22], ConversationFormsColumns[0]},
+			},
+			{
+				Name:    "conversation_form_resource",
+				Unique:  false,
+				Columns: []*schema.Column{ConversationFormsColumns[6], ConversationFormsColumns[7], ConversationFormsColumns[13], ConversationFormsColumns[22]},
+			},
+		},
+	}
 	// ConversationMessagesColumns holds the columns for the "conversation_messages" table.
 	ConversationMessagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -868,8 +919,9 @@ var (
 		{Name: "request_key", Type: field.TypeString, Size: 36},
 		{Name: "request_hash", Type: field.TypeString, Size: 64},
 		{Name: "attachments", Type: field.TypeJSON, Nullable: true},
-		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"message", "proof"}, Default: "message"},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"message", "proof", "form", "form_reply"}, Default: "message"},
 		{Name: "body", Type: field.TypeString, Size: 4000},
+		{Name: "form_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// ConversationMessagesTable holds the schema information for the "conversation_messages" table.
@@ -1771,7 +1823,7 @@ var (
 	// SecretBundlesColumns holds the columns for the "secret_bundles" table.
 	SecretBundlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
-		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer"}},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer", "chat_form"}},
 		{Name: "resource_id", Type: field.TypeString, Size: 36},
 		{Name: "owner_id", Type: field.TypeString, Size: 36},
 		{Name: "cipher_owner_id", Type: field.TypeString, Size: 36, Default: ""},
@@ -2404,6 +2456,7 @@ var (
 		CaseEventsTable,
 		CatalogReleasesTable,
 		ConversationsTable,
+		ConversationFormsTable,
 		ConversationMessagesTable,
 		ConversationReadsTable,
 		CouponsTable,

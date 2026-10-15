@@ -8,7 +8,6 @@ import { useResource } from "../orders/resource";
 import { deliverySchema } from "./model";
 import { denied } from "../support/chat-state";
 import { ProductTerms } from "./market";
-import { SecretReveal, SecretUpload } from "./secret";
 
 export default function AccountDelivery({
   id,
@@ -228,25 +227,20 @@ export default function AccountDelivery({
                 )}
               </>
             )}
-            {visible &&
-              !resource.loading &&
-              admin &&
-              paid &&
-              row.state === "pending" && (
-                <SecretUpload
-                  key={`${String(row.version)}:${String(row.secret.version)}`}
-                  path={`/admin/account-orders/${id}/secret`}
-                  version={row.secret.version}
-                  changed={resource.reload}
-                />
-              )}
-            {visible &&
-              !resource.loading &&
-              !admin &&
-              paid &&
-              ["delivered", "acknowledged"].includes(row.state) && (
-                <SecretReveal path={`/account-orders/${id}/secret/reveal`} />
-              )}
+            {paid && (
+              <p>
+                <Link
+                  className="button compact secondary"
+                  to="?section=messages&channel=support"
+                  state={location.state}
+                  preventScrollReset
+                >
+                  {admin
+                    ? "Prepare or view access in chat"
+                    : "View account access in chat"}
+                </Link>
+              </p>
+            )}
             {paid &&
               ((admin && row.state === "pending") ||
                 (!admin && row.state === "delivered")) && (

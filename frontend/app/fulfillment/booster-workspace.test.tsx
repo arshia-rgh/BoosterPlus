@@ -136,14 +136,17 @@ it("conceals recoverable drafts and clears them after access is removed", async 
   ).not.toBeInTheDocument();
   expect(screen.queryByText("Synthetic game")).not.toBeInTheDocument();
 });
-it("unmounts protected access on section changes", async () => {
+it("keeps access exchange in messages instead of a standalone credential panel", async () => {
   vi.mocked(get).mockImplementation((path) =>
     Promise.resolve(path.includes("/readiness") ? ready : work),
   );
   view();
   await screen.findByLabelText("Customer-visible update");
-  fireEvent.click(screen.getByRole("link", { name: "Game access" }));
-  expect(screen.getByText("Synthetic protected reveal")).toBeVisible();
+  expect(
+    screen.queryByRole("link", { name: "Game access" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "Messages & proof" }));
+  expect(screen.getByLabelText("Shared reply")).toBeVisible();
   fireEvent.click(screen.getByRole("link", { name: "Overview" }));
   expect(
     screen.queryByText("Synthetic protected reveal"),
@@ -201,7 +204,10 @@ it("keeps a panel-local verification return after clearing a sensitive assignmen
   );
   view();
   await screen.findByLabelText("Customer-visible update");
-  fireEvent.click(screen.getByRole("link", { name: "Game access" }));
+  expect(
+    screen.queryByRole("link", { name: "Game access" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "Messages & proof" }));
   fireEvent(
     window,
     new CustomEvent("boosterplus:session-changed", {
@@ -230,7 +236,7 @@ it("keeps a panel-local verification return after clearing a sensitive assignmen
   fireEvent.click(
     screen.getByRole("button", { name: "Check assignment access" }),
   );
-  await screen.findByText("Synthetic protected reveal");
+  await screen.findByLabelText("Shared reply");
   expect(
     screen.queryByRole("button", { name: "Verify to continue here" }),
   ).not.toBeInTheDocument();

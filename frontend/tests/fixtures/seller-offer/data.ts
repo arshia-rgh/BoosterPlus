@@ -24,7 +24,7 @@ const terms: SellerTerms = {
   proceeds_basis: "Synthetic consignment proceeds after buyer inspection.",
   fees: "Synthetic seller commission is ten percent of the account base.",
   transfer_requirements:
-    "Synthetic protected ownership verification before resale.",
+    "Synthetic account access requested through protected chat fields when needed.",
   dispute_terms: "Synthetic evidence review for account and delivery disputes.",
   withdrawal_terms:
     "Synthetic withdrawal through a separately agreed resolution.",

@@ -125,7 +125,12 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
     </nav>
   );
 }
-export default function AdminShell({ session, title, children }: FrameProps) {
+export default function AdminShell({
+  session,
+  title,
+  children,
+  navigation,
+}: FrameProps) {
   const drawer = useRef<HTMLDialogElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const { pathname } = useLocation();
@@ -149,6 +154,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
           </Anchor>
           <span className="admin-edition">STAFF CONSOLE</span>
           <Navigation owner={session.user?.role === "owner"} />
+          <div className="admin-session-action">{navigation}</div>
           <div className="admin-staff-card">
             <span className="admin-avatar" aria-hidden="true">
               {(session.user?.staff_alias || session.user?.display_name || "S")
@@ -263,6 +269,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             owner={session.user?.role === "owner"}
             close={() => drawer.current?.close()}
           />
+          <div className="admin-session-action">{navigation}</div>
         </dialog>
       )}
     </div>

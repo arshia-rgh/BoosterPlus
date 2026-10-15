@@ -142,7 +142,6 @@ const progress: SellingProgress = {
   payout_state: stage === "buy_first" ? "verified" : "recipient_pending",
   blockers: accepted
     ? [
-        ...(!received ? ["handover"] : []),
         ...(stage.startsWith("buy_first") ? ["seller_payment"] : []),
         ...(hasListing
           ? ["listing_details", "listing_terms", "publication"]
@@ -152,7 +151,10 @@ const progress: SellingProgress = {
 };
 if (["published", "reserved", "sold"].includes(stage)) progress.blockers = [];
 if (stage === "unavailable") progress.blockers = ["game_unavailable"];
-if (stage === "ready") progress.blockers = ["publication"];
+if (stage === "ready") {
+  progress.blockers = ["publication"];
+  progress.handover = { state: "missing", locked: false, received_at: null };
+}
 const offer: Offer = {
   id: offerID,
   submission_id: id,

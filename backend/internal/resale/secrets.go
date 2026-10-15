@@ -189,7 +189,7 @@ func (s *Store) SubmitDeliverySecret(ctx context.Context, p *identity.Principal,
 		}
 		existing, e := tx.AccountDelivery.Query().Where(accountdelivery.OrderIDEQ(id)).Only(ctx)
 		if e == nil {
-			if existing.State != "pending" || existing.SecretOwnerID != current.User.ID {
+			if existing.State != "pending" || existing.SecretOwnerID != current.User.ID || existing.FormID != "" {
 				return ErrConflict
 			}
 			return nil

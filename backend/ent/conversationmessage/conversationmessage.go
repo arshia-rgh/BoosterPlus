@@ -38,6 +38,8 @@ const (
 	FieldPurpose = "purpose"
 	// FieldBody holds the string denoting the body field in the database.
 	FieldBody = "body"
+	// FieldFormID holds the string denoting the form_id field in the database.
+	FieldFormID = "form_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the conversationmessage in the database.
@@ -59,6 +61,7 @@ var Columns = []string{
 	FieldAttachments,
 	FieldPurpose,
 	FieldBody,
+	FieldFormID,
 	FieldCreatedAt,
 }
 
@@ -87,6 +90,10 @@ var (
 	RequestHashValidator func(string) error
 	// BodyValidator is a validator for the "body" field. It is called by the builders before save.
 	BodyValidator func(string) error
+	// DefaultFormID holds the default value on creation for the "form_id" field.
+	DefaultFormID string
+	// FormIDValidator is a validator for the "form_id" field. It is called by the builders before save.
+	FormIDValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
@@ -126,8 +133,10 @@ const DefaultPurpose = PurposeMessage
 
 // Purpose values.
 const (
-	PurposeMessage Purpose = "message"
-	PurposeProof   Purpose = "proof"
+	PurposeMessage   Purpose = "message"
+	PurposeProof     Purpose = "proof"
+	PurposeForm      Purpose = "form"
+	PurposeFormReply Purpose = "form_reply"
 )
 
 func (pu Purpose) String() string {
@@ -137,7 +146,7 @@ func (pu Purpose) String() string {
 // PurposeValidator is a validator for the "purpose" field enum values. It is called by the builders before save.
 func PurposeValidator(pu Purpose) error {
 	switch pu {
-	case PurposeMessage, PurposeProof:
+	case PurposeMessage, PurposeProof, PurposeForm, PurposeFormReply:
 		return nil
 	default:
 		return fmt.Errorf("conversationmessage: invalid enum value for purpose field: %q", pu)
@@ -205,6 +214,11 @@ func ByPurpose(opts ...sql.OrderTermOption) OrderOption {
 // ByBody orders the results by the body field.
 func ByBody(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBody, opts...).ToFunc()
+}
+
+// ByFormID orders the results by the form_id field.
+func ByFormID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFormID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

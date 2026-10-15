@@ -197,3 +197,30 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.news-block-actions .button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-size: 0.8rem;
+  padding: 0.45rem 0.6rem;
+  min-height: 44px;
+}
+.news-block-actions .button:last-child {
+  color: #f1b7b7;
+  border-color: #885757;
+}
+.news-block-actions .button:hover {
+  background: #345442;
+}
+.news-block-actions .button + .button {
+  margin: 0;
+}
+.news-block {
+  padding: 1rem !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 0.7rem;
+}
+.news-block-actions {
+  gap: 0.4rem;
+}

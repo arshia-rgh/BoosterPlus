@@ -6,8 +6,10 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/chataccess"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
@@ -15,6 +17,8 @@ import (
 // DeliveryView exposes accepted public terms and handoff lifecycle, never seller or staff identity.
 type DeliveryView struct {
 	OrderID        string        `json:"order_id"`
+	FormID         string        `json:"form_id"`
+	ConversationID string        `json:"conversation_id"`
 	Product        PublicListing `json:"listing"`
 	Version        int           `json:"version"`
 	State          string        `json:"state"`
@@ -52,7 +56,15 @@ func deliveryView(ctx context.Context, client *ent.Client, row *ent.Order, now t
 	result.DeliveredAt = record.DeliveredAt
 	result.AcknowledgedAt = record.AcknowledgedAt
 	result.DisputeUntil = record.DisputeUntil
-	bundle, err := client.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(row.ID), secretbundle.OwnerIDEQ(record.SecretOwnerID)).Only(ctx)
+	result.FormID = record.FormID
+	if record.FormID != "" {
+		form, e := client.ConversationForm.Get(ctx, record.FormID)
+		if e != nil {
+			return result, e
+		}
+		result.ConversationID = form.ConversationID
+	}
+	bundle, err := deliveryBundle(ctx, client, record, now)
 	if ent.IsNotFound(err) {
 		return result, nil
 	}
@@ -132,7 +144,15 @@ func (s *Store) ChangeDelivery(ctx context.Context, p *identity.Principal, id, a
 			if _, e = tx.SecretBundle.Update().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id), secretbundle.OwnerIDEQ(record.SecretOwnerID), secretbundle.StateEQ(secretbundle.StateActive)).AddVersion(1).SetState(secretbundle.StateDeleted).ClearEncryptedPayload().ClearWrappedKey().SetKeyVersion("").SetUpdatedAt(s.instant()).Save(ctx); e != nil {
 				return e
 			}
-			update.SetSecretOwnerID(current.User.ID).SetSecretVersion(0)
+			if record.FormID != "" {
+				if _, e = tx.ConversationForm.UpdateOneID(record.FormID).SetState(conversationform.StateCancelled).ClearAnswers().AddVersion(1).SetUpdatedAt(s.instant()).Save(ctx); e != nil {
+					return e
+				}
+				if _, e = tx.SecretBundle.Update().Where(secretbundle.PurposeEQ(secretbundle.PurposeChatForm), secretbundle.ResourceIDEQ(record.FormID)).SetState(secretbundle.StateDeleted).ClearEncryptedPayload().ClearWrappedKey().SetKeyVersion("").AddVersion(1).SetUpdatedAt(s.instant()).Save(ctx); e != nil {
+					return e
+				}
+			}
+			update.SetSecretOwnerID(current.User.ID).SetSecretVersion(0).SetFormID("")
 			next = row.State
 		case "deliver":
 			if !admin {
@@ -141,11 +161,11 @@ func (s *Store) ChangeDelivery(ctx context.Context, p *identity.Principal, id, a
 			if record.State != "pending" {
 				return ErrConflict
 			}
-			bundle, bundleErr := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id), secretbundle.OwnerIDEQ(record.SecretOwnerID), secretbundle.StateEQ(secretbundle.StateActive)).Only(ctx)
+			bundle, bundleErr := deliveryBundle(ctx, tx.Client(), record, s.instant())
 			if bundleErr != nil {
 				return bundleErr
 			}
-			if bundle.Version != input.SecretVersion || !bundle.ExpiresAt.After(s.instant().Add(24*time.Hour)) {
+			if bundle.State != secretbundle.StateActive || bundle.Version != input.SecretVersion || !bundle.ExpiresAt.After(s.instant().Add(24*time.Hour)) {
 				return ErrConflict
 			}
 			snapshot, decodeErr := decode[PublicListing](row.AccountSnapshot)
@@ -191,4 +211,18 @@ func (s *Store) ChangeDelivery(ctx context.Context, p *identity.Principal, id, a
 		return e
 	})
 	return result, err
+}
+
+func deliveryBundle(ctx context.Context, c *ent.Client, row *ent.AccountDelivery, now time.Time) (*ent.SecretBundle, error) {
+	if row.FormID == "" {
+		return c.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(row.OrderID), secretbundle.OwnerIDEQ(row.SecretOwnerID)).Only(ctx)
+	}
+	form, err := c.ConversationForm.Get(ctx, row.FormID)
+	if err != nil {
+		return nil, err
+	}
+	if form.Purpose != conversationform.PurposeBuyerAccess || form.ResourceID != row.OrderID || form.RecipientID != row.BuyerID || form.AnsweredBy != row.SecretOwnerID {
+		return nil, identity.ErrForbidden
+	}
+	return chataccess.Bundle(ctx, c, row.FormID, now)
 }

@@ -42,6 +42,8 @@ type ConversationMessage struct {
 	Purpose conversationmessage.Purpose `json:"purpose,omitempty"`
 	// Body holds the value of the "body" field.
 	Body string `json:"body,omitempty"`
+	// FormID holds the value of the "form_id" field.
+	FormID string `json:"form_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 	selectValues sql.SelectValues
@@ -56,7 +58,7 @@ func (*ConversationMessage) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case conversationmessage.FieldSequence, conversationmessage.FieldPublicSequence:
 			values[i] = new(sql.NullInt64)
-		case conversationmessage.FieldID, conversationmessage.FieldConversationID, conversationmessage.FieldSenderID, conversationmessage.FieldSenderRole, conversationmessage.FieldSenderLabel, conversationmessage.FieldVisibility, conversationmessage.FieldRequestKey, conversationmessage.FieldRequestHash, conversationmessage.FieldPurpose, conversationmessage.FieldBody:
+		case conversationmessage.FieldID, conversationmessage.FieldConversationID, conversationmessage.FieldSenderID, conversationmessage.FieldSenderRole, conversationmessage.FieldSenderLabel, conversationmessage.FieldVisibility, conversationmessage.FieldRequestKey, conversationmessage.FieldRequestHash, conversationmessage.FieldPurpose, conversationmessage.FieldBody, conversationmessage.FieldFormID:
 			values[i] = new(sql.NullString)
 		case conversationmessage.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -156,6 +158,12 @@ func (_m *ConversationMessage) assignValues(columns []string, values []any) erro
 			} else if value.Valid {
 				_m.Body = value.String
 			}
+		case conversationmessage.FieldFormID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field form_id", values[i])
+			} else if value.Valid {
+				_m.FormID = value.String
+			}
 		case conversationmessage.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -235,6 +243,9 @@ func (_m *ConversationMessage) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("body=")
 	builder.WriteString(_m.Body)
+	builder.WriteString(", ")
+	builder.WriteString("form_id=")
+	builder.WriteString(_m.FormID)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

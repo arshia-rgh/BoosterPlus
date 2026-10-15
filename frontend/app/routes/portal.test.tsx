@@ -151,6 +151,10 @@ it("loads a named immutable legal version", async () => {
   expect(historical.version).toBe("v2");
   render(<Terms loaderData={historical} />);
   expect(
-    screen.getByRole("heading", { name: "Historical privacy" }),
-  ).toBeInTheDocument();
+    screen.getByRole("link", { name: "Historical privacy" }),
+  ).toHaveAttribute("href", "/policies/privacy?version=v2");
+  expect(screen.getByText("Historical published terms")).toBeInTheDocument();
+  expect(
+    screen.queryByText("Approved historical privacy details."),
+  ).not.toBeInTheDocument();
 });

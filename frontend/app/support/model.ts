@@ -17,7 +17,8 @@ export const conversationSchema = z.object({
   created_at: z.string(),
 });
 export const messageSchema = z.object({
-  purpose: z.enum(["message", "proof"]),
+  purpose: z.enum(["message", "proof", "form", "form_reply"]),
+  form_id: z.string().optional(),
   id: z.string(),
   sequence: z.number().int(),
   sender_label: z.string(),

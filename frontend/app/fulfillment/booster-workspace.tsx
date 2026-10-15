@@ -25,7 +25,7 @@ import { workNextStep } from "./work-presentation";
 import { listingSchema, workSchema, type Work } from "./model";
 import { WorkSummary } from "./work-summary";
 import AssignmentActions from "./readiness";
-import { StaffSecret } from "./secrets";
+
 import Bookings from "./bookings";
 import { sessionTime } from "./agenda";
 import "../orders/order-workspace.css";
@@ -39,7 +39,6 @@ const sections = [
   { id: "progress", label: "Progress" },
   { id: "messages", label: "Messages & proof" },
   { id: "sessions", label: "Sessions" },
-  { id: "access", label: "Game access" },
 ];
 export function BoosterQueue() {
   const [params, setParams] = useSearchParams();
@@ -278,7 +277,7 @@ function Assignment({
               <h3>Shared assignment conversation</h3>
               <p>
                 Visible to the customer, currently assigned booster and PLAYORA
-                staff. Keep credentials in Game access.
+                staff. Use protected fields in chat for credentials.
               </p>
               {work.coordination_id && work.coordination_shared ? (
                 <Thread
@@ -303,7 +302,11 @@ function Assignment({
             </fieldset>
           )}
           {section === "access" && visible && !hidden && !loading && (
-            <StaffSecret key={work.access_version} work={work} admin={false} />
+            <p>
+              <Link to="?section=messages" preventScrollReset>
+                View protected access in messages
+              </Link>
+            </p>
           )}
         </>
       )}

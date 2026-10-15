@@ -352,6 +352,7 @@ function Editor({
                 </section>
               )}
               <fieldset
+                className="account-listing-editor"
                 disabled={
                   busy ||
                   loading ||
@@ -621,11 +622,7 @@ function Editor({
                       !!progress.error ||
                       !progress.data ||
                       progress.data.blockers.some((code) =>
-                        [
-                          "handover",
-                          "seller_payment",
-                          "game_unavailable",
-                        ].includes(code),
+                        ["seller_payment", "game_unavailable"].includes(code),
                       )
                     }
                     onClick={() => void act("publish")}

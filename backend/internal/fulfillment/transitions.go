@@ -11,6 +11,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/chataccess"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -57,6 +58,14 @@ func (s *Store) startPrerequisites(ctx context.Context, tx *ent.Tx, row *ent.Ord
 		ok, e := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeGameAccess), secretbundle.ResourceIDEQ(row.ID), secretbundle.OwnerIDEQ(row.UserID), secretbundle.StateEQ(secretbundle.StateActive), secretbundle.ExpiresAtGT(s.now())).Exist(ctx)
 		if e != nil {
 			return "", e
+		}
+		if !ok {
+			_, e = chataccess.Receipt(ctx, tx.Client(), "game_access", row.ID, row.UserID, work.AssignedID, time.Time{}, s.now())
+			if e == nil {
+				ok = true
+			} else if !ent.IsNotFound(e) {
+				return "", e
+			}
 		}
 		if !ok {
 			return "game_access", ErrConflict

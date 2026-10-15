@@ -16,7 +16,7 @@ type SecretBundle struct{ ent.Schema }
 func (SecretBundle) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
-		field.Enum("purpose").Values("game_access", "account_transfer").Immutable(),
+		field.Enum("purpose").Values("game_access", "account_transfer", "chat_form").Immutable(),
 		field.String("resource_id").MaxLen(36).Immutable(),
 		field.String("owner_id").MaxLen(36).Immutable(),
 		// Only namespace-migrated envelopes retain their deterministic original owner.

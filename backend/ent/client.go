@@ -41,6 +41,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
@@ -151,6 +152,8 @@ type Client struct {
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
 	Conversation *ConversationClient
+	// ConversationForm is the client for interacting with the ConversationForm builders.
+	ConversationForm *ConversationFormClient
 	// ConversationMessage is the client for interacting with the ConversationMessage builders.
 	ConversationMessage *ConversationMessageClient
 	// ConversationRead is the client for interacting with the ConversationRead builders.
@@ -283,6 +286,7 @@ func (c *Client) init() {
 	c.CaseEvent = NewCaseEventClient(c.config)
 	c.CatalogRelease = NewCatalogReleaseClient(c.config)
 	c.Conversation = NewConversationClient(c.config)
+	c.ConversationForm = NewConversationFormClient(c.config)
 	c.ConversationMessage = NewConversationMessageClient(c.config)
 	c.ConversationRead = NewConversationReadClient(c.config)
 	c.Coupon = NewCouponClient(c.config)
@@ -449,6 +453,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CaseEvent:                NewCaseEventClient(cfg),
 		CatalogRelease:           NewCatalogReleaseClient(cfg),
 		Conversation:             NewConversationClient(cfg),
+		ConversationForm:         NewConversationFormClient(cfg),
 		ConversationMessage:      NewConversationMessageClient(cfg),
 		ConversationRead:         NewConversationReadClient(cfg),
 		Coupon:                   NewCouponClient(cfg),
@@ -542,6 +547,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CaseEvent:                NewCaseEventClient(cfg),
 		CatalogRelease:           NewCatalogReleaseClient(cfg),
 		Conversation:             NewConversationClient(cfg),
+		ConversationForm:         NewConversationFormClient(cfg),
 		ConversationMessage:      NewConversationMessageClient(cfg),
 		ConversationRead:         NewConversationReadClient(cfg),
 		Coupon:                   NewCouponClient(cfg),
@@ -624,16 +630,17 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
 		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
 		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
-		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.ManualPayout, c.MediaFile, c.MoneyTransfer,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy,
-		c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings, c.PaymentSignal,
-		c.PrivacyRequest, c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer,
-		c.SellerOfferEvent, c.ServiceCase, c.ShopDelivery, c.ShopProduct,
-		c.ShopProductEvent, c.ShopProductRelease, c.ShopRecipient, c.ShopReservation,
-		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationForm,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.ManualPayout,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
+		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
+		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -651,16 +658,17 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
 		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
 		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
-		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.ManualPayout, c.MediaFile, c.MoneyTransfer,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy,
-		c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings, c.PaymentSignal,
-		c.PrivacyRequest, c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer,
-		c.SellerOfferEvent, c.ServiceCase, c.ShopDelivery, c.ShopProduct,
-		c.ShopProductEvent, c.ShopProductRelease, c.ShopRecipient, c.ShopReservation,
-		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationForm,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.ManualPayout,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
+		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
+		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -725,6 +733,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CatalogRelease.mutate(ctx, m)
 	case *ConversationMutation:
 		return c.Conversation.mutate(ctx, m)
+	case *ConversationFormMutation:
+		return c.ConversationForm.mutate(ctx, m)
 	case *ConversationMessageMutation:
 		return c.ConversationMessage.mutate(ctx, m)
 	case *ConversationReadMutation:
@@ -4412,6 +4422,139 @@ func (c *ConversationClient) mutate(ctx context.Context, m *ConversationMutation
 		return (&ConversationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Conversation mutation op: %q", m.Op())
+	}
+}
+
+// ConversationFormClient is a client for the ConversationForm schema.
+type ConversationFormClient struct {
+	config
+}
+
+// NewConversationFormClient returns a client for the ConversationForm from the given config.
+func NewConversationFormClient(c config) *ConversationFormClient {
+	return &ConversationFormClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `conversationform.Hooks(f(g(h())))`.
+func (c *ConversationFormClient) Use(hooks ...Hook) {
+	c.hooks.ConversationForm = append(c.hooks.ConversationForm, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `conversationform.Intercept(f(g(h())))`.
+func (c *ConversationFormClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ConversationForm = append(c.inters.ConversationForm, interceptors...)
+}
+
+// Create returns a builder for creating a ConversationForm entity.
+func (c *ConversationFormClient) Create() *ConversationFormCreate {
+	mutation := newConversationFormMutation(c.config, OpCreate)
+	return &ConversationFormCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ConversationForm entities.
+func (c *ConversationFormClient) CreateBulk(builders ...*ConversationFormCreate) *ConversationFormCreateBulk {
+	return &ConversationFormCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ConversationFormClient) MapCreateBulk(slice any, setFunc func(*ConversationFormCreate, int)) *ConversationFormCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ConversationFormCreateBulk{err: fmt.Errorf("calling to ConversationFormClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ConversationFormCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ConversationFormCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ConversationForm.
+func (c *ConversationFormClient) Update() *ConversationFormUpdate {
+	mutation := newConversationFormMutation(c.config, OpUpdate)
+	return &ConversationFormUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConversationFormClient) UpdateOne(_m *ConversationForm) *ConversationFormUpdateOne {
+	mutation := newConversationFormMutation(c.config, OpUpdateOne, withConversationForm(_m))
+	return &ConversationFormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConversationFormClient) UpdateOneID(id string) *ConversationFormUpdateOne {
+	mutation := newConversationFormMutation(c.config, OpUpdateOne, withConversationFormID(id))
+	return &ConversationFormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ConversationForm.
+func (c *ConversationFormClient) Delete() *ConversationFormDelete {
+	mutation := newConversationFormMutation(c.config, OpDelete)
+	return &ConversationFormDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConversationFormClient) DeleteOne(_m *ConversationForm) *ConversationFormDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ConversationFormClient) DeleteOneID(id string) *ConversationFormDeleteOne {
+	builder := c.Delete().Where(conversationform.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConversationFormDeleteOne{builder}
+}
+
+// Query returns a query builder for ConversationForm.
+func (c *ConversationFormClient) Query() *ConversationFormQuery {
+	return &ConversationFormQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeConversationForm},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ConversationForm entity by its id.
+func (c *ConversationFormClient) Get(ctx context.Context, id string) (*ConversationForm, error) {
+	return c.Query().Where(conversationform.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConversationFormClient) GetX(ctx context.Context, id string) *ConversationForm {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConversationFormClient) Hooks() []Hook {
+	return c.hooks.ConversationForm
+}
+
+// Interceptors returns the client interceptors.
+func (c *ConversationFormClient) Interceptors() []Interceptor {
+	return c.inters.ConversationForm
+}
+
+func (c *ConversationFormClient) mutate(ctx context.Context, m *ConversationFormMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ConversationFormCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ConversationFormUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ConversationFormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ConversationFormDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ConversationForm mutation op: %q", m.Op())
 	}
 }
 
@@ -10674,14 +10817,14 @@ type (
 		Artwork, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage,
 		AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, ManualPayout, MediaFile, MoneyTransfer, Notification, Order,
-		OrderContract, OrderEvent, OrderQuote, PaymentAllocation, PaymentAttempt,
-		PaymentObservation, PaymentPolicy, PaymentReceipt, PaymentRecord,
-		PaymentSettings, PaymentSignal, PrivacyRequest, Review, ReviewRevision,
-		SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase, ShopDelivery,
-		ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationForm,
+		ConversationMessage, ConversationRead, Coupon, CouponClaim, CouponRevision,
+		Favorite, Fulfillment, Game, ManualPayout, MediaFile, MoneyTransfer,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote, PaymentAllocation,
+		PaymentAttempt, PaymentObservation, PaymentPolicy, PaymentReceipt,
+		PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest, Review,
+		ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase,
+		ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
 		TransferRecord, User []ent.Hook
@@ -10692,14 +10835,14 @@ type (
 		Artwork, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage,
 		AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, ManualPayout, MediaFile, MoneyTransfer, Notification, Order,
-		OrderContract, OrderEvent, OrderQuote, PaymentAllocation, PaymentAttempt,
-		PaymentObservation, PaymentPolicy, PaymentReceipt, PaymentRecord,
-		PaymentSettings, PaymentSignal, PrivacyRequest, Review, ReviewRevision,
-		SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase, ShopDelivery,
-		ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationForm,
+		ConversationMessage, ConversationRead, Coupon, CouponClaim, CouponRevision,
+		Favorite, Fulfillment, Game, ManualPayout, MediaFile, MoneyTransfer,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote, PaymentAllocation,
+		PaymentAttempt, PaymentObservation, PaymentPolicy, PaymentReceipt,
+		PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest, Review,
+		ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase,
+		ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
 		TransferRecord, User []ent.Interceptor

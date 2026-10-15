@@ -252,9 +252,11 @@ export function Decisions({
   if (!admin && !cancellable && state !== "needs_information") return null;
   return (
     <section className="catalog-section" aria-label="Order actions">
-      <h2>Next steps</h2>
+      <h2>{admin ? "Next steps" : "Order options"}</h2>
       <fieldset className="order-task-controls" disabled={busy}>
-        <legend>{admin ? "Manage request" : "Your decision"}</legend>
+        <legend className="sr-only">
+          {admin ? "Manage request" : "Your decision"}
+        </legend>
         {!admin && state === "quoted" && detail.quote && (
           <>
             <p>

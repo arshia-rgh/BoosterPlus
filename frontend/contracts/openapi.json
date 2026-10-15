@@ -24002,6 +24002,880 @@
           }
         }
       }
+    },
+    "/api/v1/conversations/{id}/forms/{form}": {
+      "get": {
+        "operationId": "memberChatFormRead",
+        "summary": "Recipient-bound conversation form read. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatForm"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ]
+      }
+    },
+    "/api/v1/conversations/{id}/forms/legacy": {
+      "get": {
+        "operationId": "memberChatFormLegacy",
+        "summary": "Recipient-bound conversation form legacy. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatFormLegacy"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ]
+      }
+    },
+    "/api/v1/conversations/{id}/forms/{form}/reveal": {
+      "post": {
+        "operationId": "memberChatFormReveal",
+        "summary": "Recipient-bound conversation form reveal. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatFormSecret"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyCommand"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/forms/{form}/reply": {
+      "post": {
+        "operationId": "memberChatFormReply",
+        "summary": "Recipient-bound conversation form reply. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatForm"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatFormReply"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms/{form}": {
+      "get": {
+        "operationId": "staffChatFormRead",
+        "summary": "Recipient-bound conversation form read. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatForm"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms/legacy": {
+      "get": {
+        "operationId": "staffChatFormLegacy",
+        "summary": "Recipient-bound conversation form legacy. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatFormLegacy"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms/{form}/reveal": {
+      "post": {
+        "operationId": "staffChatFormReveal",
+        "summary": "Recipient-bound conversation form reveal. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatFormSecret"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyCommand"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms/options": {
+      "get": {
+        "operationId": "staffChatFormOptions",
+        "summary": "Recipient-bound conversation form options. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatFormOptions"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms": {
+      "post": {
+        "operationId": "staffChatFormCreate",
+        "summary": "Recipient-bound conversation form create. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatForm"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatFormCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/forms/{form}/cancel": {
+      "post": {
+        "operationId": "staffChatFormCancel",
+        "summary": "Recipient-bound conversation form cancel. Protected actions require fresh verification; sensitive values never appear in messages or notifications.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatForm"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "form",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatFormCancel"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -26850,7 +27724,11 @@
           },
           "purpose": {
             "type": "string",
-            "enum": ["message", "proof"]
+            "enum": ["message", "proof", "form", "form_reply"]
+          },
+          "form_id": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -30763,6 +31641,12 @@
           "dispute_until": {
             "type": ["string", "null"],
             "format": "date-time"
+          },
+          "form_id": {
+            "type": "string"
+          },
+          "conversation_id": {
+            "type": "string"
           }
         },
         "required": [
@@ -34603,6 +35487,312 @@
             }
           }
         }
+      },
+      "ChatFormField": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,39}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["text", "multiline", "select"]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "secure": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["key", "label", "kind", "required", "secure"]
+      },
+      "ChatFormCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["request", "share"]
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "information",
+              "game_access",
+              "seller_access",
+              "buyer_access"
+            ]
+          },
+          "recipient": {
+            "type": "string",
+            "enum": ["customer", "booster"]
+          },
+          "share_with_booster": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "fields": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/ChatFormField"
+            }
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "maxProperties": 12
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "request_key",
+          "mode",
+          "purpose",
+          "recipient",
+          "title",
+          "fields",
+          "expires_at"
+        ]
+      },
+      "ChatFormReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "maxProperties": 12
+          }
+        },
+        "required": ["version", "request_key", "answers"]
+      },
+      "ChatFormCancel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          }
+        },
+        "required": ["version"]
+      },
+      "ChatForm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatFormField"
+            }
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "maxProperties": 12
+          },
+          "has_secure": {
+            "type": "boolean"
+          },
+          "can_respond": {
+            "type": "boolean"
+          },
+          "can_reveal": {
+            "type": "boolean"
+          },
+          "can_cancel": {
+            "type": "boolean"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "answered_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "mode",
+          "purpose",
+          "recipient",
+          "audience",
+          "state",
+          "version",
+          "fields",
+          "answers",
+          "has_secure",
+          "can_respond",
+          "can_reveal",
+          "can_cancel",
+          "expires_at",
+          "answered_at"
+        ]
+      },
+      "ChatFormOptions": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "open": {
+            "type": "boolean"
+          },
+          "booster": {
+            "type": "boolean"
+          },
+          "purposes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "modes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_hours": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 720
+                }
+              },
+              "required": ["key", "label", "modes", "max_hours"]
+            }
+          }
+        },
+        "required": ["open", "booster", "purposes"]
+      },
+      "ChatFormLegacy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "path"]
+            }
+          }
+        },
+        "required": ["links"]
+      },
+      "ChatFormSecret": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "Encrypted answers are revealed only after current access and fresh verification checks; plaintext is never cached."
+          }
+        },
+        "required": ["value"]
+      },
+      "EmptyCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
       }
     },
     "securitySchemes": {

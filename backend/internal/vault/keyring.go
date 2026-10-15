@@ -34,7 +34,7 @@ func (s Scope) aad(id string) ([]byte, error) {
 			return nil, ErrInvalid
 		}
 	}
-	if s.Purpose != "game_access" && s.Purpose != "account_transfer" {
+	if s.Purpose != "game_access" && s.Purpose != "account_transfer" && s.Purpose != "chat_form" {
 		return nil, ErrInvalid
 	}
 	return json.Marshal([]string{"boosterplus-vault-v1", id, s.Purpose, s.ResourceID, s.OwnerID})

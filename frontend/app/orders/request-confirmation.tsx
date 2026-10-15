@@ -22,10 +22,9 @@ export default function RequestConfirmation({ detail }: { detail: Detail }) {
             ? "Our team needs more information."
             : "This request could not be accepted."}
       </h2>
-      <p>Request {detail.order.id}</p>
       <p>
         {state === "submitted"
-          ? "Staff will review your selections. Any questions and the final quote will appear in this order. Keep this page or return through My account → Orders."
+          ? "The team will send your final quote and any questions here."
           : state === "needs_information"
             ? "Read the latest staff question in Order activity or contact support for this order. Revise your request below when you have the missing details."
             : "Read the reason in Order activity. Contact support for this order if you need help understanding the decision."}
@@ -33,7 +32,7 @@ export default function RequestConfirmation({ detail }: { detail: Detail }) {
       <p>
         <strong>No payment is due for this request.</strong>
         {state !== "rejected" &&
-          " You will review and explicitly accept a final quote before paying. Submitting this request does not charge you or start work."}
+          " You choose whether to accept the final quote before paying."}
       </p>
     </section>
   );

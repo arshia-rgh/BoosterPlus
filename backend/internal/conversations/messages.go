@@ -20,7 +20,7 @@ import (
 )
 
 func messageView(row *ent.ConversationMessage, admin bool) Message {
-	result := Message{Purpose: string(row.Purpose), Attachments: row.Attachments, ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
+	result := Message{FormID: row.FormID, Purpose: string(row.Purpose), Attachments: row.Attachments, ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
 	if admin {
 		result.SenderID = row.SenderID
 	} else if row.PublicSequence != nil {

@@ -25,13 +25,13 @@ const resource = (
 ) => ({ data, error, loading: false, reload: vi.fn() });
 it("never equates accepted terms with publication and identifies the responsible next actor", () => {
   expect(saleNextStep(base, false, false)).toMatchObject({
-    title: "Share account access securely",
-    actor: "You",
-    section: "handover",
+    title: "PLAYORA is preparing your listing",
+    actor: "PLAYORA",
+    section: "messages",
   });
   expect(saleNextStep(base, true, false)).toMatchObject({
-    title: "Waiting for secure account access",
-    actor: "Seller",
+    title: "Finish and publish the listing",
+    actor: "You",
     section: "listing",
   });
   expect(
@@ -53,21 +53,21 @@ it("never equates accepted terms with publication and identifies the responsible
     ).title,
   ).toBe("Live in Accounts");
 });
-it("keeps expired and returned handovers actionable, and does not label a disabled game live", () => {
+it("does not block publication on missing or expired credentials, and does not label a disabled game live", () => {
   expect(
     saleNextStep(
       { ...base, handover: { ...base.handover, state: "expired" } },
       false,
       false,
     ).title,
-  ).toBe("Update expired account details");
+  ).toBe("PLAYORA is preparing your listing");
   expect(
     saleNextStep(
       { ...base, handover: { ...base.handover, state: "refresh_required" } },
       false,
       false,
     ).title,
-  ).toBe("Update access before relisting");
+  ).toBe("PLAYORA is preparing your listing");
   expect(
     saleNextStep({ ...base, listing_state: "unavailable" }, false, false).title,
   ).toBe("Listing paused with this game");
@@ -118,8 +118,8 @@ it("preserves return context for an existing listing and keeps customer blockers
     }),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "Share account access" }),
-  ).toHaveAttribute("href", "/?section=handover");
+    screen.getByRole("link", { name: "Message the team" }),
+  ).toHaveAttribute("href", "/?section=messages");
 });
 it("shows an actionable retry and no cached next step when progress fails", () => {
   const r = resource(base, new Error("offline"));
@@ -205,7 +205,7 @@ it("directs the seller to confirm a buy-first destination before asking the owne
   });
   expect(
     saleNextStep({ ...pending, handover: base.handover }, false, false).section,
-  ).toBe("handover");
+  ).toBe("payout");
   expect(
     saleNextStep(
       { ...pending, arrangement: "consignment", blockers: ["publication"] },

@@ -108,6 +108,20 @@ func (_c *ConversationMessageCreate) SetBody(v string) *ConversationMessageCreat
 	return _c
 }
 
+// SetFormID sets the "form_id" field.
+func (_c *ConversationMessageCreate) SetFormID(v string) *ConversationMessageCreate {
+	_c.mutation.SetFormID(v)
+	return _c
+}
+
+// SetNillableFormID sets the "form_id" field if the given value is not nil.
+func (_c *ConversationMessageCreate) SetNillableFormID(v *string) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetFormID(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *ConversationMessageCreate) SetCreatedAt(v time.Time) *ConversationMessageCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -174,6 +188,10 @@ func (_c *ConversationMessageCreate) defaults() {
 	if _, ok := _c.mutation.Purpose(); !ok {
 		v := conversationmessage.DefaultPurpose
 		_c.mutation.SetPurpose(v)
+	}
+	if _, ok := _c.mutation.FormID(); !ok {
+		v := conversationmessage.DefaultFormID
+		_c.mutation.SetFormID(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := conversationmessage.DefaultCreatedAt()
@@ -260,6 +278,14 @@ func (_c *ConversationMessageCreate) check() error {
 	if v, ok := _c.mutation.Body(); ok {
 		if err := conversationmessage.BodyValidator(v); err != nil {
 			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.body": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.FormID(); !ok {
+		return &ValidationError{Name: "form_id", err: errors.New(`ent: missing required field "ConversationMessage.form_id"`)}
+	}
+	if v, ok := _c.mutation.FormID(); ok {
+		if err := conversationmessage.FormIDValidator(v); err != nil {
+			return &ValidationError{Name: "form_id", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.form_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
@@ -352,6 +378,10 @@ func (_c *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgra
 	if value, ok := _c.mutation.Body(); ok {
 		_spec.SetField(conversationmessage.FieldBody, field.TypeString, value)
 		_node.Body = value
+	}
+	if value, ok := _c.mutation.FormID(); ok {
+		_spec.SetField(conversationmessage.FieldFormID, field.TypeString, value)
+		_node.FormID = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(conversationmessage.FieldCreatedAt, field.TypeTime, value)

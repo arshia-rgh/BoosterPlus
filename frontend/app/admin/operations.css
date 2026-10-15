@@ -144,9 +144,12 @@
   margin: 0 0 1.3rem;
   border-bottom: 1px solid #395640;
 }
-.admin-view-nav button {
+.admin-view-nav :is(button, a) {
   font: inherit;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
   color: #c9ddd0;
   background: #14281d;
   border: 1px solid #395640;
@@ -191,7 +194,29 @@
   .operations-worklists {
     grid-template-columns: 1fr;
   }
-  .admin-view-nav button {
+  .admin-view-nav :is(button, a) {
     flex: 1 1 9rem;
   }
+}
+
+.admin-session-action {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--line);
+}
+.admin-session-action .identity-form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.admin-session-action button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.staff-invitation-disclosure {
+  margin: 1rem 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
 }

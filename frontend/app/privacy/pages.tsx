@@ -41,6 +41,7 @@ const sections = [
   "offers",
   "conversations",
   "messages",
+  "forms",
   "receipts",
   "transfers",
   "reviews",

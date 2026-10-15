@@ -17,6 +17,8 @@ type AccountDelivery struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// FormID holds the value of the "form_id" field.
+	FormID string `json:"form_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID string `json:"order_id,omitempty"`
 	// ListingID holds the value of the "listing_id" field.
@@ -53,7 +55,7 @@ func (*AccountDelivery) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case accountdelivery.FieldVersion, accountdelivery.FieldSecretVersion:
 			values[i] = new(sql.NullInt64)
-		case accountdelivery.FieldID, accountdelivery.FieldOrderID, accountdelivery.FieldListingID, accountdelivery.FieldBuyerID, accountdelivery.FieldState, accountdelivery.FieldInstructions, accountdelivery.FieldSecretOwnerID:
+		case accountdelivery.FieldID, accountdelivery.FieldFormID, accountdelivery.FieldOrderID, accountdelivery.FieldListingID, accountdelivery.FieldBuyerID, accountdelivery.FieldState, accountdelivery.FieldInstructions, accountdelivery.FieldSecretOwnerID:
 			values[i] = new(sql.NullString)
 		case accountdelivery.FieldDeliveredAt, accountdelivery.FieldAcknowledgedAt, accountdelivery.FieldDisputeUntil, accountdelivery.FieldCreatedAt, accountdelivery.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -77,6 +79,12 @@ func (_m *AccountDelivery) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case accountdelivery.FieldFormID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field form_id", values[i])
+			} else if value.Valid {
+				_m.FormID = value.String
 			}
 		case accountdelivery.FieldOrderID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -195,6 +203,9 @@ func (_m *AccountDelivery) String() string {
 	var builder strings.Builder
 	builder.WriteString("AccountDelivery(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("form_id=")
+	builder.WriteString(_m.FormID)
+	builder.WriteString(", ")
 	builder.WriteString("order_id=")
 	builder.WriteString(_m.OrderID)
 	builder.WriteString(", ")

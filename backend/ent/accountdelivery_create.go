@@ -20,6 +20,20 @@ type AccountDeliveryCreate struct {
 	hooks    []Hook
 }
 
+// SetFormID sets the "form_id" field.
+func (_c *AccountDeliveryCreate) SetFormID(v string) *AccountDeliveryCreate {
+	_c.mutation.SetFormID(v)
+	return _c
+}
+
+// SetNillableFormID sets the "form_id" field if the given value is not nil.
+func (_c *AccountDeliveryCreate) SetNillableFormID(v *string) *AccountDeliveryCreate {
+	if v != nil {
+		_c.SetFormID(*v)
+	}
+	return _c
+}
+
 // SetOrderID sets the "order_id" field.
 func (_c *AccountDeliveryCreate) SetOrderID(v string) *AccountDeliveryCreate {
 	_c.mutation.SetOrderID(v)
@@ -227,6 +241,10 @@ func (_c *AccountDeliveryCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *AccountDeliveryCreate) defaults() {
+	if _, ok := _c.mutation.FormID(); !ok {
+		v := accountdelivery.DefaultFormID
+		_c.mutation.SetFormID(v)
+	}
 	if _, ok := _c.mutation.State(); !ok {
 		v := accountdelivery.DefaultState
 		_c.mutation.SetState(v)
@@ -263,6 +281,14 @@ func (_c *AccountDeliveryCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AccountDeliveryCreate) check() error {
+	if _, ok := _c.mutation.FormID(); !ok {
+		return &ValidationError{Name: "form_id", err: errors.New(`ent: missing required field "AccountDelivery.form_id"`)}
+	}
+	if v, ok := _c.mutation.FormID(); ok {
+		if err := accountdelivery.FormIDValidator(v); err != nil {
+			return &ValidationError{Name: "form_id", err: fmt.Errorf(`ent: validator failed for field "AccountDelivery.form_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.OrderID(); !ok {
 		return &ValidationError{Name: "order_id", err: errors.New(`ent: missing required field "AccountDelivery.order_id"`)}
 	}
@@ -362,6 +388,10 @@ func (_c *AccountDeliveryCreate) createSpec() (*AccountDelivery, *sqlgraph.Creat
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.FormID(); ok {
+		_spec.SetField(accountdelivery.FieldFormID, field.TypeString, value)
+		_node.FormID = value
 	}
 	if value, ok := _c.mutation.OrderID(); ok {
 		_spec.SetField(accountdelivery.FieldOrderID, field.TypeString, value)

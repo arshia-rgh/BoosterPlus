@@ -55,10 +55,11 @@ export default function SellerPayoutQueue() {
       {resource.loading && <p role="status">Checking payout obligations…</p>}
       <p>
         Each amount belongs to an accepted seller offer. Both arrangements
-        require secure account handover and a confirmed payout destination.
-        Consignment also requires settled buyer payment, acknowledged delivery
-        and completed inspection. Active disputes or unresolved refunds hold
-        consignment payouts for review.
+        require a confirmed payout destination. Buy-first offers also require
+        account access requested securely in chat. Consignment also requires
+        settled buyer payment, acknowledged delivery and completed inspection.
+        Active disputes or unresolved refunds hold consignment payouts for
+        review.
       </p>
       <Action onClick={resource.reload}>Refresh payout queue</Action>
       <ErrorNotice error={resource.error ?? session.error} />

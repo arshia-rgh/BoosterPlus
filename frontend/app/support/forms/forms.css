@@ -1,0 +1,183 @@
+.chat-form-dialog {
+  color: var(--text, #edf7f2);
+  background: #10281f;
+  border: 1px solid #517467;
+  border-radius: 1.25rem;
+  width: min(40rem, calc(100vw - 1.5rem));
+  max-height: calc(100dvh - 2rem);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  overflow: auto;
+  box-shadow: 0 2rem 5rem #0008;
+}
+.chat-form-dialog::backdrop {
+  background: #00100bd9;
+  backdrop-filter: blur(6px);
+}
+.chat-form-dialog > header,
+.form-field-heading,
+.chat-form-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.chat-form-dialog h2 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+.chat-form-dialog fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.chat-form-dialog .catalog-label {
+  margin-block: 1rem;
+}
+.chat-form-dialog p {
+  line-height: 1.55;
+}
+.chat-form-dialog input,
+.chat-form-dialog textarea,
+.chat-form-dialog select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.chat-form-dialog .catalog-check input {
+  width: auto;
+}
+.chat-form-card {
+  border: 1px solid #5b957777;
+  background: #143d2f;
+  border-radius: 0.85rem;
+  padding: 1rem;
+  min-width: 0;
+}
+.chat-form-card strong {
+  overflow-wrap: anywhere;
+}
+.chat-form-card p {
+  font-size: 0.85rem;
+  margin: 0.5rem 0 1rem;
+}
+.form-state,
+.form-secure-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #b6e3cc;
+}
+.form-secure-badge {
+  margin-inline-start: 0.5rem;
+  border: 1px solid #64967b;
+  border-radius: 0.4rem;
+  padding: 0.1rem 0.35rem;
+  display: inline-block;
+}
+.form-audience {
+  color: #b6e3cc;
+  font-size: 0.9rem;
+}
+.chat-form-answers > div {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #446957;
+}
+.chat-form-answers dt {
+  font-weight: 600;
+}
+.chat-form-answers dd {
+  margin: 0.4rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.form-field-editor {
+  border-top: 1px solid #446957;
+  padding: 1rem 0;
+}
+.form-cancel {
+  border-top: 1px solid #446957;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+}
+.form-preview-field {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #446957;
+}
+.form-preview-field span {
+  font-size: 0.85rem;
+  color: #b6cbbf;
+}
+.form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-block: 0.75rem;
+}
+.chat-form-dialog {
+  font-family: var(--font-body, Inter, system-ui, sans-serif);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.chat-form-dialog :is(input, select, textarea) {
+  background: #0a2018;
+  border: 1px solid #64947d;
+  border-radius: 0.6rem;
+  color: #ecf8f0;
+  font: inherit;
+  padding: 0.75rem;
+}
+.chat-form-dialog .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  background: #90eabb;
+  color: #0b2519;
+  border: 1px solid #90eabb;
+  border-radius: 0.6rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.chat-form-dialog .chat-text-button {
+  color: #b5e9cc;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  cursor: pointer;
+}
+.chat-form-dialog :is(button, input, textarea, select):focus-visible {
+  outline: 3px solid #bcf5d1;
+  outline-offset: 3px;
+}
+.chat-form-dialog button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.chat-form-dialog :is(button, .button):hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.chat-form-dialog .catalog-check {
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+.chat-form-dialog .field-error {
+  color: #ffb6b6;
+  font-size: 0.875rem;
+}
+
+.chat-form-toolbar {
+  padding: 0.4rem 1rem;
+  border-top: 1px solid var(--line);
+}
+.chat-legacy-access {
+  margin-block: 1rem;
+}

@@ -15,6 +15,7 @@ type AccountDelivery struct{ ent.Schema }
 // Fields describes explicit SQL-owned columns.
 func (AccountDelivery) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("form_id").MaxLen(36).Default(""),
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.String("order_id").MaxLen(36).Immutable(),
 		field.String("listing_id").MaxLen(36).Immutable(),

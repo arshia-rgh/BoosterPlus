@@ -106,7 +106,12 @@ function Workspace({
     !detail.contract &&
     ["submitted", "quoted"].includes(detail.order.state);
   const local = (section: string, label: string) => (
-    <Link to={`?section=${section}`} state={location.state} preventScrollReset>
+    <Link
+      className="button compact secondary"
+      to={`?section=${section}`}
+      state={location.state}
+      preventScrollReset
+    >
       {label}
     </Link>
   );

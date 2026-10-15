@@ -305,8 +305,8 @@ it("keeps directory role filters across pagination and history and keeps verific
     expect(screen.getByLabelText("Role")).toHaveValue("customer");
   });
   expect(
-    screen.getByText(/If this action needs fresh verification/),
-  ).toBeVisible();
+    screen.queryByRole("button", { name: /Verify email again/ }),
+  ).not.toBeInTheDocument();
 });
 it("removes stale results after a failed directory read and keeps refresh available", async () => {
   vi.mocked(get).mockResolvedValue({ users: [], next: "" });
@@ -351,8 +351,8 @@ it("keeps audit filters through history and keeps verification in context", asyn
     expect(screen.getByLabelText("Exact audit action")).toHaveValue("old");
   });
   expect(
-    screen.getByText(/If this action needs fresh verification/),
-  ).toBeVisible();
+    screen.queryByRole("button", { name: /Verify email again/ }),
+  ).not.toBeInTheDocument();
 });
 it("does not fetch owner evidence for an administrator", () => {
   mount(false, true);

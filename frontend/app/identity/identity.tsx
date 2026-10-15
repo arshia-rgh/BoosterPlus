@@ -1230,6 +1230,17 @@ function PortalIdentity({
             />
           }
         />
+      ) : session?.user && !entry && portal === "admin" ? (
+        <Form
+          compact
+          title="Sign out"
+          submit={async () => {
+            await command("/auth/logout");
+            clearGoogleReturn(portal);
+            setCodes([]);
+            await refresh();
+          }}
+        />
       ) : null,
     children: (
       <main
@@ -1344,7 +1355,7 @@ function PortalIdentity({
               </>
             ) : (
               <>
-                {(portal === "admin" || entry) && (
+                {entry && (
                   <Form
                     compact
                     title="Sign out"

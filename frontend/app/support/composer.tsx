@@ -432,7 +432,7 @@ export default function Composer({
           {desktop && enterToSend
             ? "Enter to send · Shift+Enter for a new line. "
             : "Use the send button when ready. "}
-          Drafts clear on exit. Use secure access for credentials.
+          Drafts clear on exit. Share credentials only in protected form fields.
         </p>
         <div id={failureID}>
           {unknown && (
