@@ -4,6 +4,8 @@
 
 Baseline: repository `95f094a`, deployed application `20fe17e`, schema 43. At this checkpoint fixes are in the working tree; this file does **not** certify a deployed fix or final release pass. Preserve the current green/champagne theme, independent identities/MFA, accepted financial rules and disabled outgoing transfers/customer deletion.
 
+**Release follow-up, 18 October:** the confirmed corrections were subsequently deployed as signed `0dcc73c`, with focused qualification and live verification recorded in [the implementation worklog](../../ux165-multi-role-review-2026-10-16.md). This does not expand the frozen per-role coverage below or mark any unfinished journey complete. Later scoped design/engineering checks close the listed fixes; the wider audit stays paused.
+
 ## How to read the evidence
 
 - **Persisted:** a named actor used the actual isolated application, database and normal authentication. Mail and provider activity stayed in local fixtures; no real invoice, email, funds or production customer records were used.
