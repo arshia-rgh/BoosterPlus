@@ -108,6 +108,38 @@ export function transferPresentation(
         : "Review the transfer evidence for the current status. This record does not confirm that funds were sent."),
   };
 }
+
+export function manualPayoutPresentation(
+  recording: { available: boolean; reason: string },
+  timedHold: boolean,
+  inspectionOnly: boolean,
+) {
+  if (recording.available)
+    return {
+      title: "Ready for staff payout",
+      description:
+        "Your destination is confirmed and current eligibility checks have passed. PLAYORA must arrange and record the external transfer; no completed transfer is recorded yet.",
+    };
+  if (recording.reason === "eligibility_hold")
+    return {
+      title: timedHold
+        ? inspectionOnly
+          ? "Waiting for buyer inspection"
+          : "Waiting for the agreed payout date"
+        : "Payout on hold",
+      description: timedHold
+        ? "Your destination is confirmed. PLAYORA will recheck the accepted payout conditions after the waiting period; no completed transfer is recorded yet."
+        : "PLAYORA must resolve the remaining sale or case requirements before payout. Your destination is confirmed; no completed transfer is recorded yet.",
+    };
+  return {
+    title:
+      recording.reason === "provider_attempt"
+        ? "Existing transfer under review"
+        : "Payout needs staff review",
+    description:
+      "PLAYORA must review the transfer requirements before recording a payout. This status does not confirm that funds were sent.",
+  };
+}
 export function caseNextStep(state: string, admin: boolean) {
   if (state === "closed")
     return "This case is closed. The agreed resolution and history remain available below.";

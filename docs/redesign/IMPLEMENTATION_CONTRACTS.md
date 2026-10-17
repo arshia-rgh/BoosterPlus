@@ -1,5 +1,7 @@
 # DI00 — implementation contracts
 
+**Historical design/qualification baseline.** For current behavior and the ongoing review, use the [UX165 route and flow inventory](reviews/UX165_COVERAGE.md) and [current implementation progress](../progress.md). The later delivered changes supersede conflicting details below: customer/admin/booster identities and portals are independent; credentials are exchanged through admin-requested chat forms; consignment publication does not require credential handover; buy-first still requires actual seller-payment evidence; seller payouts are recorded manually by the owner; customer deletion remains disabled. Earlier qualification receipts certify only their recorded versions, not the current application.
+
 25 September 2026. Application implementation is authorized through DI15. R10/R11 remain held. Baseline: accepted atlas at `2923885`, roadmap at `2972498`. This contract and the [shop/news addendum](SHOP_NEWS_ADDENDUM.md) specify implementation details without changing the accepted visual direction. The [traceability matrix](implementation-matrix.json) tracks each accepted screen's route, API family, permission, state coverage and delivery phase. `implementation-routes.json` preserves every existing route.
 
 ## Portal and route boundaries

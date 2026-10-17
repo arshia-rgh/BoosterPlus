@@ -101,8 +101,8 @@ func TestConversationDiscoveryFiltersBeforePaginationAndPrivateAudiences(t *test
 		t.Fatal("internal note affected customer unread", err)
 	}
 	staff, err := store.List(ctx, f.admin, true, conversations.ListFilters{Customer: f.buyer.User.ID, Unread: "true"})
-	if err != nil || len(staff.Conversations) != 1 || staff.Conversations[0].Unread != 2 {
-		t.Fatal("staff audience unread", err)
+	if err != nil || len(staff.Conversations) != 0 {
+		t.Fatal("own staff replies and notes must not be unread", err)
 	}
 	for _, term := range []string{"Public ordinary reply", "Private internal marker"} {
 		found, err = store.List(ctx, f.buyer, false, conversations.ListFilters{Search: term})

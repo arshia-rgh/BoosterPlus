@@ -90,13 +90,10 @@ func visible(ctx context.Context, client *ent.Client, p *identity.Principal, row
 		result.UpdatedAt = row.UpdatedAt
 		result.AssignedTo = row.AssignedTo
 	}
-	marker, err := client.ConversationRead.Query().Where(conversationread.ConversationIDEQ(row.ID), conversationread.UserIDEQ(p.User.ID), conversationread.AudienceEQ(audience(admin))).Only(ctx)
-	if err != nil && !ent.IsNotFound(err) {
+	var err error
+	result.Unread, result.FirstUnreadSequence, err = communication.Unread(ctx, client, row.ID, p.User.ID, admin)
+	if err != nil {
 		return View{}, err
-	}
-	result.Unread = result.Sequence
-	if marker != nil {
-		result.Unread = max(0, result.Sequence-marker.Sequence)
 	}
 	return result, nil
 }

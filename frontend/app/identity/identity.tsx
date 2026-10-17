@@ -451,8 +451,10 @@ function EmailFormFields({
               <p>
                 Access to a new email address does not prove ownership of this{" "}
                 {portal === "customer" ? "customer" : portal} account. An owner
-                must independently review your request. Your authenticator
-                remains required.
+                must independently review your request.{" "}
+                {portal === "customer"
+                  ? "If you set up an authenticator, it will still be required."
+                  : "Your authenticator remains required."}
               </p>
               <Text
                 name="account_email"
@@ -998,26 +1000,40 @@ function Account({
       {section === "recovery" && (
         <section className="identity-section">
           <h2>Recovery for this account</h2>
-          <p>
-            A recovery code replaces one authenticator check after you verify
-            email or Google. Each code works once and only for this {portal}{" "}
-            account. Keep the codes private.
-          </p>
-          <p>
-            If fresh verification is needed, you can confirm it here when you
-            replace your codes.
-          </p>
-          <RecoveryCodes session={session} onCodes={onCodes} />
-          <details>
-            <summary>Lost your authenticator and recovery codes?</summary>
-            <p>
-              {portal === "customer"
-                ? "Contact PLAYORA support for an independent ownership review."
-                : "Contact your PLAYORA administrator through your established staff channel for an independent ownership review."}{" "}
-              Email verification alone does not remove the second factor. Never
-              send a setup key, password or recovery code.
-            </p>
-          </details>
+          {!user.mfa_enabled ? (
+            <>
+              <p>
+                You haven’t set up an authenticator for this account, so there
+                are no recovery codes yet.
+              </p>
+              <Link className="button" to={`${base}/security`}>
+                Set up an authenticator
+              </Link>
+            </>
+          ) : (
+            <>
+              <p>
+                A recovery code replaces one authenticator check after you
+                verify email or Google. Each code works once and only for this{" "}
+                {portal} account. Keep the codes private.
+              </p>
+              <p>
+                If fresh verification is needed, you can confirm it here when
+                you replace your codes.
+              </p>
+              <RecoveryCodes session={session} onCodes={onCodes} />
+              <details>
+                <summary>Lost your authenticator and recovery codes?</summary>
+                <p>
+                  {portal === "customer"
+                    ? "Contact PLAYORA support for an independent ownership review."
+                    : "Contact your PLAYORA administrator through your established staff channel for an independent ownership review."}{" "}
+                  Email verification alone does not remove the second factor.
+                  Never send a setup key, password or recovery code.
+                </p>
+              </details>
+            </>
+          )}
         </section>
       )}
       {section === "profile" && (

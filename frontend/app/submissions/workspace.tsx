@@ -185,11 +185,10 @@ function Workspace({
             )}
             {section === "messages" && (
               <>
-                <h3>Messages & photos</h3>
                 <p>
-                  Private to you and PLAYORA staff. Use protected fields in a
-                  requested form for account access; never send credentials as a
-                  normal message.
+                  Private between {admin ? "the seller" : "you"} and PLAYORA
+                  staff. Use protected fields in a requested form for account
+                  access; never send credentials as a normal message.
                 </p>
                 <Thread
                   conversationID={value.conversation_id}

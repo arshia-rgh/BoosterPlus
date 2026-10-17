@@ -1399,7 +1399,7 @@
           {
             "key": "instructions",
             "label": "Additional instructions",
-            "help": "Do not enter passwords, recovery codes or game credentials. Account access uses the dedicated secure handoff after payment.",
+            "help": "Do not enter passwords, recovery codes or game credentials here. If access is needed, support will request it using protected fields in your order chat.",
             "type": "long_text",
             "stage": "order",
             "required": false,
@@ -1435,7 +1435,7 @@
           {
             "key": "player_id",
             "label": "MLBB User ID",
-            "help": "The player number shown in your profile. Never enter a password or recovery code here; private account access has its own secure handoff.",
+            "help": "The player number shown in your profile. Never enter a password or recovery code here. If access is needed, support will request it using protected fields in your order chat.",
             "type": "short_text",
             "stage": "fulfillment",
             "required": true,
@@ -1471,7 +1471,7 @@
           {
             "key": "coordination",
             "label": "Play-together coordination",
-            "help": "Do not enter passwords, recovery codes or game credentials. Account access uses the dedicated secure handoff after payment.",
+            "help": "Do not enter passwords, recovery codes or game credentials here. If access is needed, support will request it using protected fields in your order chat.",
             "type": "long_text",
             "stage": "fulfillment",
             "required": false,

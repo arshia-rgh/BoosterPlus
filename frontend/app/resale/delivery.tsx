@@ -27,6 +27,12 @@ export default function AccountDelivery({
   const location: Location<unknown> = useLocation();
   const base = `${admin ? "/admin" : ""}/account-orders/${id}`,
     resource = useResource(`${base}/delivery`, deliverySchema);
+  const wasVisible = useRef(visible);
+  const reloadDelivery = resource.reload;
+  useEffect(() => {
+    if (visible && !wasVisible.current) reloadDelivery();
+    wasVisible.current = visible;
+  }, [visible, reloadDelivery]);
   const [note, setNote] = useState(""),
     [accept, setAccept] = useState(false),
     [busy, setBusy] = useState(false),
@@ -62,6 +68,7 @@ export default function AccountDelivery({
     if (
       !visible ||
       !resource.data ||
+      resource.data.active_case ||
       !!resource.error ||
       denied(error) ||
       resource.loading ||
@@ -170,16 +177,30 @@ export default function AccountDelivery({
           <>
             <p role="status">Handoff: {row.state}</p>
             <p className="seller-next-step">
-              {!paid
-                ? "Payment must be verified and holds resolved before access is available."
-                : row.state === "pending"
-                  ? "The team is preparing protected account access. You can return here when it is ready."
-                  : row.state === "delivered"
-                    ? "Access is ready. Follow the ownership checklist, test access, then confirm receipt."
-                    : row.state === "acknowledged"
-                      ? "You confirmed receipt. Keep your account secure; the agreed dispute terms remain available."
-                      : "Contact support for the current ownership status."}
+              {row.active_case
+                ? "Account access is paused while PLAYORA reviews the open case. Your recorded delivery and receipt remain unchanged."
+                : !paid
+                  ? "Payment must be verified and holds resolved before access is available."
+                  : row.state === "pending"
+                    ? "The team is preparing protected account access. You can return here when it is ready."
+                    : row.state === "delivered"
+                      ? "Access is ready. Follow the ownership checklist, test access, then confirm receipt."
+                      : row.state === "acknowledged"
+                        ? "You confirmed receipt. Keep your account secure; the agreed dispute terms remain available."
+                        : "Contact support for the current ownership status."}
             </p>
+            {row.active_case && (
+              <p>
+                <Link
+                  className="button compact secondary"
+                  to={admin ? "?section=payment" : "?section=help"}
+                  state={location.state}
+                  preventScrollReset
+                >
+                  {admin ? "Review payment & cases" : "View your case"}
+                </Link>
+              </p>
+            )}
             <details>
               <summary>Accepted account and sale terms</summary>
               <ProductTerms listing={row.listing} />
@@ -201,11 +222,13 @@ export default function AccountDelivery({
                     credentials are never included.
                   </p>
                   <p>
-                    {row.state === "pending"
-                      ? "Your account is being prepared for secure delivery."
-                      : row.state === "delivered"
-                        ? "Your account access is ready. Verify ownership and acknowledge receipt after testing it."
-                        : "Receipt is recorded. Your published support and dispute terms still apply."}
+                    {row.active_case
+                      ? "Account access is paused while your open case is reviewed. Your recorded delivery remains available."
+                      : row.state === "pending"
+                        ? "Your account is being prepared for secure delivery."
+                        : row.state === "delivered"
+                          ? "Your account access is ready. Verify ownership and acknowledge receipt after testing it."
+                          : "Receipt is recorded. Your published support and dispute terms still apply."}
                   </p>
                   <p>{row.instructions}</p>
                 </section>
@@ -227,7 +250,7 @@ export default function AccountDelivery({
                 )}
               </>
             )}
-            {paid && (
+            {paid && !row.active_case && !resource.loading && (
               <p>
                 <Link
                   className="button compact secondary"
@@ -242,6 +265,7 @@ export default function AccountDelivery({
               </p>
             )}
             {paid &&
+              !row.active_case &&
               ((admin && row.state === "pending") ||
                 (!admin && row.state === "delivered")) && (
                 <fieldset disabled={busy || resource.loading || !visible}>

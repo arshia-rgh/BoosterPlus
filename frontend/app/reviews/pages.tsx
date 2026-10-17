@@ -44,8 +44,10 @@ export function ReviewList({ admin = false }: { admin?: boolean }) {
       listingSchema,
     );
   return (
-    <section>
-      <h2>{admin ? "Review moderation queue" : "Your purchase reviews"}</h2>
+    <section
+      aria-label={admin ? "Review moderation queue" : "Purchase reviews"}
+    >
+      {admin && <h2>Review moderation queue</h2>}
       <p>
         {admin
           ? "Moderate documented content-policy violations. A low rating alone is not a reason to hide feedback."

@@ -16,6 +16,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/api"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
@@ -45,6 +46,13 @@ func TestAccountOverviewOwnedBoundedAndRevoked(t *testing.T) {
 			SetPublicSequence(public).SetSequence(99).Save(ctx)
 		if createErr != nil {
 			t.Fatal(createErr)
+		}
+		for sequence := 1; sequence <= public; sequence++ {
+			if _, createErr = f.auth.client.ConversationMessage.Create().SetConversationID(thread.ID).SetSenderID(f.admin.User.ID).
+				SetSenderRole("administrator").SetSenderLabel("PLAYORA support").SetVisibility(conversationmessage.VisibilityPublic).
+				SetSequence(sequence).SetPublicSequence(sequence).SetBody("Synthetic overview reply").SetRequestKey(uuid.NewString()).SetRequestHash("synthetic-overview-message").Save(ctx); createErr != nil {
+				t.Fatal(createErr)
+			}
 		}
 		for _, audience := range []conversationread.Audience{conversationread.AudiencePublic, conversationread.AudienceStaff} {
 			sequence := 2

@@ -57,7 +57,7 @@ it("protects calendar routes by staff capability", () => {
 });
 
 it("protects the booster homepage with the booster identity boundary", () => {
-  expect(homeMeta()[0]?.title).toBe("Your next session — PLAYORA");
+  expect(homeMeta()[0]?.title).toBe("Your work overview — PLAYORA");
   render(<Home />);
   expect(screen.getByRole("region", { name: "booster" })).toHaveTextContent(
     "Assigned work overview",

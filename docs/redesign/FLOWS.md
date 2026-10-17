@@ -1,5 +1,7 @@
 # PLAYORA end-to-end journeys
 
+**Historical design/qualification baseline.** For current behavior and the ongoing review, use the [UX165 route and flow inventory](reviews/UX165_COVERAGE.md) and [current implementation progress](../progress.md). The later delivered changes supersede conflicting details below: customer/admin/booster identities and portals are independent; credentials are exchanged through admin-requested chat forms; consignment publication does not require credential handover; buy-first still requires actual seller-payment evidence; seller payouts are recorded manually by the owner; customer deletion remains disabled. Earlier qualification receipts certify only their recorded versions, not the current application.
+
 Each path links to designed views. Staff/customer handoffs represent different authorized people; prototype navigation is not an authorization model. Branches must be checked before implementation acceptance.
 
 ## F01 — Custom boost: browse to completion

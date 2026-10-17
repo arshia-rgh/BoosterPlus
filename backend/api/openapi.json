@@ -27571,6 +27571,12 @@
           },
           "submission_id": {
             "type": "string"
+          },
+          "first_unread_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646,
+            "description": "First incoming unread message in this audience sequence; zero when none. Own outgoing messages are excluded without advancing the read marker."
           }
         }
       },
@@ -31624,6 +31630,10 @@
           "state": {
             "type": "string"
           },
+          "active_case": {
+            "type": "boolean",
+            "description": "An active service case currently holds protected delivery access. Contains no private case details."
+          },
           "instructions": {
             "type": "string"
           },
@@ -35366,6 +35376,11 @@
           },
           "reason": {
             "type": "string"
+          },
+          "eligible_after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Earliest eligibility check time when the current hold is only the accepted inspection or payout delay. Omitted when another prerequisite remains; eligibility is rechecked before recording a payout."
           }
         }
       },

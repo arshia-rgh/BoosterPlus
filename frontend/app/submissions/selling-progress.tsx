@@ -235,8 +235,8 @@ export function saleNextStep(
         ? "Set the exact seller amount, payout route and terms."
         : "PLAYORA will send the exact payout and terms for you to accept.",
       "agreement",
-      admin && owner ? "Prepare sale proposal" : "View sale agreement",
-      admin ? (owner ? "You" : "Owner") : "PLAYORA",
+      admin ? "Prepare sale proposal" : "View sale agreement",
+      admin ? "You" : "PLAYORA",
       1,
     );
   }

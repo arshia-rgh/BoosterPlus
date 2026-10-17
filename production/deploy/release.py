@@ -98,7 +98,11 @@ def execute(manifest, bundle, *, rollback=False, resume=False, runner=None, smok
             record("quiescing")
             runner(candidate, ["stop", "--timeout", "120", *APPLICATION])
             record("migrating")
-            runner(candidate, ["up", "-d", "pd", "tikv", "tidb", "storage", "object-gateway", "scanner"])
+            # A recreated scanner can be running before its signature database
+            # is loaded. Wait for dependency health before migration/probes;
+            # keep the application-level scan/storage checks below as well.
+            runner(candidate, ["up", "-d", "--wait", "--wait-timeout", "180",
+                               "pd", "tikv", "tidb", "storage", "object-gateway", "scanner"])
             migration = ["run", "--rm", "--no-deps", "migrate", "db", "migrate"]
             # Bounded readiness retries are read-only, never blindly retry DDL.
             for attempt in range(30):

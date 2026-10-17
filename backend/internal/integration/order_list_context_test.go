@@ -11,6 +11,8 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 )
 
@@ -60,8 +62,11 @@ func TestOrderListAcceptedPriceAndPrivateUnread(t *testing.T) {
 		}
 	}
 	check(false)
-	if _, err = f.auth.client.Conversation.UpdateOneID(thread.ID).SetPublicSequence(2).Save(ctx); err != nil {
-		t.Fatal(err)
+	chat := supportStore(f)
+	for _, principal := range []*identity.Principal{f.buyer, f.admin} {
+		if _, err = chat.Send(ctx, principal, thread.ID, principal == f.admin, conversations.SendInput{RequestKey: uuid.NewString(), Body: "ordinary customer note", Visibility: "public"}); err != nil {
+			t.Fatal(err)
+		}
 	}
 	check(true)
 	if _, err = f.auth.client.ConversationRead.Create().SetConversationID(thread.ID).SetUserID(f.buyer.User.ID).SetAudience(conversationread.AudiencePublic).SetSequence(2).Save(ctx); err != nil {
@@ -72,9 +77,13 @@ func TestOrderListAcceptedPriceAndPrivateUnread(t *testing.T) {
 	if err != nil || len(staff.Orders) != 1 || staff.Orders[0].Unread == nil || !*staff.Orders[0].Unread {
 		t.Fatal("staff must use its own reader and sequence")
 	}
-	if _, err = f.auth.client.Conversation.Create().SetUserID(f.buyer.User.ID).SetLinkedOrderID(custom.Order.ID).
+	linked, err := f.auth.client.Conversation.Create().SetUserID(f.buyer.User.ID).SetLinkedOrderID(custom.Order.ID).
 		SetKind(conversation.KindPresales).SetSubject("Private linked support").SetCreatedBy(f.buyer.User.ID).
-		SetRequestKey(uuid.NewString()).SetRequestHash("synthetic-linked-list-context").SetSequence(1).SetPublicSequence(1).Save(ctx); err != nil {
+		SetRequestKey(uuid.NewString()).SetRequestHash("synthetic-linked-list-context").Save(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = chat.Send(ctx, f.admin, linked.ID, true, conversations.SendInput{RequestKey: uuid.NewString(), Body: "Synthetic incoming linked reply", Visibility: "public"}); err != nil {
 		t.Fatal(err)
 	}
 	for _, row := range list().Orders {

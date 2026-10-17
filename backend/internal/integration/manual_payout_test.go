@@ -200,3 +200,59 @@ func TestManualPayoutHoldsAndProviderAttempts(t *testing.T) {
 		t.Fatal("provider attempt overridden")
 	}
 }
+
+func TestManualPayoutTimingHoldDateRequiresAllOtherPrerequisites(t *testing.T) {
+	f := resaleDB(t, "consignment")
+	ctx := t.Context()
+	f.store.ConfigureOutgoing(&outgoingFixture{}, false)
+	payout := manualObligation(t, f, true)
+	readHold := func() *payments.ManualRecording {
+		t.Helper()
+		rows, err := f.store.SellerPayouts(ctx, f.base.other, f.offer.SubmissionID, false)
+		if err != nil || len(rows) != 1 || rows[0].ID != payout.ID || rows[0].ManualRecording == nil {
+			t.Fatal("missing seller payout status", err)
+		}
+		return rows[0].ManualRecording
+	}
+	if hold := readHold(); hold.Available || hold.Reason != "eligibility_hold" || hold.EligibleAfter != nil {
+		t.Fatal("unfulfilled sale suggested a timing-only hold", hold)
+	}
+	f.publish(t)
+	order := f.reserve(t)
+	attempt := f.start(t, order)
+	f.issue(t, attempt)
+	f.reconcile(t, f.evidence(t, attempt, "912", "finished", "12.34000001"))
+	now := time.Unix(f.base.auth.clock.Load(), 0)
+	secret, err := f.resale.SubmitDeliverySecret(ctx, f.base.admin, order.Order.ID, resale.SecretInput{RequestKey: uuid.NewString(), Value: []byte("synthetic consignment handoff for timing checks"), ExpiresAt: now.Add(72 * time.Hour)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	delivery, err := f.resale.Delivery(ctx, f.base.admin, order.Order.ID, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	delivery, err = f.resale.ChangeDelivery(ctx, f.base.admin, order.Order.ID, "deliver", true, resale.DeliveryChange{Version: delivery.Version, SecretVersion: secret.Version, Instructions: "Follow the synthetic ownership transfer checklist.", Accept: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hold := readHold(); hold.EligibleAfter != nil {
+		t.Fatal("unacknowledged delivery suggested a payout date", hold)
+	}
+	delivery, err = f.resale.ChangeDelivery(ctx, f.base.buyer, order.Order.ID, "acknowledge", false, resale.DeliveryChange{Version: delivery.Version, Instructions: "I received and tested the synthetic account ownership.", Accept: true})
+	if err != nil || delivery.DisputeUntil == nil {
+		t.Fatal("missing inspection deadline", err)
+	}
+	hold := readHold()
+	if hold.Available || hold.Reason != "eligibility_hold" || hold.EligibleAfter == nil || !hold.EligibleAfter.Equal(*delivery.DisputeUntil) {
+		t.Fatal("inspection-only hold did not expose its authoritative deadline", hold)
+	}
+	if _, err = f.store.RecordManualSellerPayout(ctx, f.base.admin, payout.ID, manualInput(f, payout)); !errors.Is(err, payments.ErrConflict) {
+		t.Fatal("displayed deadline weakened the payout hold", err)
+	}
+	if _, err = f.store.OpenCase(ctx, f.base.buyer, order.Order.ID, false, payments.CaseInput{RequestKey: uuid.NewString(), Kind: "dispute", Note: "Synthetic access concern prevents a timing-only eligibility promise."}); err != nil {
+		t.Fatal(err)
+	}
+	if hold = readHold(); hold.Available || hold.Reason != "eligibility_hold" || hold.EligibleAfter != nil {
+		t.Fatal("active dispute retained a misleading payout-ready date", hold)
+	}
+}

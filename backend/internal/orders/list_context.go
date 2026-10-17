@@ -7,11 +7,11 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopdelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -58,21 +58,12 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 			prices[record.ID] = record
 		}
 	}
-	audience, sequence := string(conversationread.AudiencePublic), conversation.FieldPublicSequence
-	if admin {
-		audience, sequence = string(conversationread.AudienceStaff), conversation.FieldSequence
-	}
 	unread, err := s.client.Order.Query().Where(order.IDIn(ids...), func(selector *sql.Selector) {
-		thread, marker := sql.Table(conversation.Table), sql.Table(conversationread.Table)
-		read := sql.Select(marker.C(conversationread.FieldID)).From(marker).Where(sql.And(
-			sql.EQ(marker.C(conversationread.FieldUserID), p.User.ID), sql.EQ(marker.C(conversationread.FieldAudience), audience),
-			sql.ColumnsEQ(marker.C(conversationread.FieldConversationID), thread.C(conversation.FieldID)),
-			sql.ColumnsGTE(marker.C(conversationread.FieldSequence), thread.C(sequence)),
-		))
+		thread := sql.Table(conversation.Table)
 		linked := sql.Select(thread.C(conversation.FieldID)).From(thread).Where(sql.And(
-			sql.Or(sql.ColumnsEQ(thread.C(conversation.FieldOrderID), selector.C(order.FieldID)), sql.ColumnsEQ(thread.C(conversation.FieldLinkedOrderID), selector.C(order.FieldID))),
+			sql.Or(sql.ColumnsEQ(thread.C(conversation.FieldOrderID), selector.C(order.FieldID)), sql.ColumnsEQ(thread.C(conversation.FieldLinkedOrderID), selector.C(order.FieldID)), sql.ColumnsEQ(thread.C(conversation.FieldFulfillmentOrderID), selector.C(order.FieldID))),
 			sql.ColumnsEQ(thread.C(conversation.FieldUserID), selector.C(order.FieldUserID)),
-			sql.GT(thread.C(sequence), 0), sql.Not(sql.Exists(read)),
+			communication.HasUnread(thread.C(conversation.FieldID), p.User.ID, admin),
 		))
 		selector.Where(sql.Exists(linked))
 	}).IDs(ctx)

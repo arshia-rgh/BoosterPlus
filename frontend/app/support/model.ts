@@ -13,6 +13,7 @@ export const conversationSchema = z.object({
   version: z.number().int(),
   sequence: z.number().int(),
   unread: z.number().int(),
+  first_unread_sequence: z.number().int().min(0).optional(),
   updated_at: z.string(),
   created_at: z.string(),
 });

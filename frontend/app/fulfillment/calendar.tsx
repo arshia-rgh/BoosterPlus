@@ -190,8 +190,10 @@ function Calendar({ base }: { base: string }) {
         </section>
       )}
       {data && (
-        <fieldset disabled={resource.loading || busy}>
-          <legend>Calendar controls</legend>
+        <fieldset
+          disabled={resource.loading || busy}
+          aria-label="Calendar controls"
+        >
           <ProfileEditor
             key={data.profile.version}
             base={base}
@@ -216,8 +218,7 @@ function Calendar({ base }: { base: string }) {
           )}
           <h3>Published availability</h3>
           <p className="calendar-timezone">
-            Calendar timezone: <strong>{data.profile.timezone}</strong>. Review
-            local dates and offsets before publishing or removing a window.
+            Calendar timezone: <strong>{data.profile.timezone}</strong>.
           </p>
           <p>
             A window with a future confirmed session cannot be removed until

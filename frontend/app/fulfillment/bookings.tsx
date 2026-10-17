@@ -223,7 +223,7 @@ function Proposal({
               <TimeInput
                 name="start"
                 label="Session start"
-                value={start}
+                value={{ ...start, zone }}
                 change={(value) => {
                   setStart(value);
                   edit();
@@ -232,7 +232,7 @@ function Proposal({
               <TimeInput
                 name="end"
                 label="Session end"
-                value={end}
+                value={{ ...end, zone }}
                 change={(value) => {
                   setEnd(value);
                   edit();
@@ -313,9 +313,11 @@ export default function Bookings({
       <section className="catalog-section">
         <h3>Play-together sessions</h3>
         <p>
-          Propose a time, then wait for staff confirmation. Work can begin after
-          the required player information is saved and a current session is
-          confirmed.
+          {audience === "account"
+            ? "Propose a time, then wait for staff confirmation."
+            : "Review proposed times and confirm or cancel a session."}{" "}
+          Work can begin after the required player information is saved and a
+          current session is confirmed.
         </p>
         <ErrorNotice error={error ?? resource.error} />
         <ValidationSummary

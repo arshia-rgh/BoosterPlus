@@ -246,3 +246,66 @@ it("can load older messages after an older request settles while its record sect
     1, 51,
   ]);
 });
+
+it("starts at the server's first incoming unread message despite later outgoing messages", async () => {
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("/messages")
+        ? {
+            messages: [message(2), message(3), message(4), message(5)],
+            latest: 5,
+            next: 0,
+          }
+        : {
+            id: "thread",
+            sequence: 5,
+            unread: 2,
+            first_unread_sequence: 2,
+            version: 5,
+          },
+    ),
+  );
+  const view = renderHook(() => useChat("/conversations/thread"));
+  await waitFor(() => {
+    expect(view.result.current.loading).toBe(false);
+  });
+  expect(get).toHaveBeenCalledWith(
+    "/conversations/thread/messages?after=1",
+    expect.anything(),
+    "customer",
+  );
+  expect(view.result.current.firstUnread).toBe(2);
+  expect(view.result.current.messages[0]?.sequence).toBe(2);
+  expect(get).not.toHaveBeenCalledWith(
+    "/conversations/thread/messages?after=3",
+    expect.anything(),
+    "customer",
+  );
+});
+
+it("shows latest history without an unread divider when only outgoing messages remain", async () => {
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("/messages")
+        ? { messages: [message(1), message(2)], latest: 2, next: 0 }
+        : {
+            id: "thread",
+            sequence: 2,
+            unread: 0,
+            first_unread_sequence: 0,
+            version: 2,
+          },
+    ),
+  );
+  const view = renderHook(() => useChat("/conversations/thread"));
+  await waitFor(() => {
+    expect(view.result.current.loading).toBe(false);
+  });
+  expect(get).toHaveBeenCalledWith(
+    "/conversations/thread/messages?before=0",
+    expect.anything(),
+    "customer",
+  );
+  expect(view.result.current.firstUnread).toBe(0);
+  expect(view.result.current.messages).toHaveLength(2);
+});

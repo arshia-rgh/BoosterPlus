@@ -4,6 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
 import { fixture, signIn, enroll } from "./identity-fixtures";
 import { qualifyChat } from "./chat-ux-fixtures";
+import { qualifyIncomingUnread } from "./unread-fixtures";
 import { messagesSchema } from "../../app/support/model";
 async function accessible(page: Page) {
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -99,6 +100,10 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       .getByRole("button", { name: "Search conversations", exact: true })
       .click();
     await expect(page.locator(".chat-inbox-list li")).toHaveCount(1);
+    const inboxRow = page.locator(".chat-inbox-list > li > a");
+    await expect(inboxRow).toHaveCSS("text-decoration-line", "none");
+    await expect(inboxRow).toHaveCSS("display", "grid");
+    expect((await inboxRow.boundingBox())?.height).toBeGreaterThanOrEqual(44);
     await accessible(page);
     await page.screenshot({
       path: `.cache/di07-inbox-${info.project.name}.png`,
@@ -348,6 +353,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       await strangerContext.close();
     }
     await qualifyChat(buyer, page, info.project.name);
+    await qualifyIncomingUnread(buyer, page);
   } finally {
     await context.close();
   }

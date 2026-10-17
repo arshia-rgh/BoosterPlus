@@ -94,25 +94,28 @@ test("seller drafts, clarification and review stay private and create no commerc
     await seller.goto("/sell");
     await accessible(seller);
     await seller
-      .getByRole("link", { name: "Start an account submission" })
+      .getByRole("main")
+      .getByRole("link", { name: "Sell an account", exact: true })
       .click();
     await seller
       .getByRole("button", {
-        name: `Submit Intake ${info.project.name} account`,
+        name: `Choose Intake ${info.project.name}`,
         exact: true,
       })
       .click();
     await seller.getByLabel("Private account title").fill(privateTitle);
     await accessible(seller);
-    await seller.getByRole("button", { name: "Create private draft" }).click();
-    await expect(seller).toHaveURL(/\/sell\/[a-f0-9-]+$/);
-    const id = seller.url().split("/").at(-1);
+    await seller
+      .getByRole("button", { name: "Continue to account details" })
+      .click();
+    await expect(seller).toHaveURL(/\/sell\/[a-f0-9-]+\?section=details$/);
+    const id = new URL(seller.url()).pathname.split("/").at(-1);
     if (!id) throw new Error("Missing submission ID");
     await seller
       .getByRole("link", { name: "Account details", exact: true })
       .click();
     const submit = seller.getByRole("button", {
-      name: "Submit saved account for review",
+      name: "Save and submit for review",
     });
     const submitRequests: string[] = [];
     seller.on("request", (request) => {
@@ -123,30 +126,21 @@ test("seller drafts, clarification and review stay private and create no commerc
         submitRequests.push(request.url());
     });
     await submit.click();
-    const ownership = seller.getByLabel("Ownership and control information");
+    const ownership = seller.getByLabel("Account notes (optional)");
     const authority = seller.getByLabel(
       "I control this account and have authority to submit it for review",
     );
-    await expect(ownership).toBeFocused();
-    await expect(ownership).toBeInViewport();
-    await expect(ownership).toHaveAttribute("aria-invalid", "true");
-    await expect(ownership).toHaveAccessibleDescription(
-      "Describe how you obtained and control the account and relevant restrictions. Do not include login or recovery information. Describe your ownership using 1–2,000 characters.",
-    );
+    await expect(authority).toBeFocused();
+    await expect(authority).toBeInViewport();
     await expect(authority).toHaveAttribute("aria-invalid", "true");
     await expect(authority).toHaveAccessibleDescription(
       "Confirm your authority to submit this account for review.",
     );
-    await expect(
-      seller.getByText("Describe your ownership using 1–2,000 characters.", {
-        exact: true,
-      }),
-    ).toBeVisible();
+    await expect(ownership).not.toHaveAttribute("aria-invalid", "true");
     expect(submitRequests).toHaveLength(0);
-    await ownership.fill("I created and control this synthetic account.");
+    // Notes are optional; submitting saves current details before checking the
+    // game's required fields. No separate save-and-submit choreography is needed.
     await authority.check();
-    await expect(submit).toBeDisabled();
-    await action(seller, "Save account draft", `/submissions/${id}/edit`);
     await expect(submit).toBeEnabled();
     const requiredRegion = seller.waitForResponse(
       (response) =>
@@ -176,20 +170,18 @@ test("seller drafts, clarification and review stay private and create no commerc
       path: `.cache/seller-intake-${info.project.name}.png`,
       fullPage: true,
     });
-    await expect(submit).toBeDisabled();
-    await action(seller, "Save account draft", `/submissions/${id}/edit`);
     await expect(submit).toBeEnabled();
     await action(
       seller,
-      "Submit saved account for review",
+      "Save and submit for review",
       `/submissions/${id}/submit`,
     );
-    await expect(
-      seller.getByRole("heading", {
-        name: "Private account details",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await expect(seller).toHaveURL(
+      new RegExp(`/sell/${id}\\?section=overview$`),
+    );
+    await expect(seller.locator(".record-status .status")).toHaveText(
+      "Awaiting review",
+    );
     await accessible(seller);
     await page.goto("/admin/submissions");
     await page.getByRole("link", { name: privateTitle, exact: true }).click();
@@ -209,21 +201,23 @@ test("seller drafts, clarification and review stay private and create no commerc
       .getByRole("button", { name: "Refresh submission", exact: true })
       .click();
     await seller
-      .getByLabel("Ownership and control information")
+      .getByRole("link", { name: "Account details", exact: true })
+      .click();
+    await seller
+      .getByLabel("Account notes (optional)")
       .fill("Synthetic account has no restrictions.");
-    await action(seller, "Save account draft", `/submissions/${id}/edit`);
     await expect(submit).toBeEnabled();
     await action(
       seller,
-      "Submit saved account for review",
+      "Save and submit for review",
       `/submissions/${id}/submit`,
     );
-    await expect(
-      seller.getByRole("heading", {
-        name: "Private account details",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await expect(seller).toHaveURL(
+      new RegExp(`/sell/${id}\\?section=overview$`),
+    );
+    await expect(seller.locator(".record-status .status")).toHaveText(
+      "Awaiting review",
+    );
     await page
       .getByRole("button", { name: "Refresh submission", exact: true })
       .click();
@@ -242,7 +236,7 @@ test("seller drafts, clarification and review stay private and create no commerc
       .getByRole("button", { name: "Refresh submission", exact: true })
       .click();
     await expect(seller.locator(".record-status .status")).toHaveText(
-      "Review approved · commercial terms pending",
+      "Review approved · agreement pending",
     );
     const accepted = submissionSchema.parse(
       await (await seller.request.get(`/api/v1/submissions/${id}`)).json(),
@@ -254,7 +248,7 @@ test("seller drafts, clarification and review stay private and create no commerc
       fullPage: true,
     });
     await seller
-      .getByRole("link", { name: "Messages & evidence", exact: true })
+      .getByRole("link", { name: "Messages & photos", exact: true })
       .click();
     await expect(seller.locator(".chat-title")).toContainText(
       "Private seller review · Needs staff reply",

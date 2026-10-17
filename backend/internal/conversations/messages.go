@@ -136,10 +136,7 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		now := s.now().UTC()
 		label, role := "Customer", "customer"
 		if staffSender {
-			label = current.User.StaffAlias
-			if label == "" {
-				label = "PLAYORA support"
-			}
+			label = staffLabel(current.User.Role, current.User.StaffAlias)
 			role = current.User.Role
 		}
 		create := tx.ConversationMessage.Create().SetConversationID(id).SetSenderID(current.User.ID).SetSenderRole(role).SetSenderLabel(label).SetVisibility(conversationmessage.Visibility(input.Visibility)).SetSequence(row.Sequence + 1).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetBody(input.Body).SetAttachments(input.Attachments).SetCreatedAt(now)

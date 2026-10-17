@@ -1,5 +1,7 @@
 # Integrated journey evidence
 
+**Historical design/qualification baseline.** For current behavior and the ongoing review, use the [UX165 route and flow inventory](reviews/UX165_COVERAGE.md) and [current implementation progress](../progress.md). The later delivered changes supersede conflicting details below: customer/admin/booster identities and portals are independent; credentials are exchanged through admin-requested chat forms; consignment publication does not require credential handover; buy-first still requires actual seller-payment evidence; seller payouts are recorded manually by the owner; customer deletion remains disabled. Earlier qualification receipts certify only their recorded versions, not the current application.
+
 28 September 2026. This map binds31 accepted journeys and six approved shop/news journeys to actual scenario files. The machine-readable companion `journey-evidence.json` retains each accepted exception and done guard verbatim. DI15 records the fresh aggregate run. File presence is not a test pass; phase reports contain previous executed receipts.
 
 Browser references below are under `frontend/tests/e2e/`; helper journeys execute through their importing spec. Domain references are under `backend/internal/integration/` and run against isolated TiDB with the race detector. Some rare finance, identity and concurrency branches are verified below the browser layer; this is stated explicitly instead of claiming37 uninterrupted browser scenarios. Provider responses are isolated fixtures, never a runtime payment bypass.

@@ -23,6 +23,16 @@ const resource = (
   data: SellingProgress | null = base,
   error: unknown = null,
 ) => ({ data, error, loading: false, reload: vi.fn() });
+it("directs administrators to propose seller terms without waiting for an owner", () => {
+  expect(
+    saleNextStep({ ...base, offer_state: "missing" }, true, false),
+  ).toMatchObject({
+    title: "Prepare a sale proposal",
+    label: "Prepare sale proposal",
+    actor: "You",
+    section: "agreement",
+  });
+});
 it("never equates accepted terms with publication and identifies the responsible next actor", () => {
   expect(saleNextStep(base, false, false)).toMatchObject({
     title: "PLAYORA is preparing your listing",

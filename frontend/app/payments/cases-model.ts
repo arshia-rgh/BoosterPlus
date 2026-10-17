@@ -42,7 +42,11 @@ export const manualReceiptSchema = z.object({
 export const transferSchema = z.object({
   manual_receipt: manualReceiptSchema.optional(),
   manual_recording: z
-    .object({ available: z.boolean(), reason: z.string() })
+    .object({
+      available: z.boolean(),
+      reason: z.string(),
+      eligible_after: z.string().nullable().optional(),
+    })
     .optional(),
   seller_agreement: z
     .object({

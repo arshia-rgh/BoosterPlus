@@ -30,6 +30,26 @@ function Location() {
   const value = useLocation();
   return <output aria-label="Current query">{value.search}</output>;
 }
+it.each([false, true])(
+  "keeps results in the page heading hierarchy (admin=%s)",
+  async (admin) => {
+    vi.mocked(get).mockResolvedValue({ conversations: [], next: "" });
+    render(
+      <MemoryRouter>
+        <Inbox admin={admin} />
+      </MemoryRouter>,
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Conversation results",
+        level: admin ? 2 : 3,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Your conversations" }) !== null,
+    ).toBe(!admin);
+  },
+);
 it("searches on submit before pagination and preserves filters on next/first", async () => {
   vi.mocked(get).mockResolvedValue({
     conversations: [thread],

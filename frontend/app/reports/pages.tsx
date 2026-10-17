@@ -138,7 +138,6 @@ export default function Reports() {
   return (
     <ActionFields error={error} busy={busy}>
       <section>
-        <h2>Operational reports</h2>
         <p>
           Preview and download up to 100 records per page. Financial reports
           show exact crypto quantities by asset and network and distinguish

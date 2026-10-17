@@ -39,8 +39,9 @@ type ManualPayoutReceipt struct {
 
 // ManualRecording describes server-checked eligibility, not permission to send funds.
 type ManualRecording struct {
-	Available bool   `json:"available"`
-	Reason    string `json:"reason"`
+	Available     bool       `json:"available"`
+	Reason        string     `json:"reason"`
+	EligibleAfter *time.Time `json:"eligible_after,omitempty"`
 }
 
 var evmTransaction = regexp.MustCompile(`^0x[0-9a-fA-F]{64}$`)
@@ -88,11 +89,18 @@ func (s *Store) manualRecording(ctx context.Context, tx *ent.Tx, row *ent.MoneyT
 			result.Reason = "provider_attempt"
 			return result, nil
 		}
-		if _, err = s.sellerEligible(ctx, tx, row); err != nil {
+		due, err := s.sellerEligible(ctx, tx, row)
+		if err != nil {
 			if !errors.Is(err, ErrConflict) && !ent.IsNotFound(err) {
 				return nil, err
 			}
 			result.Reason = "eligibility_hold"
+			// The authoritative eligibility check returns a date only after all
+			// non-time prerequisites pass. Disputes and incomplete delivery must
+			// not suggest that waiting for a date will make the payout available.
+			if !due.IsZero() {
+				result.EligibleAfter = &due
+			}
 			return result, nil
 		}
 		result.Available = true

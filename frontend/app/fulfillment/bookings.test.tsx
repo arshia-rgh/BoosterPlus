@@ -80,6 +80,24 @@ it("requires a current available window before presenting session detail inputs"
     target: { value: "window:" + slot.starts_at },
   });
   expect(screen.getByLabelText("Session time zone (IANA)")).toBeVisible();
+  expect(
+    screen.queryByLabelText("Session start: repeated clock hour"),
+  ).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("Session time zone (IANA)"), {
+    target: { value: "Europe/London" },
+  });
+  expect(
+    screen.getByLabelText("Session start: repeated clock hour"),
+  ).toBeVisible();
+  expect(
+    screen.getByLabelText("Session end: repeated clock hour"),
+  ).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Session time zone (IANA)"), {
+    target: { value: "UTC" },
+  });
+  expect(
+    screen.queryByLabelText("Session start: repeated clock hour"),
+  ).not.toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("Availability period"), {
     target: { value: "1" },
   });

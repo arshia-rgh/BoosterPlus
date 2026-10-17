@@ -6422,6 +6422,8 @@ export interface components {
       updated_at: string;
       booster_shared: boolean;
       submission_id?: string;
+      /** @description First incoming unread message in this audience sequence; zero when none. Own outgoing messages are excluded without advancing the read marker. */
+      first_unread_sequence?: number;
     };
     ConversationCreate: {
       /** Format: uuid */
@@ -7556,6 +7558,8 @@ export interface components {
       listing: components["schemas"]["AccountListing"];
       version: number;
       state: string;
+      /** @description An active service case currently holds protected delivery access. Contains no private case details. */
+      active_case?: boolean;
       instructions: string;
       secret: components["schemas"]["AccountSecret"];
       /** Format: date-time */
@@ -8546,6 +8550,11 @@ export interface components {
     ManualPayoutRecording: {
       available: boolean;
       reason: string;
+      /**
+       * Format: date-time
+       * @description Earliest eligibility check time when the current hold is only the accepted inspection or payout delay. Omitted when another prerequisite remains; eligibility is rechecked before recording a payout.
+       */
+      eligible_after?: string;
     };
     ManualPayoutInput: {
       /** Format: uuid */

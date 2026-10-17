@@ -8,7 +8,7 @@ import {
   focusValidationTarget,
   type FieldIssue,
 } from "../ui/form-validation";
-import { quoteIssues } from "./quote-validation";
+import { quoteIssues, quoteAmountMinor } from "./quote-validation";
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import {
   Action,
@@ -55,7 +55,7 @@ export default function QuoteEditor({
     [maximum, setMaximum] = useState(24),
     [hours, setHours] = useState(48),
     [lines, setLines] = useState<
-      { key: string; label: string; amount_minor: string }[]
+      { key: string; label: string; amount: string }[]
     >([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
@@ -80,12 +80,19 @@ export default function QuoteEditor({
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (lock.current || unknown) return;
+    const amounts = {
+      amount_minor: quoteAmountMinor(amount),
+      lines: lines.map((line) => ({
+        key: line.key,
+        label: line.label,
+        amount_minor: quoteAmountMinor(line.amount, true),
+      })),
+    };
     const invalid = quoteIssues({
-      amount_minor: amount,
+      ...amounts,
       currency,
       scope,
       reason,
-      lines,
       delivery_min_hours: minimum,
       delivery_max_hours: maximum,
       expiry_hours: hours,
@@ -106,11 +113,10 @@ export default function QuoteEditor({
     try {
       const input = {
         version: detail.order.version,
-        amount_minor: amount,
+        ...amounts,
         currency,
         scope,
         reason,
-        lines,
         delivery_min_hours: minimum,
         delivery_max_hours: maximum,
         expires_at: new Date(Date.now() + hours * 3600000).toISOString(),
@@ -210,10 +216,11 @@ export default function QuoteEditor({
           <div className="catalog-grid">
             <Text
               name="amount_minor"
-              label="Pre-discount amount in minor units"
+              label="Pre-discount price"
+              inputMode="decimal"
               value={amount}
               change={setAmount}
-              help="For example, 1234 means 12.34. Do not include a currency symbol."
+              help={`Enter the price in ${currency || "the selected currency"}, for example 12.50.`}
             />
             <Select
               name="currency"
@@ -298,12 +305,14 @@ export default function QuoteEditor({
               />
               <Text
                 name={"lines." + String(index) + ".amount_minor"}
-                label="Line amount in minor units"
-                value={line.amount_minor}
-                change={(amount_minor) => {
+                label="Line price"
+                inputMode="decimal"
+                help={`Amount in ${currency || "the selected currency"}. Use a minus for a reduction, for example -2.50.`}
+                value={line.amount}
+                change={(amount) => {
                   setLines(
                     lines.map((v) =>
-                      v.key === line.key ? { ...v, amount_minor } : v,
+                      v.key === line.key ? { ...v, amount } : v,
                     ),
                   );
                 }}
@@ -326,7 +335,7 @@ export default function QuoteEditor({
               setApproved(false);
               setLines([
                 ...lines,
-                { key: crypto.randomUUID(), label: "", amount_minor: "" },
+                { key: crypto.randomUUID(), label: "", amount: "" },
               ]);
             }}
           >

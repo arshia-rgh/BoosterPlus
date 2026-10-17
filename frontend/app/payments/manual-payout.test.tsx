@@ -46,6 +46,59 @@ const completed: Transfer = {
     recorded_at: "2026-01-02T01:00:00Z",
   },
 };
+it("distinguishes a timed hold, unresolved requirements and actual readiness without predicting eligibility", () => {
+  const deadline = "2026-01-03T00:00:00Z";
+  const renderRecord = (record: Transfer) => (
+    <MemoryRouter>
+      <TransferRecord
+        record={record}
+        admin={false}
+        owner={false}
+        reload={vi.fn()}
+        refreshing={false}
+      />
+    </MemoryRouter>
+  );
+  const held: Transfer = {
+    ...base,
+    manual_recording: {
+      available: false,
+      reason: "eligibility_hold",
+      eligible_after: deadline,
+    },
+  };
+  const view = render(renderRecord(held));
+  expect(screen.getByText("Waiting for the agreed payout date")).toBeVisible();
+  expect(document.querySelector(`time[datetime="${deadline}"]`)).toBeVisible();
+  expect(screen.queryByText("Ready for staff payout")).not.toBeInTheDocument();
+  // A past date alone never changes the authoritative eligibility decision.
+  expect(
+    screen.getByText(/another unmet condition can keep the payout on/),
+  ).toBeVisible();
+  view.rerender(
+    renderRecord({
+      ...held,
+      manual_recording: { available: false, reason: "eligibility_hold" },
+    }),
+  );
+  expect(screen.getByText("Payout on hold")).toBeVisible();
+  expect(
+    document.querySelector(`time[datetime="${deadline}"]`),
+  ).not.toBeInTheDocument();
+  view.rerender(renderRecord(base));
+  expect(screen.getByText("Ready for staff payout")).toBeVisible();
+  expect(
+    screen.queryByRole("button", { name: "Record completed payout" }),
+  ).not.toBeInTheDocument();
+  view.rerender(
+    renderRecord({
+      ...base,
+      manual_recording: { available: false, reason: "provider_attempt" },
+    }),
+  );
+  expect(screen.getByText("Existing transfer under review")).toBeVisible();
+  expect(post).not.toHaveBeenCalled();
+});
 function fill() {
   fireEvent.change(screen.getByLabelText("Transaction hash"), {
     target: { value: hash },

@@ -379,7 +379,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       await page
         .getByRole("link", { name: "Quote & agreement", exact: true })
         .click();
-      await page.getByLabel("Pre-discount amount in minor units").fill(amount);
+      await page.getByLabel("Pre-discount price").fill(amount);
       await page.getByLabel("Quote currency").selectOption("USD");
       await page
         .getByLabel("Agreed scope", { exact: true })
@@ -415,11 +415,11 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
         .getByRole("button", { name: "Issue quote", exact: true })
         .click();
     }
-    await quote("2000", "Initial reviewed scope");
+    await quote("20.00", "Initial reviewed scope");
     await expect(
       page.getByRole("heading", { name: "Current quote · revision 1" }),
     ).toBeVisible();
-    await quote("2200", "Updated scope confirmed");
+    await quote("22.00", "Updated scope confirmed");
     await expect(
       page.getByRole("heading", { name: "Current quote · revision 2" }),
     ).toBeVisible();

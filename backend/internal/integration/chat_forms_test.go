@@ -296,7 +296,7 @@ func TestChatFormsBuyerDeliveryRequiresPaymentConfirmationAndRetainsDisputeHold(
 		t.Fatal("undelivered access leaked")
 	}
 	delivery, err := f.resale.Delivery(ctx, f.base.admin, order.Order.ID, true)
-	if err != nil || delivery.FormID != row.ID || delivery.Secret.State != "active" {
+	if err != nil || delivery.FormID != row.ID || delivery.Secret.State != "active" || delivery.ActiveCase {
 		t.Fatal("form delivery receipt", err)
 	}
 	delivery, err = f.resale.ChangeDelivery(ctx, f.base.admin, order.Order.ID, "deliver", true, resale.DeliveryChange{Version: delivery.Version, SecretVersion: delivery.Secret.Version, Accept: true, Instructions: "Change recovery details and test access before acknowledging."})
@@ -324,6 +324,10 @@ func TestChatFormsBuyerDeliveryRequiresPaymentConfirmationAndRetainsDisputeHold(
 	if _, err = store.RevealForm(ctx, f.base.buyer, thread.ID, row.ID, false); err == nil {
 		t.Fatal("dispute hold ignored")
 	}
+	delivery, err = f.resale.Delivery(ctx, f.base.buyer, order.Order.ID, false)
+	if err != nil || !delivery.ActiveCase {
+		t.Fatal("delivery omitted the active dispute hold", err)
+	}
 	record, err = f.store.ChangeCase(ctx, f.base.admin, record.ID, "decide", true, payments.CaseChange{Version: record.Version, Outcome: "rework", Note: "Prepare fresh access after the synthetic review."})
 	if err != nil {
 		t.Fatal(err)
@@ -334,5 +338,9 @@ func TestChatFormsBuyerDeliveryRequiresPaymentConfirmationAndRetainsDisputeHold(
 	saved, err := f.base.auth.client.ConversationForm.Get(ctx, row.ID)
 	if err != nil || saved.State != conversationform.StateCancelled {
 		t.Fatal("rework retained form", err)
+	}
+	delivery, err = f.resale.Delivery(ctx, f.base.buyer, order.Order.ID, false)
+	if err != nil || delivery.ActiveCase {
+		t.Fatal("closed case retained an active dispute indicator", err)
 	}
 }

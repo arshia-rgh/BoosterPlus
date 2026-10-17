@@ -132,9 +132,8 @@ export default function AvailabilityEditor({
       <section className="catalog-section" aria-label="Publish availability">
         <h3>Publish availability</h3>
         <p>
-          Choose a single date or a weekly series in {zone}. Every window is 15
-          minutes to 12 hours, within the next 90 days. Review each date before
-          publishing; no availability repeats indefinitely.
+          Choose dates in {zone}: 15 minutes to 12 hours per window, within the
+          next 90 days. Availability does not confirm a customer booking.
         </p>
         <ErrorNotice error={error} />
         <ValidationSummary
@@ -176,10 +175,10 @@ export default function AvailabilityEditor({
             <fieldset disabled={busy || unknown}>
               <legend>Review dates and exceptions</legend>
               <p>
-                Remove a date to make an exception. Adjust a repeated clock hour
-                where daylight saving changes. Publishing checks all dates
-                together; any invalid or overlapping window prevents the entire
-                series.
+                Remove any dates you cannot work. All dates must be valid and
+                free of overlaps before the series can be published.
+                {zone !== "UTC" &&
+                  " If a clock hour repeats, choose its first or second occurrence."}
               </p>
               {entries.map((entry, index) => (
                 <section

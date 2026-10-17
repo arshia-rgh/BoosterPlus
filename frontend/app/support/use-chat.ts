@@ -68,10 +68,13 @@ export function useChat(
         const detail = await get(base, conversationSchema, portal);
         if (!current()) return;
         const initial = cursor.current === null;
-        const marker = Math.max(
-          0,
-          (start ?? detail.sequence - detail.unread + 1) - 1,
-        );
+        // Incoming messages need not be contiguous: our own sends are not unread.
+        // Older servers omit the additive cursor during a rolling deployment.
+        const firstIncoming = detail.unread
+          ? (detail.first_unread_sequence ??
+            detail.sequence - detail.unread + 1)
+          : 0;
+        const marker = Math.max(0, (start ?? firstIncoming) - 1);
         let after = cursor.current ?? marker;
         let page = await get(
           base +
@@ -83,9 +86,7 @@ export function useChat(
         );
         if (!current()) return;
         if (initial) {
-          setFirstUnread(
-            detail.unread ? detail.sequence - detail.unread + 1 : 0,
-          );
+          setFirstUnread(firstIncoming);
           setEarlier(
             page.messages[0]?.sequence && page.messages[0].sequence > 1
               ? page.messages[0].sequence

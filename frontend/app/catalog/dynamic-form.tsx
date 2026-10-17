@@ -917,6 +917,7 @@ function ConfigurationForm({
               values={values}
               stage={stage}
               fixed={!!variant}
+              editableFields={variant?.required_fields}
               compact={liveSummary}
               price={priceView}
               priceDetails={

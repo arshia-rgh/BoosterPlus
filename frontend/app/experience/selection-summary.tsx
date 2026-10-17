@@ -38,6 +38,7 @@ export default function SelectionSummary({
   values,
   stage,
   fixed,
+  editableFields,
   state = "unchecked",
   compact = false,
   price,
@@ -49,6 +50,7 @@ export default function SelectionSummary({
   values: Answers;
   stage: string;
   fixed: boolean;
+  editableFields?: readonly string[] | undefined;
   compact?: boolean;
   price?: ReactNode;
   priceDetails?: ReactNode;
@@ -68,6 +70,7 @@ export default function SelectionSummary({
   const detailsTitle = useId();
   const fields = service.fields.filter(
     (field) =>
+      (!fixed || editableFields?.includes(field.key)) &&
       stageIndex(field.stage) <= stageIndex(stage) &&
       matches(field.visible_when, values, service.fields),
   );
@@ -82,6 +85,7 @@ export default function SelectionSummary({
   // Free text, attachments and personal order information stay in their inputs.
   const summary = fields.filter(
     (field) =>
+      !fixed &&
       [
         "rank",
         "select",
@@ -91,37 +95,47 @@ export default function SelectionSummary({
         "integer",
         "decimal",
         "win_rate",
-      ].includes(field.type) && field.stage === "estimate",
+      ].includes(field.type) &&
+      field.stage === "estimate",
   );
   const choices = (
     <>
-      <p>
-        {chosen} of {fields.length} visible fields answered. This is a
-        completion guide, not validation.
-      </p>
-      <progress
-        className="selection-progress"
-        aria-label="Visible fields answered"
-        value={chosen}
-        max={Math.max(1, fields.length)}
-      />
-      <dl>
-        {summary.map((field) => (
-          <div key={field.key}>
-            <dt>{field.label}</dt>
-            <dd>
-              {isWinRateField(field) && typeof values[field.key] === "string"
-                ? formatWinRate(values[field.key] as string)
-                : selectedLabel(values[field.key], optionsFor(field, config))}
-              {!isWinRateField(field) &&
-              field.unit &&
-              values[field.key] !== undefined
-                ? ` ${field.unit}`
-                : ""}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {fields.length > 0 && (
+        <>
+          <p>
+            {fixed
+              ? `${String(chosen)} of ${String(fields.length)} delivery details completed.`
+              : `${String(chosen)} of ${String(fields.length)} visible fields answered. This is a completion guide, not validation.`}
+          </p>
+          <progress
+            className="selection-progress"
+            aria-label={
+              fixed ? "Delivery details completed" : "Visible fields answered"
+            }
+            value={chosen}
+            max={fields.length}
+          />
+        </>
+      )}
+      {summary.length > 0 && (
+        <dl>
+          {summary.map((field) => (
+            <div key={field.key}>
+              <dt>{field.label}</dt>
+              <dd>
+                {isWinRateField(field) && typeof values[field.key] === "string"
+                  ? formatWinRate(values[field.key] as string)
+                  : selectedLabel(values[field.key], optionsFor(field, config))}
+                {!isWinRateField(field) &&
+                field.unit &&
+                values[field.key] !== undefined
+                  ? ` ${field.unit}`
+                  : ""}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
       <p className="selection-guidance">
         {state === "unavailable"
           ? "This offering is unavailable. You can review the options, but cannot request an order."
@@ -145,10 +159,12 @@ export default function SelectionSummary({
                           ? "Review the published variant price and check your selections before creating your order."
                           : "Check your selections for a provisional estimate. Our team reviews your request before you accept a final quote."}
       </p>
-      <p>
-        Private order details stay in the form. Selected non-private choices can
-        be restored after sign-in.
-      </p>
+      {!fixed && (
+        <p>
+          Private order details stay in the form. Selected non-private choices
+          can be restored after sign-in.
+        </p>
+      )}
     </>
   );
   return (

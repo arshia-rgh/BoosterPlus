@@ -80,10 +80,9 @@ function mount() {
   );
 }
 async function review() {
-  fireEvent.change(
-    screen.getByLabelText("Pre-discount amount in minor units"),
-    { target: { value: "2000" } },
-  );
+  fireEvent.change(screen.getByLabelText("Pre-discount price"), {
+    target: { value: "20.00" },
+  });
   fireEvent.change(screen.getByLabelText("Quote currency"), {
     target: { value: "USD" },
   });
@@ -166,13 +165,76 @@ it("freezes unknown issuance until authoritative read-back, retaining edited sco
   expect(post).toHaveBeenCalledTimes(2);
 });
 
+it("converts decimal prices and reductions to exact cents without changing the reviewed contract", async () => {
+  vi.mocked(post).mockResolvedValue(preview);
+  mount();
+  for (const [label, amount] of [
+    ["Climb", "22.51"],
+    ["Adjustment", "-2.51"],
+  ]) {
+    fireEvent.click(screen.getByRole("button", { name: "Add quote line" }));
+    const labelField = screen.getAllByLabelText("Line label").at(-1);
+    const priceField = screen.getAllByLabelText("Line price").at(-1);
+    if (!labelField || !priceField) throw new Error("Quote line was not added");
+    fireEvent.change(labelField, {
+      target: { value: label },
+    });
+    fireEvent.change(priceField, {
+      target: { value: amount },
+    });
+  }
+  await review();
+  expect(post).toHaveBeenCalledWith(
+    "/admin/orders/order/quote/preview",
+    expect.objectContaining({
+      amount_minor: "2000",
+      lines: [
+        expect.objectContaining({ label: "Climb", amount_minor: "2251" }),
+        expect.objectContaining({ label: "Adjustment", amount_minor: "-251" }),
+      ],
+    }),
+    expect.anything(),
+  );
+  const firstPrice = screen.getAllByLabelText("Line price").at(0);
+  if (!firstPrice) throw new Error("Reviewed quote line is missing");
+  fireEvent.change(firstPrice, {
+    target: { value: "22.511" },
+  });
+  expect(
+    screen.queryByRole("region", { name: "Customer quote preview" }),
+  ).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Preview quote" }));
+  await waitFor(() =>
+    expect(screen.getAllByLabelText("Line price")[0]).toHaveFocus(),
+  );
+  expect(screen.getAllByLabelText("Line price")[0]).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(post).toHaveBeenCalledTimes(1);
+});
+
+it.each(["0", "-1.00", "12.345", "1e2", "1,000", "10000000000.00"])(
+  "keeps invalid price %s visible and refuses to silently round or submit it",
+  async (value) => {
+    mount();
+    const input = screen.getByLabelText("Pre-discount price");
+    fireEvent.change(input, { target: { value } });
+    fireEvent.click(screen.getByRole("button", { name: "Preview quote" }));
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(input).toHaveValue(value);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(post).not.toHaveBeenCalled();
+  },
+);
+
 it("puts quote errors next to their fields and focuses the first without discarding input", async () => {
   mount();
   fireEvent.change(screen.getByLabelText("Agreed scope"), {
     target: { value: "Preserve this draft scope" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Preview quote" }));
-  const amount = screen.getByLabelText("Pre-discount amount in minor units");
+  const amount = screen.getByLabelText("Pre-discount price");
   await waitFor(() => {
     expect(amount).toHaveFocus();
   });

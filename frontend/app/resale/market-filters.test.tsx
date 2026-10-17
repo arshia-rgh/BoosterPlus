@@ -89,6 +89,14 @@ it("keeps game context and rejects ambiguous or rounded price comparisons", () =
   );
   expect(apply).not.toHaveBeenCalled();
   expect(screen.getByLabelText("Maximum price")).toBeInvalid();
+  expect(screen.getByLabelText("Maximum price")).toHaveFocus();
+  fireEvent.blur(screen.getByLabelText("Maximum price"));
+  expect(
+    screen.getByText("Enter a positive price with at most two decimal places."),
+  ).toBeVisible();
+  expect(screen.getByLabelText("Maximum price")).toHaveAccessibleDescription(
+    "Optional · up to two decimal places. Enter a positive price with at most two decimal places.",
+  );
   fireEvent.change(screen.getByLabelText("Maximum price"), {
     target: { value: "12.34" },
   });
@@ -96,6 +104,10 @@ it("keeps game context and rejects ambiguous or rounded price comparisons", () =
     screen.getByRole("button", { name: "Apply account filters" }),
   );
   expect(screen.getByLabelText("Listing currency")).toBeInvalid();
+  expect(screen.getByLabelText("Listing currency")).toHaveFocus();
+  expect(
+    screen.getByText("Enter a listing currency to compare prices."),
+  ).toBeVisible();
   expect(apply).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText("Listing currency"), {
     target: { value: "usd" },
@@ -115,6 +127,28 @@ it("keeps game context and rejects ambiguous or rounded price comparisons", () =
     region: "",
     rank: "",
   });
+});
+it("shows a persistent inline currency error even when no price filter was entered", () => {
+  const apply = vi.fn();
+  render(
+    <MarketFilters
+      params={new URLSearchParams()}
+      gameSlug="game"
+      apply={apply}
+      clear={vi.fn()}
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("Listing currency"), {
+    target: { value: "US" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Apply account filters" }),
+  );
+  expect(screen.getByLabelText("Listing currency")).toHaveFocus();
+  expect(
+    screen.getByText("Enter a three-letter listing currency, such as USD."),
+  ).toBeVisible();
+  expect(apply).not.toHaveBeenCalled();
 });
 it("loads bounded game choices, retains a selected missing game, and retries without losing choices", async () => {
   vi.mocked(get)

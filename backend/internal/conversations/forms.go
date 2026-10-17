@@ -312,11 +312,8 @@ func (s *Store) formMessage(ctx context.Context, tx *ent.Tx, p *identity.Princip
 	label, role := "Customer", "customer"
 	admin := p.Session.Portal == string(identity.PortalAdmin)
 	if p.User.ID != thread.UserID {
-		label = p.User.StaffAlias
+		label = staffLabel(p.User.Role, p.User.StaffAlias)
 		role = p.User.Role
-		if label == "" {
-			label = "PLAYORA staff"
-		}
 	}
 	purpose := conversationmessage.PurposeForm
 	if reply {

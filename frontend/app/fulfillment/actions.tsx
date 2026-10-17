@@ -59,6 +59,18 @@ export function Assignment({
       <section className="catalog-section">
         <h3>{work ? "Change assignment" : "Assign paid order"}</h3>
         <ErrorNotice error={error ?? staff.error} />
+        {staff.data?.staff.length === 0 && !staff.error && (
+          <p role="status">
+            No boosters are ready for assignment. A booster must be active and
+            finish authenticator setup in the Pro panel. Ask an owner to invite
+            a booster if needed, then refresh this list.
+          </p>
+        )}
+        {(staff.error || staff.data?.staff.length === 0) && (
+          <Action disabled={staff.loading} onClick={staff.reload}>
+            Refresh eligible boosters
+          </Action>
+        )}
         <Select
           name="assigned_id"
           label="Assigned staff"
@@ -80,7 +92,9 @@ export function Assignment({
           help="Customer-visible. Reassignment pauses work and removes stored access. Ask the customer to change their game password before sharing access again."
         />
         <Action
-          disabled={busy}
+          disabled={
+            busy || staff.loading || !!staff.error || !staff.data?.staff.length
+          }
           onClick={() => {
             void save();
           }}

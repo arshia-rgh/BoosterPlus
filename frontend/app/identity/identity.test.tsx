@@ -46,6 +46,31 @@ function show() {
     </MemoryRouter>,
   );
 }
+it("explains why an unenrolled customer has no recovery codes and links to setup", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      Response.json({
+        ...session,
+        user,
+        capabilities: ["account", "self"],
+      }),
+    ),
+  );
+  render(
+    <MemoryRouter initialEntries={["/account/recovery"]}>
+      <Identity title="Recovery codes" view="recovery" />
+    </MemoryRouter>,
+  );
+  expect(
+    await screen.findByText(/there are no recovery codes yet/),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Set up an authenticator" }),
+  ).toHaveAttribute("href", "/account/security");
+  expect(screen.queryByText(/A recovery code replaces/)).toBeNull();
+  expect(screen.queryByText(/If fresh verification is needed/)).toBeNull();
+});
 it("loads passwordless sign-in without credentials in storage", async () => {
   const fetcher = vi
     .fn()

@@ -86,6 +86,7 @@ export const secretSchema = z.object({
   expires_at: z.string().nullable(),
 });
 export const deliverySchema = z.object({
+  active_case: z.boolean().optional(),
   order_id: z.string(),
   listing: publicListingSchema,
   version: z.number().int(),

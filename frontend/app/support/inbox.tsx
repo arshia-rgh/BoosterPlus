@@ -101,6 +101,7 @@ function InboxFilters({
   );
 }
 export default function Inbox({ admin = false }: { admin?: boolean }) {
+  const ResultsHeading = admin ? "h2" : "h3";
   const [params, setParams] = useSearchParams();
   const filters: Filters = {
     state: params.get("state") ?? "",
@@ -134,7 +135,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
   return (
     <section className="chat-inbox">
       <div className="chat-inbox-heading">
-        <h2>{admin ? "Support inbox" : "Your conversations"}</h2>
+        {!admin && <h2>Your conversations</h2>}
         <span className="quiet">
           Private support, seller reviews and shared coordination have separate
           audiences.
@@ -190,9 +191,9 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
         )}
       </div>
       <ErrorNotice error={resource.error} />
-      <h3 ref={heading} tabIndex={-1} className="sr-only">
+      <ResultsHeading ref={heading} tabIndex={-1} className="sr-only">
         Conversation results
-      </h3>
+      </ResultsHeading>
       {!resource.data ? (
         <p role="status">
           {resource.loading
@@ -208,7 +209,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
                 : after
                   ? "No more conversations on this page. Return to the first conversations."
                   : "No conversations yet. Start a conversation when you need help."
-              : `Showing ${String(resource.data.conversations.length)} conversations${resource.data.next ? " · more available" : ""}.`}
+              : `Conversations: ${String(resource.data.conversations.length)}${resource.data.next ? " · more available" : ""}`}
           </p>
           <ul className="chat-inbox-list">
             {resource.data.conversations.map((thread) => (

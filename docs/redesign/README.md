@@ -1,5 +1,7 @@
 # PLAYORA — design before development
 
+**Historical design/qualification baseline.** For current behavior and the ongoing review, use the [UX165 route and flow inventory](reviews/UX165_COVERAGE.md) and [current implementation progress](../progress.md). The later delivered changes supersede conflicting details below: customer/admin/booster identities and portals are independent; credentials are exchanged through admin-requested chat forms; consignment publication does not require credential handover; buy-first still requires actual seller-payment evidence; seller payouts are recorded manually by the owner; customer deletion remains disabled. Earlier qualification receipts certify only their recorded versions, not the current application.
+
 Design baseline · updated 25 September 2026 · Accepted by the owner; implementation authorized
 
 **DI00–DI15 implementation and automated qualification are delivered; owner review is next.** See the [DI15 receipt](DI15_QUALIFICATION.md) for exact evidence and remaining device/acceptance limits. This design package supersedes `UI_UX_ROADMAP.md` and `docs/ux/HOMEPAGE_REFINEMENT_ROADMAP.md` as the active design direction. Those files remain historical records, not an implementation queue. R10/R11 remain held with their full scope in [final-launch.md](../../final-launch.md). Design approval does not authorize production launch.

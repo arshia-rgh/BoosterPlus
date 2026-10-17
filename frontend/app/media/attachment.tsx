@@ -5,6 +5,7 @@ import { APIError, command, get, post, sessionSchema } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
 import "./attachment.css";
 import { uploadError } from "./upload-error";
+import { FieldValidation } from "../ui/form-validation";
 
 const mediaSchema = z.object({
   id: z.string(),
@@ -351,7 +352,9 @@ export function UploadImage({
                     : "Upload not yet ready."}
           </p>
         )}
-        <ErrorNotice error={error} />
+        <FieldValidation value={null}>
+          <ErrorNotice error={error} />
+        </FieldValidation>
       </div>
       {item?.state === "scan_failed" && !removalPending && (
         <button
@@ -425,7 +428,9 @@ export function DownloadImage({ id, admin }: { id: string; admin: boolean }) {
           Get image download
         </Action>
       )}
-      <ErrorNotice error={error} />
+      <FieldValidation value={null}>
+        <ErrorNotice error={error} />
+      </FieldValidation>
     </div>
   );
 }

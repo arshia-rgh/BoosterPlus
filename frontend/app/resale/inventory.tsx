@@ -802,7 +802,6 @@ export function AccountInventory() {
   );
   return (
     <section>
-      <h2>Account inventory</h2>
       <Link to="/admin/submissions">
         Review seller submissions and create offers
       </Link>

@@ -19,7 +19,7 @@ import {
   ManualPayoutForm,
   type ManualPayoutControls,
 } from "./manual-payout";
-import { transferPresentation } from "./presentation";
+import { manualPayoutPresentation, transferPresentation } from "./presentation";
 import "./workspace.css";
 import { FieldValidation, focusValidationTarget } from "../ui/form-validation";
 import { boundedTextIssue, useEditorValidation } from "../ui/editor-validation";
@@ -131,6 +131,16 @@ export function TransferRecord({
       focusValidationTarget(failurePanel.current);
     }
   }, [busy, error]);
+  const candidateDate = record.manual_recording?.eligible_after;
+  const waitingUntil =
+    seller &&
+    record.state === "verified" &&
+    !record.manual_recording?.available &&
+    record.manual_recording?.reason === "eligibility_hold" &&
+    candidateDate &&
+    Number.isFinite(Date.parse(candidateDate))
+      ? candidateDate
+      : null;
   const status = record.manual_receipt
     ? {
         title: "Completed payout recorded by staff",
@@ -141,11 +151,12 @@ export function TransferRecord({
         record.manual_recording &&
         record.manual_recording.reason !== "automatic_enabled" &&
         record.state === "verified"
-      ? {
-          title: "Awaiting manual payout",
-          description:
-            "The seller destination is confirmed. Staff handle this payout externally; no completed transfer has been recorded yet.",
-        }
+      ? manualPayoutPresentation(
+          record.manual_recording,
+          !!waitingUntil,
+          record.seller_agreement?.terms.model === "consignment" &&
+            record.seller_agreement.terms.payout_delay_hours === 0,
+        )
       : transferPresentation(
           record.state,
           admin ? (seller ? "seller" : "customer") : "you",
@@ -251,6 +262,16 @@ export function TransferRecord({
             ? " Staff are reviewing an issue with this transfer."
             : ""}
         </p>
+        {waitingUntil && !record.manual_receipt && (
+          <p>
+            Agreed waiting period ends:{" "}
+            <time dateTime={waitingUntil}>
+              {new Date(waitingUntil).toLocaleString()}
+            </time>
+            . An open case or another unmet condition can keep the payout on
+            hold after this time.
+          </p>
+        )}
         {record.seller_agreement && (
           <section>
             <h4>Accepted seller agreement</h4>

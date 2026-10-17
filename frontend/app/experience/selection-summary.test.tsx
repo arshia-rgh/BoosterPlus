@@ -146,3 +146,50 @@ it("formats multiselect labels and empty values without inventing choices", () =
   expect(selectedLabel("", [])).toBe("Not selected");
   expect(selectedLabel(true, [])).toBe("Yes");
 });
+
+it("counts only the buyer's editable delivery details for a fixed package and does not repeat its presets", () => {
+  render(
+    <SelectionSummary
+      config={emptyConfiguration("Game")}
+      service={{
+        key: "boost",
+        name: "Boost",
+        description: "",
+        evaluator: "manual-review-v1",
+        rules: [],
+        fields: [
+          {
+            ...emptyField("rank"),
+            type: "rank",
+            label: "Fixed rank",
+            options: [{ key: "high", label: "High rank", units: 1 }],
+          },
+          {
+            ...emptyField("region"),
+            type: "select",
+            label: "Delivery region",
+            stage: "order",
+            options: [{ key: "eu", label: "Europe", units: 0 }],
+          },
+          {
+            ...emptyField("player"),
+            type: "short_text",
+            label: "Player ID",
+            stage: "order",
+          },
+        ],
+      }}
+      values={{ rank: "high", region: "eu", player: "" }}
+      stage="order"
+      fixed
+      editableFields={["region", "player"]}
+    />,
+  );
+  expect(screen.getByText("1 of 2 delivery details completed.")).toBeVisible();
+  expect(
+    screen.getByRole("progressbar", { name: "Delivery details completed" }),
+  ).toHaveAttribute("max", "2");
+  expect(screen.queryByText("High rank")).toBeNull();
+  expect(screen.queryByText("Fixed rank")).toBeNull();
+  expect(screen.queryByText("Europe")).toBeNull();
+});

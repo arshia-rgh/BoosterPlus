@@ -362,8 +362,10 @@ function FormContent({
                 </>
               ) : (
                 <p>
-                  Protected details are unavailable until delivery and access
-                  requirements are met. Ask support in this conversation.
+                  {row.purpose === "buyer_access"
+                    ? "Account access is unavailable while payment, delivery or case checks are unresolved."
+                    : "Protected details are unavailable until delivery and access requirements are met."}{" "}
+                  Ask support in this conversation.
                 </p>
               )}
             </>

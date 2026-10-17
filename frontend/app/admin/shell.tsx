@@ -64,7 +64,7 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
           type="search"
           value={search}
           maxLength={80}
-          placeholder="Orders, finance, catalog…"
+          placeholder="Search modules…"
           onChange={(event) => {
             setSearch(event.target.value);
           }}
@@ -211,7 +211,7 @@ export default function AdminShell({
                   id="staff-search"
                   name="search"
                   type="search"
-                  placeholder="Search game or order ID…"
+                  placeholder="Search orders…"
                   maxLength={200}
                 />
                 <button type="submit" aria-label="Search orders">

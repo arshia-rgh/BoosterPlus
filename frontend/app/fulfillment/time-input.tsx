@@ -41,10 +41,6 @@ export default function TimeInput({
               });
             }}
           />
-          <p>
-            {value.local.replace("T", " at ") || "Choose a date and time"} ·{" "}
-            {value.zone}
-          </p>
         </>
       ) : (
         <Text
@@ -57,37 +53,28 @@ export default function TimeInput({
           }}
         />
       )}
-      <Select
-        name={name ? `${name}.occurrence` : undefined}
-        label={`${label}: repeated clock hour`}
-        value={value.occurrence}
-        options={[
-          ["", "Require an unambiguous time"],
-          ["first", "First occurrence"],
-          ["second", "Second occurrence"],
-        ]}
-        change={(occurrence) => {
-          change({
-            ...value,
-            occurrence:
-              occurrence === "first"
-                ? "first"
-                : occurrence === "second"
-                  ? "second"
-                  : "",
-          });
-        }}
-      />
-      {split && (
-        <p>
-          Repeated clock hour:{" "}
-          {value.occurrence === "first"
-            ? "First occurrence"
-            : value.occurrence === "second"
-              ? "Second occurrence"
-              : "Require an unambiguous time"}
-          .
-        </p>
+      {value.zone !== "UTC" && (
+        <Select
+          name={name ? `${name}.occurrence` : undefined}
+          label={`${label}: repeated clock hour`}
+          value={value.occurrence}
+          options={[
+            ["", "Require an unambiguous time"],
+            ["first", "First occurrence"],
+            ["second", "Second occurrence"],
+          ]}
+          change={(occurrence) => {
+            change({
+              ...value,
+              occurrence:
+                occurrence === "first"
+                  ? "first"
+                  : occurrence === "second"
+                    ? "second"
+                    : "",
+            });
+          }}
+        />
       )}
     </div>
   );

@@ -53,21 +53,22 @@ type Change struct {
 
 // View has a separate public sequence/revision/time for customer privacy.
 type View struct {
-	SubmissionID  string    `json:"submission_id,omitempty"`
-	BoosterShared bool      `json:"booster_shared"`
-	ID            string    `json:"id"`
-	Kind          string    `json:"kind"`
-	OrderID       string    `json:"order_id"`
-	LinkedOrderID string    `json:"linked_order_id"`
-	Subject       string    `json:"subject"`
-	Slug          string    `json:"slug"`
-	State         string    `json:"state"`
-	AssignedTo    string    `json:"assigned_to,omitempty"`
-	Version       int       `json:"version"`
-	Sequence      int       `json:"sequence"`
-	Unread        int       `json:"unread"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	CreatedAt     time.Time `json:"created_at"`
+	SubmissionID        string    `json:"submission_id,omitempty"`
+	BoosterShared       bool      `json:"booster_shared"`
+	ID                  string    `json:"id"`
+	Kind                string    `json:"kind"`
+	OrderID             string    `json:"order_id"`
+	LinkedOrderID       string    `json:"linked_order_id"`
+	Subject             string    `json:"subject"`
+	Slug                string    `json:"slug"`
+	State               string    `json:"state"`
+	AssignedTo          string    `json:"assigned_to,omitempty"`
+	Version             int       `json:"version"`
+	Sequence            int       `json:"sequence"`
+	Unread              int       `json:"unread"`
+	FirstUnreadSequence int       `json:"first_unread_sequence"`
+	UpdatedAt           time.Time `json:"updated_at"`
+	CreatedAt           time.Time `json:"created_at"`
 }
 
 // Message never exposes a private sender ID to the customer API.

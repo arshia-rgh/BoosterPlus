@@ -31,7 +31,6 @@ export default function ContentEditor() {
   const kind = kinds.find((k) => k === selected) ?? "home";
   return (
     <section>
-      <h2>Content and policies</h2>
       <p>
         Draft changes stay private. Legal and retention policies require the
         owner. Publishing requires recent authenticator or email verification.

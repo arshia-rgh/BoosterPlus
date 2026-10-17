@@ -39,7 +39,6 @@ export default function ShopQueue() {
   return (
     <section className="admin-order-list shop-delivery-queue">
       <p className="eyebrow">Manual fulfillment</p>
-      <h2>Shop delivery queue</h2>
       <p>
         Unpaid orders are visible for support. Delivery starts only after
         verified payment and an explicit staff claim.

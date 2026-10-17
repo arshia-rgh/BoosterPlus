@@ -90,6 +90,38 @@ class ReleaseLifecycle(unittest.TestCase):
         self.assertLess(verify, probe)
         self.assertLess(probe, serving)
 
+    def test_recreated_dependencies_become_healthy_before_migration_and_probe(self):
+        ready = False
+        def starting_dependencies(manifest, args, **kwargs):
+            nonlocal ready
+            if args[0] == "up" and args[-1] == "scanner":
+                self.assertIn("--wait", args)
+                self.assertEqual(args[args.index("--wait-timeout") + 1], "180")
+                ready = True
+            if args[-3:] == ["db", "migrate", "up"] or args[-2:] == ["dependencies", "check"]:
+                self.assertTrue(ready, "Do not race a scanner that is still starting")
+            return self.runner(manifest, args, **kwargs)
+        with patch("release.verify", return_value=self.target):
+            execute(self.manifest, self.root, runner=starting_dependencies, smoke=lambda _: None)
+        self.assertIsNone(pending(self.root / "operations", "boosterplus-fixture"))
+
+    def test_dependency_health_timeout_blocks_migration_and_can_resume(self):
+        def unhealthy_dependencies(manifest, args, **kwargs):
+            result = self.runner(manifest, args, **kwargs)
+            if args[0] == "up" and args[-1] == "scanner":
+                raise RuntimeError("dependency health timeout")
+            return result
+        with patch("release.verify", return_value=self.target):
+            with self.assertRaisesRegex(RuntimeError, "dependency health timeout"):
+                execute(self.manifest, self.root, runner=unhealthy_dependencies, smoke=lambda _: None)
+        self.assertEqual(self.schema, 0)
+        self.assertFalse(any(call[-3:] == ["db", "migrate", "up"] for call in self.calls))
+        self.assertFalse(any(call[0] == "up" and call[-1] in ("gateway", "worker") for call in self.calls))
+        self.assertEqual(pending(self.root / "operations", "boosterplus-fixture")["state"], "migrating")
+        self.assertFalse((self.root / "operations/boosterplus-fixture-current.json").exists())
+        self.run_release(resume=True)
+        self.assertIsNone(pending(self.root / "operations", "boosterplus-fixture"))
+
     def test_rollback_refuses_newer_schema_without_running_ddl(self):
         self.run_release()
         write(self.root / "operations", "boosterplus-fixture-backup.json",

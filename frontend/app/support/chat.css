@@ -475,6 +475,10 @@
   font-size: 1rem;
   overflow-wrap: anywhere;
 }
+.identity-page .chat-inbox .chat-inbox-list > li > a {
+  color: #eeeae0;
+  text-decoration: none;
+}
 .chat-inbox-list small {
   display: block;
   color: #bdcec3;
@@ -485,7 +489,7 @@
   color: #bdcec3;
   font-size: 0.8rem;
 }
-.chat-inbox-list a:hover {
+.chat-inbox-list a:is(:hover, :focus-visible) {
   background: #1e3528;
 }
 .chat-inbox details > summary {

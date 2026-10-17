@@ -16,6 +16,63 @@ vi.mock("./secret", () => ({
 vi.mock("./market", () => ({ ProductTerms: () => <p>Accepted terms</p> }));
 afterEach(() => vi.clearAllMocks());
 it.each([false, true])(
+  "explains an active case without suggesting access is ready (admin=%s)",
+  (admin) => {
+    const reload = vi.fn();
+    vi.mocked(useResource).mockReturnValue({
+      data: {
+        state: "delivered",
+        active_case: true,
+        version: 2,
+        secret: { state: "active", version: 1 },
+        instructions: "Verify access",
+        dispute_until: null,
+        listing: {},
+      },
+      loading: false,
+      error: null,
+      reload,
+    });
+    const component = (visible: boolean) => (
+      <MemoryRouter initialEntries={["/orders/order?section=delivery"]}>
+        <AccountDelivery
+          id="order"
+          admin={admin}
+          paid
+          visible={visible}
+          changed={vi.fn()}
+        />
+      </MemoryRouter>
+    );
+    const view = render(component(true));
+    expect(
+      screen.getByText(/Account access is paused while PLAYORA reviews/),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", {
+        name: admin ? "Review payment & cases" : "View your case",
+      }),
+    ).toHaveAttribute(
+      "href",
+      admin ? "/orders/order?section=payment" : "/orders/order?section=help",
+    );
+    expect(
+      screen.queryByRole("link", {
+        name: /View account access in chat|Prepare or view access/,
+      }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: /Deliver account access|Acknowledge account received/,
+      }),
+    ).not.toBeInTheDocument();
+    view.rerender(component(false));
+    view.rerender(component(true));
+    expect(reload).toHaveBeenCalledOnce();
+    expect(post).not.toHaveBeenCalled();
+  },
+);
+it.each([false, true])(
   "uses the accepted agreement to explain inspection (admin=%s)",
   (admin) => {
     const data = {

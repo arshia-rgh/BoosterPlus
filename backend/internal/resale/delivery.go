@@ -9,6 +9,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationform"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/chataccess"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
@@ -27,6 +28,7 @@ type DeliveryView struct {
 	DeliveredAt    *time.Time    `json:"delivered_at"`
 	AcknowledgedAt *time.Time    `json:"acknowledged_at"`
 	DisputeUntil   *time.Time    `json:"dispute_until"`
+	ActiveCase     bool          `json:"active_case"`
 }
 
 // DeliveryChange binds handoff/acknowledgement to the exact visible revision.
@@ -43,6 +45,10 @@ func deliveryView(ctx context.Context, client *ent.Client, row *ent.Order, now t
 		return DeliveryView{}, err
 	}
 	result := DeliveryView{OrderID: row.ID, Product: listing, State: "pending", Secret: SecretView{State: "missing"}}
+	result.ActiveCase, err = client.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+	if err != nil {
+		return result, err
+	}
 	record, err := client.AccountDelivery.Query().Where(accountdelivery.OrderIDEQ(row.ID)).Only(ctx)
 	if ent.IsNotFound(err) {
 		return result, nil

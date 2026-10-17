@@ -98,6 +98,13 @@ it.each(["customer", "admin", "booster"])(
     fireEvent.click(trigger);
     const dialog = screen.getByRole("dialog", { name: "Recover your account" });
     const recovery = within(dialog);
+    expect(
+      recovery.getByText(
+        portal === "customer"
+          ? /If you set up an authenticator, it will still be required\./
+          : /Your authenticator remains required\./,
+      ),
+    ).toBeVisible();
     expect(recovery.getByLabelText("Current account email")).toHaveFocus();
     const send = recovery.getByRole("button", {
       name: "Send recovery verification code",

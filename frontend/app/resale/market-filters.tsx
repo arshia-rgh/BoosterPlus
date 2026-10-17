@@ -3,6 +3,7 @@ import { Action, Select } from "../catalog/controls";
 import MarketGames from "./market-games";
 import MarketFilterPanel from "./filter-panel";
 import { maximumDisplay, maximumMinor } from "./market-price";
+import { focusValidationTarget } from "../ui/form-validation";
 
 export default function MarketFilters({
   params,
@@ -30,6 +31,7 @@ export default function MarketFilters({
   );
   const maximum = useRef<HTMLInputElement>(null);
   const currencyInput = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState({ price: "", currency: "" });
   const active =
     [
       "search",
@@ -45,6 +47,7 @@ export default function MarketFilters({
     <MarketFilterPanel>
       <form
         className="market-filters"
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           const form = event.currentTarget;
@@ -54,17 +57,25 @@ export default function MarketFilters({
             return typeof value === "string" ? value.trim() : "";
           };
           const amount = maximumMinor(maximum.current?.value ?? "");
-          maximum.current?.setCustomValidity(
-            amount === null
-              ? "Enter a positive price with at most two decimal places."
-              : "",
-          );
-          currencyInput.current?.setCustomValidity(
-            !currency && (amount || sort !== "newest")
-              ? "Enter a listing currency to compare prices."
-              : "",
-          );
-          if (!form.reportValidity() || amount === null) return;
+          const nextErrors = {
+            price:
+              amount === null
+                ? "Enter a positive price with at most two decimal places."
+                : "",
+            currency:
+              currency && !/^[A-Z]{3}$/.test(currency)
+                ? "Enter a three-letter listing currency, such as USD."
+                : !currency && (amount || sort !== "newest")
+                  ? "Enter a listing currency to compare prices."
+                  : "",
+          };
+          setErrors(nextErrors);
+          if (nextErrors.price || nextErrors.currency || amount === null) {
+            focusValidationTarget(
+              nextErrors.currency ? currencyInput.current : maximum.current,
+            );
+            return;
+          }
           form.closest("dialog")?.close();
           apply({
             slug,
@@ -109,9 +120,10 @@ export default function MarketFilters({
               maxLength={3}
               pattern="[A-Z]{3}"
               title="A three-letter listing currency, such as USD"
-              aria-describedby={`${id}-currency-help`}
+              aria-invalid={!!errors.currency || undefined}
+              aria-describedby={`${id}-currency-help${errors.currency ? ` ${id}-currency-error` : ""}`}
               onChange={(event) => {
-                event.currentTarget.setCustomValidity("");
+                setErrors((old) => ({ ...old, currency: "" }));
                 setCurrency(event.target.value.toUpperCase());
               }}
             />
@@ -119,6 +131,15 @@ export default function MarketFilters({
               Optional unless filtering or sorting by price. Use the currency
               shown on listings; no currency conversion.
             </span>
+            {errors.currency && (
+              <p
+                className="field-error"
+                id={`${id}-currency-error`}
+                role="alert"
+              >
+                {errors.currency}
+              </p>
+            )}
           </div>
           <div className="catalog-label">
             <label htmlFor={`${id}-maximum`}>
@@ -130,23 +151,32 @@ export default function MarketFilters({
               inputMode="decimal"
               maxLength={13}
               value={price}
-              aria-describedby={`${id}-maximum-help`}
+              aria-invalid={!!errors.price || undefined}
+              aria-describedby={`${id}-maximum-help${errors.price ? ` ${id}-maximum-error` : ""}`}
               onChange={(event) => {
-                event.currentTarget.setCustomValidity("");
-                currencyInput.current?.setCustomValidity("");
+                setErrors({ price: "", currency: "" });
                 setPrice(event.target.value);
               }}
             />
             <span className="quiet" id={`${id}-maximum-help`}>
               Optional · up to two decimal places.
             </span>
+            {errors.price && (
+              <p
+                className="field-error"
+                id={`${id}-maximum-error`}
+                role="alert"
+              >
+                {errors.price}
+              </p>
+            )}
           </div>
           <Select
             label="Sort accounts"
             value={sort}
             change={(value) => {
               setSort(value);
-              currencyInput.current?.setCustomValidity("");
+              setErrors((old) => ({ ...old, currency: "" }));
             }}
             options={[
               ["newest", "Newest first"],

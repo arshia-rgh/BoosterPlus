@@ -43,8 +43,9 @@ export default function Coordination({
       <h3>Coordination and proof</h3>
       <p>
         This shared conversation is for player coordination and proof images.
-        The currently assigned booster can read its shared history. Keep
-        credentials in secure game access.
+        The currently assigned booster can read its shared history. Send
+        credentials only through protected fields in a form requested by an
+        administrator.
       </p>
       <ErrorNotice error={error} />
       {work.coordination_id ? (

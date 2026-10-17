@@ -1,3 +1,4 @@
+import { majorToMinor } from "../catalog/money-input";
 import type { FieldIssue } from "../ui/form-validation";
 
 export interface QuoteFields {
@@ -9,6 +10,13 @@ export interface QuoteFields {
   delivery_max_hours: number;
   expiry_hours: number;
   lines: { key: string; label: string; amount_minor: string }[];
+}
+/** Preserve exact cents and reject extra precision rather than silently rounding. */
+export function quoteAmountMinor(value: string, signed = false): string {
+  const negative = signed && value.startsWith("-");
+  const minor = majorToMinor(negative ? value.slice(1) : value, 2);
+  if (minor === null) return "";
+  return negative && minor !== "0" ? "-" + minor : minor;
 }
 const money = /^[1-9][0-9]{0,11}$/;
 const lineMoney = /^-?(0|[1-9][0-9]{0,11})$/;
@@ -28,7 +36,7 @@ export function quoteIssues(value: QuoteFields): FieldIssue[] {
   if (!money.test(value.amount_minor))
     add(
       "amount_minor",
-      "Enter a positive whole amount in minor units, up to 12 digits.",
+      "Enter a price greater than zero, up to 9,999,999,999.99, with at most two decimal places.",
     );
   if (!["USD", "EUR", "GBP"].includes(value.currency))
     add("currency", "Choose the quote currency.");
@@ -65,7 +73,7 @@ export function quoteIssues(value: QuoteFields): FieldIssue[] {
     if (!lineMoney.test(line.amount_minor)) {
       add(
         key + ".amount_minor",
-        "Enter a signed whole amount in minor units, up to 12 digits.",
+        "Enter a price with at most two decimal places, for example 12.50 or -2.50.",
       );
     } else sum += BigInt(line.amount_minor);
   });

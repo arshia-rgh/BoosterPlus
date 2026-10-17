@@ -12,7 +12,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -115,17 +115,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, inp
 	}
 	if input.Unread == "true" {
 		q.Where(func(selector *sql.Selector) {
-			sequence := conversation.FieldPublicSequence
-			if admin {
-				sequence = conversation.FieldSequence
-			}
-			marker := sql.Table(conversationread.Table)
-			read := sql.Select(marker.C(conversationread.FieldID)).From(marker).Where(sql.And(
-				sql.ColumnsEQ(marker.C(conversationread.FieldConversationID), selector.C(conversation.FieldID)),
-				sql.EQ(marker.C(conversationread.FieldUserID), p.User.ID), sql.EQ(marker.C(conversationread.FieldAudience), string(audience(admin))),
-				sql.ColumnsGTE(marker.C(conversationread.FieldSequence), selector.C(sequence)),
-			))
-			selector.Where(sql.And(sql.GT(selector.C(sequence), 0), sql.NotExists(read)))
+			selector.Where(communication.HasUnread(selector.C(conversation.FieldID), p.User.ID, admin))
 		})
 	}
 	rows, err := q.All(ctx)

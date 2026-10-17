@@ -10,10 +10,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -57,26 +57,16 @@ type Overview struct {
 
 func (s *Store) unreadThreads(ctx context.Context, userID string) ([]UnreadThread, bool, error) {
 	rows, err := s.client.Conversation.Query().Where(conversation.UserIDEQ(userID), conversation.PublicSequenceGT(0), func(selector *sql.Selector) {
-		marker := sql.Table(conversationread.Table)
-		read := sql.Select(marker.C(conversationread.FieldID)).From(marker).Where(sql.And(
-			sql.EQ(marker.C(conversationread.FieldUserID), userID), sql.EQ(marker.C(conversationread.FieldAudience), string(conversationread.AudiencePublic)),
-			sql.ColumnsEQ(marker.C(conversationread.FieldConversationID), selector.C(conversation.FieldID)),
-			sql.ColumnsGTE(marker.C(conversationread.FieldSequence), selector.C(conversation.FieldPublicSequence)),
-		))
-		selector.Where(sql.Not(sql.Exists(read)))
+		selector.Where(communication.HasUnread(selector.C(conversation.FieldID), userID, false))
 	}).Order(ent.Desc(conversation.FieldPublicUpdatedAt), ent.Desc(conversation.FieldID)).Limit(6).All(ctx)
 	if err != nil {
 		return nil, false, err
 	}
 	items := make([]UnreadThread, 0, min(len(rows), 5))
 	for _, row := range rows[:min(len(rows), 5)] {
-		marker, readErr := s.client.ConversationRead.Query().Where(conversationread.UserIDEQ(userID), conversationread.ConversationIDEQ(row.ID), conversationread.AudienceEQ(conversationread.AudiencePublic)).Only(ctx)
-		if readErr != nil && !ent.IsNotFound(readErr) {
+		unread, _, readErr := communication.Unread(ctx, s.client, row.ID, userID, false)
+		if readErr != nil {
 			return nil, false, readErr
-		}
-		unread := row.PublicSequence
-		if marker != nil {
-			unread = max(0, unread-marker.Sequence)
 		}
 		if unread > 0 {
 			items = append(items, UnreadThread{row.ID, row.Subject, unread})
