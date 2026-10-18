@@ -10,6 +10,7 @@ import {
 import { Input } from "./dynamic-form";
 import MoneyInput, { minorToMajor } from "./money-input";
 import PricingPreview, { type PricingPreviewContext } from "./pricing-preview";
+import SurchargeEditor from "./surcharge-editor";
 import { useContext, useState } from "react";
 import { FieldValidation } from "../ui/form-validation";
 import { isWinRateField } from "./win-rate";
@@ -412,6 +413,13 @@ export function PricingEditor({
           >
             Add price operation
           </Action>
+          <SurchargeEditor
+            path={`${path}.pricing.surcharges`}
+            service={service}
+            change={(surcharges) => {
+              update({ surcharges });
+            }}
+          />
           <h4>Saved price examples</h4>
           <p>
             Use synthetic selections only. Set the expected result yourself;

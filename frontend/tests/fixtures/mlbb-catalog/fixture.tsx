@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "react-router";
 import prepared from "./configuration.json";
+import currentPrepared from "../../../../docs/catalog/MLBB_PREFERENCES_2026-10-18.json";
 import { configurationSchema, type Release } from "../../../app/catalog/model";
 import DynamicForm from "../../../app/catalog/dynamic-form";
 import ConfigurationImport from "../../../app/catalog/configuration-import";
@@ -20,6 +21,9 @@ import "../../../app/catalog/admin-workspace.css";
 import "../../../app/catalog/service-tiles.css";
 import "../../../app/catalog/game-shell.css";
 const configuration = configurationSchema.parse(prepared.configuration);
+const currentConfiguration = configurationSchema.parse(
+  currentPrepared.configuration,
+);
 const release: Release = {
   id: "00000000-0000-4000-8000-000000000145",
   game_id: "00000000-0000-4000-8000-000000000146",
@@ -33,8 +37,10 @@ function Review() {
   const [current, setCurrent] = useState(configuration),
     [dirty, setDirty] = useState(false);
   const [query] = useSearchParams();
+  const selected =
+    query.get("catalog") === "167" ? currentConfiguration : configuration;
   const section = query.get("section") || "form";
-  const service = configuration.services[0];
+  const service = selected.services[0];
   if (!service) throw new Error("Missing synthetic service");
   return (
     <div className="experience">
@@ -48,7 +54,7 @@ function Review() {
         </nav>
         {section === "form" && (
           <DynamicForm
-            config={configuration}
+            config={selected}
             service={service}
             releaseID={release.id}
             slug={release.slug}

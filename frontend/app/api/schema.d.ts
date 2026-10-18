@@ -6088,6 +6088,7 @@ export interface components {
       maximum_minor: string;
       rules: components["schemas"]["CatalogPriceRule"][] | null;
       cases: components["schemas"]["CatalogPriceCase"][] | null;
+      surcharges?: components["schemas"]["CatalogPriceSurcharge"][];
     };
     CatalogPriceLine: {
       key: string;
@@ -6812,6 +6813,12 @@ export interface components {
       description: string;
       fields: components["schemas"]["CatalogField"][] | null;
       rules: components["schemas"]["CatalogRule"][] | null;
+      summary?: {
+        hero_count: string;
+        skin_collection: string;
+        selling_point: string;
+        has_skins: string;
+      };
     };
     SubmissionSummary: {
       id: string;
@@ -7495,6 +7502,9 @@ export interface components {
       /** @description Explicit reviewed cover; must be a selected media_id for new publication. Omitted in older releases and blank in public projections. */
       cover_media_id?: string;
       commission?: components["schemas"]["AccountBuyerCommission"];
+      hero_count?: number;
+      selling_point?: string;
+      skin_collection?: components["schemas"]["AccountSkinCollection"];
     };
     AccountListing: {
       id: string;
@@ -8671,6 +8681,26 @@ export interface components {
       value: string;
     };
     EmptyCommand: Record<string, never>;
+    AccountSkinCollection: {
+      groups: {
+        category: string;
+        count: string;
+        names: string[];
+      }[];
+    };
+    CatalogPriceSurcharge: {
+      key: string;
+      label: string;
+      /** @enum {string} */
+      kind: "percentage" | "selection_count";
+      value: string;
+      field: string;
+      rates: {
+        count: number;
+        percent: string;
+      }[];
+      when?: components["schemas"]["CatalogCondition"];
+    };
   };
   responses: never;
   parameters: never;

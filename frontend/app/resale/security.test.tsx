@@ -5,7 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { post } from "../identity/api";
 import { TransferRecord } from "../payments/refunds";
 import type { Transfer } from "../payments/cases-model";
@@ -14,6 +14,10 @@ vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   post: vi.fn(),
 }));
+beforeEach(() => {
+  // A failed scenario must not leave a one-shot response for the next one.
+  vi.mocked(post).mockReset();
+});
 afterEach(() => {
   vi.clearAllMocks();
   vi.restoreAllMocks();
@@ -153,8 +157,16 @@ it("orients protected-reveal keyboard users without announcing plaintext or stea
   expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();
   fireEvent.click(reveal);
   await screen.findByText("synthetic handoff only");
+  // Wait for the intentional reveal focus before simulating a later task.
+  // Text can render before its focus effect has settled under coverage.
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", { name: "Protected details ready" }),
+    ).toHaveFocus(),
+  );
   const other = screen.getByRole("button", { name: "Other task" });
   other.focus();
+  expect(other).toHaveFocus();
   fireEvent(window, new Event("blur"));
   expect(other).toHaveFocus();
   expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();

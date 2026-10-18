@@ -8,6 +8,11 @@ import AccountGallery, {
 } from "./gallery";
 import type { PublicListing } from "./model";
 import "./account-presentation.css";
+import {
+  accountCount,
+  isCountAttribute,
+  supersededCount,
+} from "./account-summary";
 
 export function AccountFacts({ listing }: { listing: PublicListing }) {
   return (
@@ -19,6 +24,14 @@ export function AccountFacts({ listing }: { listing: PublicListing }) {
       <div>
         <dt>Region</dt>
         <dd>{listing.product.region || "Not specified"}</dd>
+      </div>
+      <div>
+        <dt>Heroes</dt>
+        <dd>{accountCount(listing.product, "heroes") ?? "Not specified"}</dd>
+      </div>
+      <div>
+        <dt>Skins</dt>
+        <dd>{accountCount(listing.product, "skins") ?? "Not specified"}</dd>
       </div>
     </dl>
   );
@@ -81,14 +94,25 @@ export function AccountCard({
         <p className="account-game-label">{listing.game}</p>
         <Heading id={titleID}>{listing.product.title}</Heading>
         <AccountFacts listing={listing} />
-        {!!listing.product.attributes.length && (
+        <div className="account-selling-point">
+          <span>Why choose this account?</span>
+          <p>
+            {listing.product.selling_point || "Selling point not provided yet."}
+          </p>
+        </div>
+        {!!listing.product.attributes
+          .filter((a) => !isCountAttribute(a.label))
+          .slice(0, 2).length && (
           <dl className="account-card-highlights">
-            {listing.product.attributes.slice(0, 2).map((a) => (
-              <div key={a.label}>
-                <dt>{a.label}</dt>
-                <dd>{a.value}</dd>
-              </div>
-            ))}
+            {listing.product.attributes
+              .filter((a) => !isCountAttribute(a.label))
+              .slice(0, 2)
+              .map((a) => (
+                <div key={a.label}>
+                  <dt>{a.label}</dt>
+                  <dd>{a.value}</dd>
+                </div>
+              ))}
           </dl>
         )}
         <div className="account-card-footer">
@@ -115,13 +139,49 @@ export function AccountCard({
 }
 
 export function AccountDescription({ listing }: { listing: PublicListing }) {
+  const attributes = listing.product.attributes.filter(
+    (a) => !supersededCount(listing.product, a.label),
+  );
   return (
     <section className="account-description" aria-label="About this account">
       <h3>About this account</h3>
+      {listing.product.selling_point && (
+        <div className="account-selling-point">
+          <span>Why choose this account?</span>
+          <p>{listing.product.selling_point}</p>
+        </div>
+      )}
       <p className="payment-policy">{listing.product.description}</p>
-      {!!listing.product.attributes.length && (
+      {listing.product.skin_collection && (
+        <section
+          className="account-skin-collection"
+          aria-label="Skin collection"
+        >
+          <h4>Skin collection</h4>
+          {listing.product.skin_collection.groups.length === 0 ? (
+            <p>This account has no skins.</p>
+          ) : (
+            listing.product.skin_collection.groups.map((g) => (
+              <details key={g.category}>
+                <summary>
+                  {g.category}{" "}
+                  <span>
+                    · {g.count} {g.count === "1" ? "skin" : "skins"}
+                  </span>
+                </summary>
+                <ul>
+                  {g.names.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
+              </details>
+            ))
+          )}
+        </section>
+      )}
+      {!!attributes.length && (
         <dl className="account-detail-facts">
-          {listing.product.attributes.map((a) => (
+          {attributes.map((a) => (
             <div key={a.label}>
               <dt>{a.label}</dt>
               <dd>{a.value}</dd>

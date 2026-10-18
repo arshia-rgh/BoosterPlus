@@ -59,9 +59,7 @@ it("makes rank, region, selected facts and inclusive total scannable without inv
   expect(within(card).getByText("Heroes").nextElementSibling).toHaveTextContent(
     "120",
   );
-  expect(
-    within(card).queryByText("Exact third attribute"),
-  ).not.toBeInTheDocument();
+  expect(within(card).queryByText("Exact third attribute")).toBeVisible();
   expect(within(card).getByText("USD 105.00")).toBeVisible();
   expect(within(card).getByText("Includes 5% buyer commission")).toBeVisible();
   expect(within(card).getByText("No account screenshot")).toBeVisible();
@@ -109,4 +107,59 @@ it("keeps historical totals and private previews truthful", () => {
   expect(screen.getByText("Preview image not loaded")).toBeVisible();
   expect(screen.getByText("Account card preview · private")).toBeVisible();
   expect(screen.queryByRole("link")).not.toBeInTheDocument();
+});
+
+it("shows the reviewed totals and selling point on the card, keeping skin names inside details", () => {
+  const account = structuredClone(listing);
+  account.product.hero_count = 133;
+  account.product.skin_collection = {
+    groups: [
+      { category: "Collector", count: "2", names: ["Aldous", "Yu Zhong"] },
+    ],
+  };
+  account.product.selling_point =
+    "A focused collector roster for EXP-lane mains.";
+  const view = render(
+    <MemoryRouter>
+      <AccountCard listing={account} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("Heroes").nextElementSibling).toHaveTextContent(
+    "133",
+  );
+  expect(screen.getByText("Skins").nextElementSibling).toHaveTextContent("2");
+  expect(screen.getByText(account.product.selling_point)).toBeVisible();
+  expect(screen.queryByText("Aldous")).not.toBeInTheDocument();
+  view.unmount();
+  render(<ProductTerms listing={account} />);
+  expect(screen.queryByText("120", { selector: "dd" })).not.toBeInTheDocument();
+  expect(screen.getByText("Aldous")).not.toBeVisible();
+  fireEvent.click(screen.getByText("Collector", { selector: "summary" }));
+  expect(screen.getByText("Aldous")).toBeVisible();
+  expect(screen.getByText("Yu Zhong")).toBeVisible();
+});
+
+it("distinguishes unknown legacy counts from confirmed zero", () => {
+  const account = structuredClone(listing);
+  account.product.attributes = [];
+  const view = render(
+    <MemoryRouter>
+      <AccountCard listing={account} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("Heroes").nextElementSibling).toHaveTextContent(
+    "Not specified",
+  );
+  expect(screen.getByText("Skins").nextElementSibling).toHaveTextContent(
+    "Not specified",
+  );
+  account.product.hero_count = 0;
+  account.product.skin_collection = { groups: [] };
+  view.rerender(
+    <MemoryRouter>
+      <AccountCard listing={account} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText("Heroes").nextElementSibling).toHaveTextContent("0");
+  expect(screen.getByText("Skins").nextElementSibling).toHaveTextContent("0");
 });

@@ -27,30 +27,55 @@ func validateCosmetics(field Field, raw json.RawMessage, refs map[string]Referen
 	var value CosmeticCollection
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&value); err != nil || value.Groups == nil || len(value.Groups) > 20 {
-		add("", "Use up to 20 skin groups with category, quantity and names.")
+	if err := decoder.Decode(&value); err != nil {
+		add("", "Use skin groups with category, quantity and names.")
+		return issues
+	}
+	if value.Groups == nil || len(value.Groups) > 60 {
+		add("", "Use up to 60 skin groups.")
 		return issues
 	}
 	if required && len(value.Groups) == 0 {
 		add("", "Add at least one skin group.")
 	}
+	for i, g := range value.Groups {
+		path := fmt.Sprintf(".groups.%d", i)
+		if !slices.ContainsFunc(optionsFor(field, refs), func(o Option) bool { return o.Key == g.Category }) {
+			add(path+".category", "Choose a different available skin category for each group.")
+		}
+	}
+	for _, issue := range CosmeticCollectionIssues(value) {
+		add(issue.Path, issue.Message)
+	}
+	return issues
+}
+
+// CosmeticCollectionIssues validates bounded ordinary public/private facts.
+// Intake additionally restricts category keys to its published catalog.
+func CosmeticCollectionIssues(value CosmeticCollection) []Issue {
+	issues := []Issue{}
+	add := func(path, message string) { issues = append(issues, Issue{Path: path, Message: message}) }
+	if value.Groups == nil || len(value.Groups) > 60 {
+		add("", "Use up to 60 skin groups.")
+		return issues
+	}
 	categories := map[string]bool{}
 	total := 0
 	for i, g := range value.Groups {
 		path := fmt.Sprintf(".groups.%d", i)
-		if categories[g.Category] || !slices.ContainsFunc(optionsFor(field, refs), func(o Option) bool { return o.Key == g.Category }) {
-			add(path+".category", "Choose a different available skin category for each group.")
+		if !validText(g.Category, 1, 120) || categories[g.Category] {
+			add(path+".category", "Use a unique category of 1–120 characters.")
 		}
 		categories[g.Category] = true
 		count, err := strconv.Atoi(g.Count)
-		if err != nil || count < 1 || count > 100 || strconv.Itoa(count) != g.Count {
-			add(path+".count", "Enter a whole quantity from 1 to 100.")
+		if err != nil || count < 1 || count > 500 || strconv.Itoa(count) != g.Count {
+			add(path+".count", "Enter a whole quantity from 1 to 500.")
 		} else if count != len(g.Names) {
 			add(path+".count", "Quantity must match the number of named skins or associated heroes.")
 		}
 		names := map[string]bool{}
-		if len(g.Names) == 0 || len(g.Names) > 100 {
-			add(path+".names", "Name each skin or its associated hero; use up to 100 entries per category.")
+		if len(g.Names) == 0 || len(g.Names) > 500 {
+			add(path+".names", "Name each skin or its associated hero; use up to 500 entries per category.")
 		}
 		for _, name := range g.Names {
 			if !validText(name, 1, 120) || name != strings.TrimSpace(name) || names[name] {
@@ -61,8 +86,8 @@ func validateCosmetics(field Field, raw json.RawMessage, refs map[string]Referen
 		}
 		total += len(g.Names)
 	}
-	if total > 200 {
-		add("", "Keep the collection within 200 named items across all groups.")
+	if total > 1000 {
+		add("", "Keep the collection within 1,000 named items across all groups.")
 	}
 	return issues
 }

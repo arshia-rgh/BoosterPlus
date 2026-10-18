@@ -4,10 +4,20 @@ import "slices"
 
 // IntakeForm declares ordinary account-resale attributes, not credentials or commercial terms.
 type IntakeForm struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Fields      []Field `json:"fields"`
-	Rules       []Rule  `json:"rules"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Fields      []Field        `json:"fields"`
+	Rules       []Rule         `json:"rules"`
+	Summary     *IntakeSummary `json:"summary,omitempty"`
+}
+
+// IntakeSummary identifies seller claims offered for explicit staff review.
+// Mapping a field never publishes it automatically.
+type IntakeSummary struct {
+	HeroCount      string `json:"hero_count"`
+	SkinCollection string `json:"skin_collection"`
+	SellingPoint   string `json:"selling_point"`
+	HasSkins       string `json:"has_skins"`
 }
 
 // Service reuses the typed form evaluator without adding boosting or payment semantics.
@@ -26,6 +36,17 @@ func validateIntake(form *IntakeForm, refs map[string]Reference, publish bool, a
 	for _, field := range form.Fields {
 		if field.Stage != "order" || field.Type == "attachment" {
 			add("intake.fields", "Intake uses ordinary order-stage fields. Upload ownership screenshots in the private review conversation; credentials use a later secure handoff.")
+		}
+	}
+	if publish && form.Summary != nil {
+		fields := fieldMap(form.Fields)
+		for _, part := range []struct{ key, field, kind string }{
+			{"hero_count", form.Summary.HeroCount, "integer"}, {"skin_collection", form.Summary.SkinCollection, "cosmetics"},
+			{"selling_point", form.Summary.SellingPoint, "short_text"}, {"has_skins", form.Summary.HasSkins, "boolean"},
+		} {
+			if part.field != "" && fields[part.field].Type != part.kind {
+				add("intake.summary."+part.key, "Choose an existing intake field of the matching type.")
+			}
 		}
 	}
 }

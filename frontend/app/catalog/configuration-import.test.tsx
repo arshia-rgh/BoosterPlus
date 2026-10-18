@@ -4,6 +4,7 @@ import ConfigurationImport, {
   readConfigurationImport,
 } from "./configuration-import";
 import { emptyConfiguration } from "./model";
+import currentPrepared from "../../../docs/catalog/MLBB_PREFERENCES_2026-10-18.json";
 
 const envelope = (configuration: unknown) => ({
   game_slug: "mobile-legends",
@@ -11,6 +12,17 @@ const envelope = (configuration: unknown) => ({
   configuration,
 });
 const config = { ...emptyConfiguration("Mobile Legends"), reviewed: true };
+
+it("preserves the current MLBB surcharge stage and mapped account summary on import", () => {
+  const imported = readConfigurationImport(JSON.stringify(currentPrepared));
+  expect(imported.configuration.reviewed).toBe(false);
+  expect(imported.configuration.services[0]?.pricing?.surcharges).toEqual(
+    currentPrepared.configuration.services[0]?.pricing.surcharges,
+  );
+  expect(imported.configuration.intake?.summary).toEqual(
+    currentPrepared.configuration.intake.summary,
+  );
+});
 
 it("requires review and explicit application; never publishes or retains approval", () => {
   const change = vi.fn();

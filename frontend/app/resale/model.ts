@@ -1,5 +1,6 @@
 import { z } from "../validation";
 import { buyerCommissionSchema, sellerCommissionSchema } from "./commissions";
+import { cosmeticsSchema } from "../catalog/model";
 
 export const sellerTermsSchema = z.object({
   commission: sellerCommissionSchema.optional(),
@@ -28,6 +29,9 @@ export const offerSchema = z.object({
 });
 export const offersSchema = z.object({ offers: z.array(offerSchema) });
 export const productSchema = z.object({
+  hero_count: z.number().int().optional(),
+  skin_collection: cosmeticsSchema.optional(),
+  selling_point: z.string().optional(),
   commission: buyerCommissionSchema.optional(),
   title: z.string(),
   description: z.string(),

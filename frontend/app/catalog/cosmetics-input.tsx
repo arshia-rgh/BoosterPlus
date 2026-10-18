@@ -18,6 +18,7 @@ export default function CosmeticsInput({
   label,
   describedBy,
   invalid,
+  publicReview = false,
 }: {
   field: Field;
   config: Configuration;
@@ -27,6 +28,7 @@ export default function CosmeticsInput({
   label: string;
   describedBy?: string | undefined;
   invalid: boolean;
+  publicReview?: boolean;
 }) {
   const groups = cosmeticsSchema.safeParse(value).data?.groups ?? [];
   const [keys, setKeys] = useState(() => groups.map((_, i) => String(i)));
@@ -43,7 +45,7 @@ export default function CosmeticsInput({
     requestAnimationFrame(() => {
       (
         root.current?.querySelector<HTMLElement>(
-          `[data-skin-row="${String(index)}"] select`,
+          `[data-skin-row="${String(index)}"] ${publicReview ? "input" : "select"}`,
         ) ?? root.current?.querySelector<HTMLElement>("[data-add-skin]")
       )?.focus();
     });
@@ -58,8 +60,10 @@ export default function CosmeticsInput({
       <legend>{label}</legend>
       <p>
         Group skins by category. Enter the quantity and name each skin or its
-        associated hero on a separate line. Your names must match the quantity.
-        This is private review information.
+        associated hero on a separate line. Your names must match the quantity.{" "}
+        {publicReview
+          ? "These reviewed details will be public after publication."
+          : "This is private review information."}
       </p>
       {groups.map((group, i) => (
         <fieldset
@@ -68,26 +72,42 @@ export default function CosmeticsInput({
           data-skin-row={i}
         >
           <legend>Skin group {i + 1}</legend>
-          <Select
-            name={`${name}.groups.${String(i)}.category`}
-            label={`Skin category ${String(i + 1)}`}
-            value={group.category}
-            options={[
-              ["", "Choose a category"],
-              ...optionsFor(field, config).map(
-                (option) => [option.key, option.label] as const,
-              ),
-              ...(group.category &&
-              !optionsFor(field, config).some(
-                (option) => option.key === group.category,
-              )
-                ? [[group.category, `Unavailable: ${group.category}`] as const]
-                : []),
-            ]}
-            change={(category) => {
-              update(i, { category });
-            }}
-          />
+          {publicReview ? (
+            <Text
+              name={`${name}.groups.${String(i)}.category`}
+              label={`Skin category ${String(i + 1)}`}
+              value={group.category}
+              change={(category) => {
+                update(i, { category });
+              }}
+            />
+          ) : (
+            <Select
+              name={`${name}.groups.${String(i)}.category`}
+              label={`Skin category ${String(i + 1)}`}
+              value={group.category}
+              options={[
+                ["", "Choose a category"],
+                ...optionsFor(field, config).map(
+                  (option) => [option.key, option.label] as const,
+                ),
+                ...(group.category &&
+                !optionsFor(field, config).some(
+                  (option) => option.key === group.category,
+                )
+                  ? [
+                      [
+                        group.category,
+                        `Unavailable: ${group.category}`,
+                      ] as const,
+                    ]
+                  : []),
+              ]}
+              change={(category) => {
+                update(i, { category });
+              }}
+            />
+          )}
           <Text
             name={`${name}.groups.${String(i)}.count`}
             label={`Quantity in group ${String(i + 1)}`}
@@ -96,7 +116,7 @@ export default function CosmeticsInput({
             change={(count) => {
               update(i, { count });
             }}
-            help="1–100. This must equal the number of names below."
+            help="1–500. This must equal the number of names below."
           />
           <Text
             name={`${name}.groups.${String(i)}.names`}
@@ -124,7 +144,7 @@ export default function CosmeticsInput({
         className="button"
         data-add-skin
         aria-describedby={describedBy}
-        disabled={groups.length >= 20}
+        disabled={groups.length >= 60}
         onClick={() => {
           setKeys((old) => [...old, String(sequence.current++)]);
           change({

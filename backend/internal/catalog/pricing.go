@@ -11,12 +11,13 @@ import (
 // PricePlan is immutable with its form release. Amounts are exact minor-unit
 // decimals; rounding occurs only after all adjustments and bounds.
 type PricePlan struct {
-	Currency     string      `json:"currency"`
-	BaseMinor    string      `json:"base_minor"`
-	MinimumMinor string      `json:"minimum_minor"`
-	MaximumMinor string      `json:"maximum_minor"`
-	Rules        []PriceRule `json:"rules"`
-	Cases        []PriceCase `json:"cases"`
+	Currency     string           `json:"currency"`
+	BaseMinor    string           `json:"base_minor"`
+	MinimumMinor string           `json:"minimum_minor"`
+	MaximumMinor string           `json:"maximum_minor"`
+	Rules        []PriceRule      `json:"rules"`
+	Cases        []PriceCase      `json:"cases"`
+	Surcharges   []PriceSurcharge `json:"surcharges,omitempty"`
 }
 
 // PriceRule is a bounded operation, never an expression or executable program.
@@ -183,6 +184,21 @@ func evaluatePrice(c Configuration, service ServiceDefinition, answers Answers) 
 	if !a || !b || lower.Sign() <= 0 || lower.Cmp(upper) > 0 {
 		return manual()
 	}
+	// Opt-in premiums use one exact base after the configured minimum. Legacy
+	// plans without this stage keep their historical order of operations.
+	if len(plan.Surcharges) > 0 {
+		if total.Cmp(lower) < 0 {
+			delta := new(big.Int).Sub(rounded(lower), rounded(total)).String()
+			total.Set(lower)
+			lines = append(lines, PriceLine{"minimum_base", "Minimum base estimate", delta})
+		}
+		var additions []PriceLine
+		total, additions, ok = applySurcharges(total, plan.Surcharges, answers, fields)
+		if !ok {
+			return manual()
+		}
+		lines = append(lines, additions...)
+	}
 	before := rounded(total)
 	if total.Cmp(lower) < 0 {
 		total.Set(lower)
@@ -279,8 +295,8 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 	if service.Evaluator != "pricing-v1" {
 		add(path, "Remove the pricing plan or choose the pricing evaluator.")
 	}
-	if len(plan.Rules) > 40 || len(plan.Cases) > 30 {
-		add(path, "Pricing supports up to 40 operations and 30 saved cases.")
+	if len(plan.Rules) > 40 || len(plan.Cases) > 30 || len(plan.Surcharges) > 20 {
+		add(path, "Pricing supports up to 40 operations, 20 base-price surcharges and 30 saved cases.")
 		return
 	}
 	for _, rule := range plan.Rules {
@@ -292,6 +308,12 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 	for _, example := range plan.Cases {
 		if len(example.Answers) > 40 {
 			add(path, "Too many saved answers.")
+			return
+		}
+	}
+	for _, surcharge := range plan.Surcharges {
+		if len(surcharge.Rates) > 30 || !validConditionShape(surcharge.When) {
+			add(path+".surcharges", "Surcharge structure exceeds supported bounds.")
 			return
 		}
 	}
@@ -314,7 +336,7 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 		add(path+".maximum_minor", "Enter a positive maximum price of at least the minimum, with no more than two currency decimal places.")
 	}
 	fields := fieldMap(service.Fields)
-	keys := map[string]bool{"base": true, "bounds": true}
+	keys := map[string]bool{"base": true, "bounds": true, "minimum_base": len(plan.Surcharges) > 0}
 	for i, rule := range plan.Rules {
 		rp := fmt.Sprintf("%s.rules.%d", path, i)
 		if keys[rule.Key] || !keyPattern.MatchString(rule.Key) {
@@ -395,6 +417,7 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 			add(rp+".kind", "Unsupported pricing operation.")
 		}
 	}
+	validateSurcharges(plan.Surcharges, fields, refs, keys, path+".surcharges", add)
 	if len(plan.Cases) == 0 {
 		add(path+".cases", "Save at least one passing price example before publication.")
 	}

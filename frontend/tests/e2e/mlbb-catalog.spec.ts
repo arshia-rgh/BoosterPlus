@@ -27,6 +27,55 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   await server.close();
 });
+
+test("current MLBB preferences offer exactly three WR/delivery choices and hero-count premiums", async ({
+  page,
+}) => {
+  await page.goto(`${origin}/?catalog=167`);
+  const win = page.getByRole("group", {
+    name: "Win-rate preference (required)",
+    exact: true,
+  });
+  const delivery = page.getByRole("group", {
+    name: "Delivery preference (required)",
+    exact: true,
+  });
+  await expect(win.getByRole("radio")).toHaveCount(3);
+  await expect(delivery.getByRole("radio")).toHaveCount(3);
+  await win
+    .getByRole("radio", { name: "Exactly 100% · +200%", exact: true })
+    .check();
+  await delivery
+    .getByRole("radio", { name: "Within 24 hours · +25%", exact: true })
+    .check();
+  await expect(
+    page.getByLabel(/Minimum delivery hours|Maximum delivery hours/),
+  ).toHaveCount(0);
+  const hero = page.getByRole("group", {
+    name: "Preferred heroes",
+    exact: true,
+  });
+  await hero.getByRole("searchbox").fill("Aldous");
+  await hero.getByRole("checkbox", { name: "Aldous", exact: true }).check();
+  await expect(
+    page.getByText("Adds 50% of the base estimate.", { exact: true }),
+  ).toBeVisible();
+  await hero.getByRole("searchbox").fill("Yu Zhong");
+  await hero.getByRole("checkbox", { name: "Yu Zhong", exact: true }).check();
+  await expect(
+    page.getByText("Adds 40% of the base estimate.", { exact: true }),
+  ).toBeVisible();
+  await hero
+    .getByRole("button", { name: "Remove Aldous", exact: true })
+    .click();
+  await hero
+    .getByRole("button", { name: "Remove Yu Zhong", exact: true })
+    .click();
+  await expect(
+    page.getByText("No surcharge without a selection.", { exact: true }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
 // Keep each viewport independently bounded: six axe scans and full-page
 // screenshots in one journey can exceed the default budget on the shared host.
 // Each case retains the complete linked-choice, rank, artwork and a11y checks.

@@ -1,5 +1,6 @@
 import ChoiceInput from "./choice-input";
 import PriceEstimate from "./price-estimate";
+import { selectionSurchargeHint } from "./surcharge-hint";
 import { useLiveEstimate } from "./live-estimate";
 export { minorDisplay } from "./price-estimate";
 import { rankUnitsField, rankUnitsError, isRankGoalField } from "./rank-units";
@@ -79,6 +80,7 @@ export function Input({
   intake,
   choiceState,
   validationName,
+  surchargeNote,
 }: {
   field: Field;
   config: Configuration;
@@ -89,6 +91,7 @@ export function Input({
   rangeError?: string | undefined;
   choiceState?: ReturnType<typeof linkedChoiceState> | undefined;
   validationName?: string;
+  surchargeNote?: string | undefined;
   intake?:
     | { scope: string; pending: (busy: boolean) => void; onSignIn: () => void }
     | undefined;
@@ -120,7 +123,7 @@ export function Input({
     [name, field.label, id, register],
   );
   const description = [
-    field.help || choiceState?.hint ? helpId : "",
+    field.help || choiceState?.hint || surchargeNote ? helpId : "",
     error ? errorId : "",
   ]
     .filter(Boolean)
@@ -291,7 +294,28 @@ export function Input({
       </>
     );
   return (
-    <div ref={fieldRef} id={id + "-field"} className="catalog-input">
+    <div
+      ref={field.type === "cosmetics" ? undefined : fieldRef}
+      id={field.type === "cosmetics" ? undefined : id + "-field"}
+      className="catalog-input"
+    >
+      {field.type === "cosmetics" && (
+        <div
+          ref={fieldRef}
+          id={id + "-field"}
+          role="group"
+          aria-label={field.label + " feedback"}
+          aria-describedby={error ? errorId : undefined}
+          tabIndex={-1}
+          hidden={!error}
+        >
+          {error && (
+            <p id={errorId} className="field-error">
+              {error}
+            </p>
+          )}
+        </div>
+      )}
       {control}
       {choiceState?.restriction && (
         <Action
@@ -302,12 +326,13 @@ export function Input({
           {choiceState.restriction.label}
         </Action>
       )}
-      {(field.help || choiceState?.hint) && (
+      {(field.help || choiceState?.hint || surchargeNote) && (
         <p id={helpId} className="quiet">
-          {field.help} {choiceState?.hint}
+          {field.help} {choiceState?.hint}{" "}
+          {surchargeNote && <strong>{surchargeNote}</strong>}
         </p>
       )}
-      {error && !isWinRateField(field) && (
+      {error && !isWinRateField(field) && field.type !== "cosmetics" && (
         <p id={errorId} className="field-error">
           {error}
         </p>
@@ -736,6 +761,11 @@ function ConfigurationForm({
                       <Input
                         key={`${field.key}:${String(uploadEpoch)}`}
                         field={rankUnitsField(service, config, field, values)}
+                        surchargeNote={
+                          !variant
+                            ? selectionSurchargeHint(service, field.key, values)
+                            : undefined
+                        }
                         intake={
                           !previewPath &&
                           field.type === "attachment" &&

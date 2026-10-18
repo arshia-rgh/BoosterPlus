@@ -9,6 +9,7 @@ import CoverEditor, { ReviewedImage } from "./cover-editor";
 import { FieldValidation, ValidationSummary } from "../ui/form-validation";
 import { useActionValidation } from "../ui/action-validation";
 import { productIssues } from "./validation";
+import SummaryFields from "./summary-fields";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -436,6 +437,21 @@ function Editor({
                     />
                   </div>
                 ))}
+                <div
+                  hidden={section !== "details"}
+                  data-editor-section="details"
+                >
+                  <SummaryFields
+                    product={product}
+                    submission={submission.data ?? undefined}
+                    change={(next) => {
+                      setProduct(next);
+                      setDirty(true);
+                      setReviewed(false);
+                      setPreview(false);
+                    }}
+                  />
+                </div>
                 <div hidden={section !== "terms"} data-editor-section="terms">
                   <AgreementTemplate
                     label="Replace with approved buyer terms"

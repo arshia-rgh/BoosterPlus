@@ -86,6 +86,44 @@
 .account-key-facts dd {
   text-transform: capitalize;
 }
+.account-selling-point {
+  min-width: 0;
+  border-left: 2px solid #d9c8a8;
+  padding-left: 0.85rem;
+}
+.account-selling-point > span {
+  color: #d9c8a8;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.account-selling-point > p {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #ecf1ea;
+  overflow-wrap: anywhere;
+}
+.account-skin-collection {
+  margin-top: 1.5rem;
+}
+.account-skin-collection details {
+  border-bottom: 1px solid #355044;
+  padding: 0.75rem 0;
+}
+.account-skin-collection summary {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.account-skin-collection summary span {
+  color: #aec7b9;
+  font-size: 0.85rem;
+}
+.account-skin-collection ul {
+  padding-left: 1.25rem;
+  columns: 2 12rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
 .account-card-highlights {
   margin: 0;
   padding-top: 0.8rem;

@@ -34,6 +34,9 @@ test(
     sparse.images = [];
     sparse.product.title = "Account without screenshots";
     sparse.product.attributes = [];
+    delete sparse.product.hero_count;
+    delete sparse.product.skin_collection;
+    delete sparse.product.selling_point;
     const backend = createServer((req, res) => {
       const url = new URL(req.url, origin),
         path = url.pathname;
@@ -168,6 +171,13 @@ test(
         card.getByText("Includes 5% buyer commission"),
       ).toBeVisible();
       await expect(card.getByText("Rank", { exact: true })).toBeVisible();
+      await expect(card.locator(".account-key-facts")).toContainText(
+        "Heroes125",
+      );
+      await expect(card.locator(".account-key-facts")).toContainText("Skins2");
+      await expect(
+        card.getByText(account.product.selling_point, { exact: true }),
+      ).toBeVisible();
       await expect(page.getByText("No account screenshot")).toBeVisible();
       await card.scrollIntoViewIfNeeded();
       await page.screenshot({ path: `${evidence}/cards-${width}.png` });
@@ -179,6 +189,16 @@ test(
         purchase.locator(".account-total").getByText("USD 105.00"),
       ).toBeVisible();
       await expect(local.getByText(account.product.sale_terms)).toBeHidden();
+      await expect(
+        local
+          .locator(".account-description dd")
+          .filter({ hasText: /^(120|240)$/ }),
+      ).toHaveCount(0);
+      const collection = local.getByRole("region", { name: "Skin collection" });
+      await collection.locator("summary").click();
+      await expect(
+        collection.getByText("Yu Zhong", { exact: true }),
+      ).toBeVisible();
       await page.getByRole("button", { name: "View screenshot 2" }).click();
       await expect(page.getByText("Reviewed screenshot 2 of 2")).toBeVisible();
       const enlarge = page.getByRole("button", { name: "Enlarge screenshot" });
@@ -258,6 +278,7 @@ test(
       await expect(
         purchase.getByRole("button", { name: "Review this account purchase" }),
       ).toBeFocused();
+      await page.waitForLoadState("networkidle");
       await page.goto(`${origin}/games/mobile-legends/accounts/${sparse.id}`);
       await expect(page.getByText("No screenshots provided")).toBeVisible();
       await expect(
@@ -270,6 +291,7 @@ test(
         false,
       );
       // Explicitly mock the two access states; never create a live reservation.
+      await page.waitForLoadState("networkidle");
       await context.route(`**/api/v1/auth/portals/customer/session`, (route) =>
         route.fulfill({
           json: { ...session("customer", false), google_enabled: false },
@@ -287,6 +309,7 @@ test(
       await context.route(`**/api/v1/accounts/${account.id}`, (route) =>
         route.fulfill({ json: { ...account, state: "sold" } }),
       );
+      await page.waitForLoadState("networkidle");
       await page.reload();
       await expect(
         page.getByRole("region", { name: "Account availability" }),
@@ -294,6 +317,7 @@ test(
       await expect(
         page.getByRole("button", { name: "Reserve and continue to payment" }),
       ).toHaveCount(0);
+      await page.waitForLoadState("networkidle");
       await context.close();
     }
     assert.deepEqual(errors, []);

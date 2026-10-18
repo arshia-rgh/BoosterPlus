@@ -144,23 +144,26 @@ func offerView(row *ent.SellerOffer) (OfferView, error) {
 
 // Product contains only material explicitly reviewed for public account resale.
 type Product struct {
-	Commission           *accountpricing.Buyer `json:"commission,omitempty"`
-	Title                string                `json:"title"`
-	Description          string                `json:"description"`
-	Region               string                `json:"region"`
-	Rank                 string                `json:"rank"`
-	Attributes           []Attribute           `json:"attributes"`
-	MediaIDs             []string              `json:"media_ids"`
-	CoverMediaID         string                `json:"cover_media_id,omitempty"`
-	Currency             string                `json:"currency"`
-	AmountMinor          string                `json:"amount_minor"`
-	SaleTerms            string                `json:"sale_terms"`
-	TransferRequirements string                `json:"transfer_requirements"`
-	DisputeTerms         string                `json:"dispute_terms"`
-	AcknowledgementTerms string                `json:"acknowledgement_terms"`
-	DisputeHours         int                   `json:"dispute_hours"`
-	DeliveryMinHours     int                   `json:"delivery_min_hours"`
-	DeliveryMaxHours     int                   `json:"delivery_max_hours"`
+	HeroCount            *int                        `json:"hero_count,omitempty"`
+	SkinCollection       *catalog.CosmeticCollection `json:"skin_collection,omitempty"`
+	SellingPoint         string                      `json:"selling_point,omitempty"`
+	Commission           *accountpricing.Buyer       `json:"commission,omitempty"`
+	Title                string                      `json:"title"`
+	Description          string                      `json:"description"`
+	Region               string                      `json:"region"`
+	Rank                 string                      `json:"rank"`
+	Attributes           []Attribute                 `json:"attributes"`
+	MediaIDs             []string                    `json:"media_ids"`
+	CoverMediaID         string                      `json:"cover_media_id,omitempty"`
+	Currency             string                      `json:"currency"`
+	AmountMinor          string                      `json:"amount_minor"`
+	SaleTerms            string                      `json:"sale_terms"`
+	TransferRequirements string                      `json:"transfer_requirements"`
+	DisputeTerms         string                      `json:"dispute_terms"`
+	AcknowledgementTerms string                      `json:"acknowledgement_terms"`
+	DisputeHours         int                         `json:"dispute_hours"`
+	DeliveryMinHours     int                         `json:"delivery_min_hours"`
+	DeliveryMaxHours     int                         `json:"delivery_max_hours"`
 }
 
 // Attribute is an explicitly published account characteristic.
@@ -173,6 +176,17 @@ func productIssues(v Product) []catalog.Issue {
 	issues := []catalog.Issue{}
 	add := func(field, message string) {
 		issues = append(issues, catalog.Issue{Path: "product." + field, Message: message})
+	}
+	if v.HeroCount != nil && (*v.HeroCount < 0 || *v.HeroCount > 10000) {
+		add("hero_count", "Enter a whole hero count from 0 to 10,000.")
+	}
+	if v.SellingPoint != "" && !text(v.SellingPoint, 1, 180) {
+		add("selling_point", "Use a short selling point of 1–180 characters.")
+	}
+	if v.SkinCollection != nil {
+		for _, issue := range catalog.CosmeticCollectionIssues(*v.SkinCollection) {
+			add("skin_collection"+issue.Path, issue.Message)
+		}
 	}
 	for _, field := range []struct {
 		key, value string

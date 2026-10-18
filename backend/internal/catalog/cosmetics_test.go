@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"encoding/json"
+	"fmt"
 	"slices"
 	"testing"
 )
@@ -38,5 +39,28 @@ func TestSellerCosmeticsBoundsAndRepairPaths(t *testing.T) {
 	c.Services[0].Fields = append(c.Services[0].Fields, c.Intake.Fields[0])
 	if issues := ValidateConfiguration(c, false); len(issues) == 0 {
 		t.Fatal("cosmetics accepted as boost field")
+	}
+}
+
+func TestLargeAndEmptyCosmeticCollectionsRemainBounded(t *testing.T) {
+	t.Parallel()
+	collection := CosmeticCollection{Groups: []CosmeticGroup{}}
+	if issues := CosmeticCollectionIssues(collection); len(issues) > 0 {
+		t.Fatal("explicit zero rejected", issues)
+	}
+	names := make([]string, 500)
+	for i := range names {
+		names[i] = fmt.Sprintf("Skin %d", i+1)
+	}
+	collection.Groups = []CosmeticGroup{{Category: "Epic", Count: "500", Names: names}, {Category: "Collector", Count: "500", Names: names}}
+	if issues := CosmeticCollectionIssues(collection); len(issues) > 0 {
+		t.Fatal(issues)
+	}
+	collection.Groups = append(collection.Groups, CosmeticGroup{Category: "Rare", Count: "1", Names: []string{"One more"}})
+	if issues := CosmeticCollectionIssues(collection); len(issues) == 0 {
+		t.Fatal("unbounded collection accepted")
+	}
+	if issues := CosmeticCollectionIssues(CosmeticCollection{Groups: make([]CosmeticGroup, 61)}); len(issues) == 0 {
+		t.Fatal("unbounded groups accepted")
 	}
 }

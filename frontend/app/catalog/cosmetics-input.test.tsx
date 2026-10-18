@@ -8,53 +8,84 @@ import {
   useFormValidation,
   type FieldIssue,
 } from "../ui/form-validation";
-it("names the required collection and describes its first action with the error", async () => {
-  function Editor() {
-    const [issues, setIssues] = useState<FieldIssue[]>([]);
-    const validation = useFormValidation(issues, () => {
-      setIssues([]);
-    });
-    return (
-      <FieldValidation value={validation}>
-        <Input
-          field={{
-            ...emptyField("skins"),
-            label: "Skin collection",
-            type: "cosmetics",
-            stage: "order",
-          }}
-          config={emptyConfiguration("Game")}
-          required
-          value={undefined}
-          error={undefined}
-          change={() => undefined}
-        />
-        <button
-          onClick={() => {
-            setIssues([
-              { path: "skins", message: "Add at least one skin group." },
-            ]);
-          }}
-        >
-          Check collection
-        </button>
-      </FieldValidation>
+it.each([false, true])(
+  "focuses collection-wide feedback before empty/populated groups (populated=%s)",
+  async (populated) => {
+    function Editor() {
+      const [issues, setIssues] = useState<FieldIssue[]>([]);
+      const validation = useFormValidation(issues, () => {
+        setIssues([]);
+      });
+      return (
+        <FieldValidation value={validation}>
+          <Input
+            field={{
+              ...emptyField("skins"),
+              label: "Skin collection",
+              type: "cosmetics",
+              stage: "order",
+            }}
+            config={emptyConfiguration("Game")}
+            required
+            value={
+              populated
+                ? {
+                    groups: [
+                      {
+                        category: "Collector",
+                        count: "2",
+                        names: ["Aldous", "Yu Zhong"],
+                      },
+                    ],
+                  }
+                : undefined
+            }
+            error={undefined}
+            change={() => undefined}
+          />
+          <button
+            onClick={() => {
+              setIssues([
+                {
+                  path: "skins",
+                  message: populated
+                    ? "Keep the collection within 1,000 named items."
+                    : "Add at least one skin group.",
+                },
+              ]);
+            }}
+          >
+            Check collection
+          </button>
+        </FieldValidation>
+      );
+    }
+    render(<Editor />);
+    fireEvent.click(screen.getByRole("button", { name: "Check collection" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("group", { name: "Skin collection feedback" }),
+      ).toHaveFocus(),
     );
-  }
-  render(<Editor />);
-  fireEvent.click(screen.getByRole("button", { name: "Check collection" }));
-  await waitFor(() =>
+    expect(
+      screen.getByRole("group", { name: "Skin collection (required)" }),
+    ).toHaveAttribute("aria-invalid", "true");
     expect(
       screen.getByRole("button", { name: "Add skin group" }),
-    ).toHaveFocus(),
-  );
-  expect(
-    screen.getByRole("group", { name: "Skin collection (required)" }),
-  ).toHaveAttribute("aria-invalid", "true");
-  expect(
-    screen.getByRole("button", { name: "Add skin group" }),
-  ).toHaveAccessibleDescription("Add at least one skin group.");
-});
+    ).toHaveAccessibleDescription(
+      populated
+        ? "Keep the collection within 1,000 named items."
+        : "Add at least one skin group.",
+    );
+    expect(
+      screen.getByRole("group", { name: "Skin collection feedback" }),
+    ).toHaveAccessibleDescription(
+      populated
+        ? "Keep the collection within 1,000 named items."
+        : "Add at least one skin group.",
+    );
+  },
+);
 it("keeps exact skin names private and focuses a mismatching quantity", async () => {
   let saved: Answers[string] | undefined;
   function Editor() {

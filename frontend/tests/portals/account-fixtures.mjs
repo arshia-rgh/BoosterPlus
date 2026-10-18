@@ -10,6 +10,13 @@ export const account = {
     "/api/v1/accounts/00000000-0000-4000-8000-000000000166/images/1?release=00000000-0000-4000-8000-000000001166",
   ],
   product: {
+    hero_count: 125,
+    skin_collection: {
+      groups: [
+        { category: "Collector", count: "2", names: ["Aldous", "Yu Zhong"] },
+      ],
+    },
+    selling_point: "Collector skins for EXP mains.",
     title: "Mythic account \u00b7 Collector collection",
     description:
       "Synthetic account for layout review only.\nA clear description of the account and its collection belongs here.",

@@ -123,6 +123,16 @@ export const priceCaseSchema = z.object({
   outcome: z.string(),
   amount_minor: z.string(),
 });
+export const priceSurchargeSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  kind: z.enum(["percentage", "selection_count"]),
+  value: z.string(),
+  field: z.string(),
+  rates: list(z.object({ count: z.number().int(), percent: z.string() })),
+  when: conditionSchema.optional(),
+});
+export type PriceSurcharge = z.infer<typeof priceSurchargeSchema>;
 export const pricePlanSchema = z.object({
   currency: z.string(),
   base_minor: z.string(),
@@ -130,6 +140,7 @@ export const pricePlanSchema = z.object({
   maximum_minor: z.string(),
   rules: list(priceRuleSchema),
   cases: list(priceCaseSchema),
+  surcharges: list(priceSurchargeSchema).optional(),
 });
 export type PricePlan = z.infer<typeof pricePlanSchema>;
 export type PriceRule = z.infer<typeof priceRuleSchema>;
@@ -219,6 +230,14 @@ export const intakeSchema = z.object({
   description: z.string(),
   fields: list(fieldSchema),
   rules: list(ruleSchema),
+  summary: z
+    .object({
+      hero_count: z.string(),
+      skin_collection: z.string(),
+      selling_point: z.string(),
+      has_skins: z.string(),
+    })
+    .optional(),
 });
 export type IntakeForm = z.infer<typeof intakeSchema>;
 export const intakeService = (form: IntakeForm): Service => ({

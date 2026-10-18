@@ -128,6 +128,44 @@ export function productIssues(product: Product, publish = false): FieldIssue[] {
   const add = (path: string, message: string) => {
     issues.push({ path: `product.${path}`, message });
   };
+  if (product.hero_count !== undefined && !whole(product.hero_count, 0, 10000))
+    add("hero_count", "Enter a whole hero count from 0 to 10,000.");
+  if (product.selling_point && !text(product.selling_point, 1, 180))
+    add("selling_point", "Use a short selling point of 1–180 characters.");
+  if (product.skin_collection) {
+    const groups = product.skin_collection.groups,
+      categories = new Set<string>();
+    if (groups.length > 60) add("skin_collection", "Use up to 60 skin groups.");
+    let total = 0;
+    groups.forEach((group, i) => {
+      const p = `skin_collection.groups.${String(i)}`;
+      if (!text(group.category, 1, 120) || categories.has(group.category))
+        add(`${p}.category`, "Use a unique category of 1–120 characters.");
+      categories.add(group.category);
+      if (
+        !/^[1-9]\d{0,2}$/.test(group.count) ||
+        Number(group.count) > 500 ||
+        Number(group.count) !== group.names.length
+      )
+        add(
+          `${p}.count`,
+          "Enter 1–500; the quantity must match the number of names.",
+        );
+      if (
+        !group.names.length ||
+        group.names.length > 500 ||
+        new Set(group.names).size !== group.names.length ||
+        group.names.some((n) => !text(n, 1, 120) || n !== n.trim())
+      )
+        add(
+          `${p}.names`,
+          "Use unique names, one per line, up to 120 characters each.",
+        );
+      total += group.names.length;
+    });
+    if (total > 1000)
+      add("skin_collection", "Keep the collection within 1,000 named items.");
+  }
   for (const [field, value, min, max] of [
     ["title", product.title, 1, 120],
     ["description", product.description, 20, 4000],
