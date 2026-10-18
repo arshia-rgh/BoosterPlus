@@ -25,15 +25,23 @@ test(
         DEV_STOREFRONT_PORT: String(storefront),
         DEV_ADMIN_PORT: String(admin),
       },
-      stdio: "ignore",
+      stdio: ["ignore", "pipe", "pipe"],
     });
+    let startupOutput = "";
+    const capture = (chunk) => {
+      startupOutput = (startupOutput + chunk.toString()).slice(-16384);
+    };
+    child.stdout.on("data", capture);
+    child.stderr.on("data", capture);
     const closed = once(child, "exit");
     const origin = "http://127.0.0.1:" + storefront;
     try {
       let ready = false;
       for (let attempt = 0; attempt < 100; attempt++) {
         if (child.exitCode !== null)
-          throw new Error("Development launcher exited before readiness");
+          throw new Error(
+            `Development launcher exited before readiness (code ${child.exitCode}, signal ${child.signalCode}):\n${startupOutput}`,
+          );
         try {
           const result = await fetch(origin + "/admin/orders", {
             signal: AbortSignal.timeout(500),
@@ -49,7 +57,7 @@ test(
       }
       assert.ok(
         ready,
-        "Both Vite applications must start and render admin deep links through one origin",
+        `Both Vite applications must start and render admin deep links through one origin:\n${startupOutput}`,
       );
       const home = await fetch(origin);
       assert.equal(home.status, 200);
