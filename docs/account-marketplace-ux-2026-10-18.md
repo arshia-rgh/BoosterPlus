@@ -24,4 +24,13 @@ Private source snapshots and review evidence: `.cache/accounts166/`. Preserve th
 
 ## Release status
 
-Implementation and scoped UI qualification are complete; the release candidate is being prepared. No deployment, customer mutation, invoice, message, funds or publication test has occurred. Schema43, independent identities/MFA, checkout enabled, automatic outgoing transfers/deletion disabled, policies/catalogs and private webmail remain unchanged. Previous no-off-host recovery exceptions are consumed; any new activation requires its exact signed candidate and recovery decision after the usual CI, image, signature and server-preflight checks.
+Signed `95526065ba7e855ec2593953af78923c82404bb4` is deployed and verified. The owner explicitly approved “Deploy 9552606 account marketplace update without an off-host backup”; that exact-release exception is now consumed.
+
+- The corrected normal focused hook passed repository, contracts, formatting, type/lint, component, dependency-security, three-build and 14 server checks. Local component totals were 203 files /941 tests, including the untouched user-owned cameo fixture. The clean tracked CI checkout passed 202 files /931 component tests; CI39109229072 also passed the required service-free backend/security and deployment-configuration checks.
+- Image release39110634506 passed scans; the exact bundle's signature was verified before transfer and activation. The live preflight verified schema43, configuration, storage and dependency readiness without changing production traffic.
+- Activation completed normally. All eight checked application/mail services are healthy, stable99f60bd mounted configuration/tooling and private runtime-file hashes are unchanged, and public legal/retention payloads match the preflight baseline.
+- Four live read-only account journeys passed: Chromium/WebKit at 1440/390 pixels, covering cards, details, terms, signed-out purchase review, back/focus and overflow. Six live portal/browser cases passed for customer/admin/pro entry and unauthenticated private-data denial. No live reservation, customer-data mutation, email, invoice, funds or publication test occurred.
+
+Current manifest: `/srv/playora/releases/9552606/deployment.env`. Private deployment receipts: `/srv/playora-qualification/accounts166/preflight`; local source/review/test/signature/live evidence: `.cache/accounts166/release/`. The broader UX165 audit remains paused. No full suite was run.
+
+Schema43, independent identities/MFA, checkout enabled, automatic outgoing transfers/deletion disabled, authored listings, policies/catalogs and private webmail remain unchanged. Prior signed0dcc73c is retained for same-schema application rollback. Off-host recovery remains unavailable, and this approval is not reusable for a later release.
