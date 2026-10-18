@@ -8,7 +8,7 @@ import {
   useSearchParams,
 } from "react-router";
 import prepared from "./configuration.json";
-import currentPrepared from "../../../../docs/catalog/MLBB_PREFERENCES_2026-10-18.json";
+import currentPrepared from "./configuration167.json";
 import { configurationSchema, type Release } from "../../../app/catalog/model";
 import DynamicForm from "../../../app/catalog/dynamic-form";
 import ConfigurationImport from "../../../app/catalog/configuration-import";

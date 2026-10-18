@@ -3,6 +3,7 @@ package catalog
 import (
 	"encoding/json"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -12,6 +13,20 @@ func TestPreparedMLBBPreferences167(t *testing.T) {
 	raw, err := os.ReadFile("../../../docs/catalog/MLBB_PREFERENCES_2026-10-18.json")
 	if err != nil {
 		t.Fatal(err)
+	}
+	frontend, err := os.ReadFile("../../../frontend/tests/fixtures/mlbb-catalog/configuration167.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var reviewedData, frontendData any
+	if err = json.Unmarshal(raw, &reviewedData); err != nil {
+		t.Fatal(err)
+	}
+	if err = json.Unmarshal(frontend, &frontendData); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(reviewedData, frontendData) {
+		t.Fatal("frontend build-context fixture differs from the reviewed catalog")
 	}
 	var prepared struct {
 		Configuration Configuration `json:"configuration"`

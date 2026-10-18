@@ -4,7 +4,7 @@ import ConfigurationImport, {
   readConfigurationImport,
 } from "./configuration-import";
 import { emptyConfiguration } from "./model";
-import currentPrepared from "../../../docs/catalog/MLBB_PREFERENCES_2026-10-18.json";
+import currentPrepared from "../../tests/fixtures/mlbb-catalog/configuration167.json";
 
 const envelope = (configuration: unknown) => ({
   game_slug: "mobile-legends",
