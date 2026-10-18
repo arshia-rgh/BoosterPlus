@@ -220,3 +220,56 @@ it.each(["loading", "failed"])(
     expect(post).not.toHaveBeenCalled();
   },
 );
+
+it("shows the purchase action beside its total without requiring a read through all terms", () => {
+  mount();
+  const purchase = screen.getByRole("region", {
+    name: "Purchase this account",
+  });
+  expect(within(purchase).getByText("USD 50.00")).toBeVisible();
+  expect(
+    within(purchase).getByText(/Delivery: 1–24 hours after verified payment/),
+  ).toBeVisible();
+  expect(screen.getByText("Exact sale terms")).not.toBeVisible();
+  expect(
+    within(purchase).getByRole("button", {
+      name: "Review this account purchase",
+    }),
+  ).toBeVisible();
+  expect(post).not.toHaveBeenCalled();
+});
+
+it("does not allow an unavailable account to be reserved through a direct review link", () => {
+  vi.mocked(useResource).mockImplementation((path) => ({
+    data: path === "/auth/session" ? session : { ...listing, state: "sold" },
+    error: null,
+    loading: false,
+    reload: vi.fn(),
+  }));
+  mount("?step=review");
+  expect(screen.getByRole("status")).toHaveTextContent("This account is sold");
+  expect(
+    screen.queryByRole("button", { name: /Reserve and continue/ }),
+  ).not.toBeInTheDocument();
+  expect(post).not.toHaveBeenCalled();
+});
+
+it("preserves sign-in return to the same exact account review", () => {
+  vi.mocked(useResource).mockImplementation((path) => ({
+    data: path === "/auth/session" ? { ...session, user: null } : listing,
+    error: null,
+    loading: false,
+    reload: vi.fn(),
+  }));
+  mount("?step=review");
+  expect(
+    screen.getByRole("link", { name: "Sign in to reserve this account" }),
+  ).toHaveAttribute(
+    "href",
+    `/login?returnTo=${encodeURIComponent(`/accounts/${listing.id}?step=review`)}`,
+  );
+  expect(
+    screen.queryByRole("button", { name: /Reserve and continue/ }),
+  ).not.toBeInTheDocument();
+  expect(post).not.toHaveBeenCalled();
+});

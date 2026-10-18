@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { post } from "../identity/api";
 import { z } from "../validation";
 import { ErrorNotice } from "../catalog/controls";
-import { minorDisplay } from "../catalog/dynamic-form";
-import AccountGallery, { AccountImage } from "./gallery";
-import { ProductTerms } from "./market";
+import AccountGallery from "./gallery";
+import { AccountCard, ProductTerms } from "./account-presentation";
 import type { PublicListing } from "./model";
 
 /** Uses the same gallery/card presentation but only short-lived staff grants. */
@@ -99,31 +98,13 @@ export default function ListingPreview({
           keeps its selected order.
         </p>
       )}
-      <div className="service-tiles market-cards private-account-card-preview">
-        <article className="catalog-section market-card">
-          {coverURL ? (
-            <AccountImage
-              key={coverURL}
-              src={coverURL}
-              title={`${listing.product.title} — title image`}
-            />
-          ) : (
-            <div className="account-image-placeholder">
-              {listing.game}
-              {ids.length ? " · Preview image not loaded" : ""}
-            </div>
-          )}
-          <p>
-            {listing.game} · {listing.product.region}
-          </p>
-          <h4>{listing.product.title}</h4>
-          <p>{listing.product.rank}</p>
-          <p className="package-price">
-            {listing.product.currency}{" "}
-            {minorDisplay(listing.product.amount_minor)}
-          </p>
-          <span>Account card preview</span>
-        </article>
+      <div className="account-card-grid private-account-card-preview">
+        <AccountCard
+          listing={listing}
+          heading="h4"
+          preview
+          previewImage={coverURL}
+        />
       </div>
       <ProductTerms
         listing={{ ...listing, images }}

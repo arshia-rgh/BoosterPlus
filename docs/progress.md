@@ -1,5 +1,9 @@
 # Implementation progress
 
+## ACCOUNTS166 — account marketplace clarity (18 October 2026)
+
+Scoped improvements make public account cards, details and purchase review easier to scan: labeled facts, clear buyer totals, honest missing-image states, a nearby purchase action and complete terms in named disclosures. Shared private previews and accepted records use the same readable presentation. The wider UX165 audit stays paused. Seven focused component files /34 cases, all three portal builds and built Chromium/WebKit regressions passed at desktop/tablet/phone widths. Independent senior rendered review passed after resolving four scoped findings. Release preparation is underway; production has not changed. See [scope and evidence](account-marketplace-ux-2026-10-18.md).
+
 ## UX165 — confirmed fixes deployed; wider review paused (18 October 2026)
 
 The owner stopped the wider multi-role exploration and requested deployment of the issues already found. The resumable checkpoint is [checked and unchecked flows](redesign/reviews/UX165_PAUSED_CHECKPOINT.md); it separates persisted synthetic journeys, frontend-only fixtures and unexecuted branches for all five customers, admin/owner and booster. This is a partial review, not completion of every route or input combination.

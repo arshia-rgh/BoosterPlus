@@ -1,10 +1,28 @@
 import { useRef, useState } from "react";
 import { Action } from "../catalog/controls";
+import { ServiceIcon } from "../ui/service-icon";
 import "./marketplace.css";
+export function AccountImagePlaceholder({
+  game,
+  message = "No account screenshot",
+}: {
+  game?: string;
+  message?: string;
+}) {
+  return (
+    <div className="account-image-placeholder">
+      <span className="account-placeholder-icon">
+        <ServiceIcon kind="accounts" />
+      </span>
+      {game && <strong>{game}</strong>}
+      <span>{message}</span>
+    </div>
+  );
+}
 export function AccountImage({ src, title }: { src: string; title: string }) {
   const [failed, setFailed] = useState(false);
   return failed ? (
-    <div className="account-image-placeholder">Image unavailable</div>
+    <AccountImagePlaceholder message="Image unavailable" />
   ) : (
     <img
       src={src}
@@ -31,9 +49,12 @@ export default function AccountGallery({
   const src = images.at(activeIndex);
   if (!src)
     return (
-      <p className="quiet">
-        No public screenshots are included in this listing.
-      </p>
+      <div className="account-gallery-empty">
+        <AccountImagePlaceholder message="No screenshots provided" />
+        <p>
+          Use the account details below, or ask support for more information.
+        </p>
+      </div>
     );
   return (
     <section className="account-gallery" aria-label="Account screenshots">

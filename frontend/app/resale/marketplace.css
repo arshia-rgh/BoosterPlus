@@ -32,49 +32,6 @@
   font-size: 0.85rem;
   margin: 1.5rem 0 0.5rem;
 }
-.market-cards {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-}
-.market-cards .market-card {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  overflow: hidden;
-  border: 1px solid #395640;
-  border-radius: 1rem;
-  background: #13291e;
-}
-.market-card > img,
-.market-card > .account-image-placeholder {
-  width: calc(100% + 2rem);
-  max-width: none;
-  margin: -1rem -1rem 0.35rem;
-  aspect-ratio: 3/2;
-  object-fit: contain;
-  background: #09130e;
-  height: auto;
-}
-.market-card :is(h2, p) {
-  margin: 0;
-}
-.market-card h2 {
-  font-size: 1.15rem;
-  line-height: 1.4;
-}
-.market-card > .button:last-child {
-  margin-top: auto;
-  align-self: start;
-}
-.account-image-placeholder {
-  min-height: 10rem;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  color: #bdd4c3;
-  background: radial-gradient(ellipse, #274631, #0b1811);
-  text-align: center;
-}
 .account-gallery {
   max-width: 52rem;
   margin: 1.5rem 0;
@@ -354,13 +311,6 @@
   display: grid;
   gap: 1rem;
 }
-.service-tiles.private-account-card-preview,
-.experience
-  .service-tiles.private-account-card-preview.private-account-card-preview {
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 24rem;
-  margin-block: 1rem;
-}
 .cosmetic-collection {
   min-width: 0;
 }
@@ -390,29 +340,54 @@
   min-width: 0;
 }
 
-.market-card .package-price small {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  font-weight: 400;
-}
-
+/* Shared gallery states also appear in staff previews and accepted orders. */
 .account-image-placeholder {
+  min-height: 10rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  background: radial-gradient(ellipse at 50% 25%, #326c4c, #0b251d 75%);
+  gap: 0.65rem;
+  background: radial-gradient(ellipse at 50% 25%, #234936, #0c2018 80%);
+  color: #bed2c5;
   text-align: center;
   padding: 1.5rem;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
 }
-.account-placeholder-mark {
-  font-size: 3rem;
-  color: #9ce8bb;
+.account-image-placeholder strong {
+  color: #ecf1ea;
+  font-size: 1rem;
 }
-.account-image-placeholder small {
-  color: #b1c5ba;
-  font-weight: 400;
+.account-placeholder-icon {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  padding: 0.8rem;
+  color: #d9c8a8;
+  border: 1px solid #d9c8a833;
+  border-radius: 1rem;
+  margin-bottom: 0.35rem;
+}
+.account-placeholder-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.account-gallery-empty {
+  border: 1px solid #365447;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.account-gallery-empty .account-image-placeholder {
+  min-height: 12rem;
+}
+.account-gallery-empty > p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  padding: 0 1.25rem;
+  color: #bdd0c5;
+}
+.account-detail-media .account-gallery {
+  margin: 0;
 }

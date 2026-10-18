@@ -1,12 +1,11 @@
 import { Loading } from "../ui/loading";
 import { BuyerBreakdown } from "./commission-fields";
-import "../catalog/service-tiles.css";
 import { Anchor } from "../portal-router";
 import MarketFilters from "./market-filters";
 import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import {
   Link,
@@ -17,7 +16,6 @@ import {
   type Location,
 } from "../portal-router";
 import { Action, Check, ErrorNotice } from "../catalog/controls";
-import { minorDisplay } from "../catalog/dynamic-form";
 import { get, post, sessionSchema } from "../identity/api";
 import RequestJourney, {
   requestReference,
@@ -33,59 +31,17 @@ import {
   type PublicListing,
 } from "./model";
 
-import AccountGallery, { AccountImage } from "./gallery";
+import AccountGallery from "./gallery";
+import {
+  AccountCard,
+  AccountConditions,
+  AccountDescription,
+  AccountFacts,
+  AccountPrice,
+  AccountTitle,
+} from "./account-presentation";
+export { ProductTerms } from "./account-presentation";
 import "./marketplace.css";
-export function ProductTerms({
-  listing,
-  gallery,
-}: {
-  listing: PublicListing;
-  gallery?: ReactNode;
-}) {
-  const p = listing.product;
-  return (
-    <section className="catalog-section">
-      <h2>{p.title}</h2>
-      <p>
-        {listing.game} · {p.region} · {p.rank}
-      </p>
-      <p className="package-price">
-        {/^[1-9][0-9]{0,11}$/.test(p.amount_minor)
-          ? `${p.currency} ${minorDisplay(p.amount_minor)}`
-          : "Price awaiting review"}
-      </p>
-      {p.commission && <BuyerBreakdown price={p.commission} />}
-      <p className="payment-policy">{p.description}</p>
-      {gallery ?? <AccountGallery images={listing.images} title={p.title} />}
-      <dl className="account-attributes">
-        {p.attributes.map((a) => (
-          <div key={a.label}>
-            <dt>{a.label}</dt>
-            <dd>{a.value}</dd>
-          </div>
-        ))}
-      </dl>
-      <section className="account-sale-terms" aria-label="Sale terms">
-        <h3>Sale agreement</h3>
-        <p className="payment-policy">{p.sale_terms}</p>
-        <h3>Ownership transfer</h3>
-        <p className="payment-policy">{p.transfer_requirements}</p>
-        <p>
-          Delivery estimate: {p.delivery_min_hours}–{p.delivery_max_hours} hours
-          after verified payment.
-        </p>
-        <h3>Disputes and acknowledgement</h3>
-        <p className="payment-policy">{p.dispute_terms}</p>
-        <p>
-          Initial inspection: {p.dispute_hours} hours after you acknowledge
-          delivery. This period does not end your protected refund or support
-          rights.
-        </p>
-        <p className="payment-policy">{p.acknowledgement_terms}</p>
-      </section>
-    </section>
-  );
-}
 export function AccountMarket({ gameSlug }: { gameSlug?: string | undefined }) {
   const [params] = useSearchParams();
   return (
@@ -143,16 +99,15 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
       <p className="eyebrow">PLAYORA marketplace</p>
       <Heading>Find your next account</Heading>
       <p>
-        Reviewed listings with clear ownership terms, direct crypto checkout and
-        protected delivery.
+        Compare rank, region and price. Open an account for screenshots and
+        delivery terms.
       </p>
       <Link
         to={
           gameSlug ? `/sell/new?slug=${encodeURIComponent(gameSlug)}` : "/sell"
         }
       >
-        Sell an account{" "}
-        <span className="quiet">· Opens your seller workspace</span>
+        Sell an account →
       </Link>
       <details className="market-alerts">
         <summary>Get notified about accounts</summary>
@@ -246,56 +201,15 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
             {resource.data.items.length} accounts in this view
             {resource.data.next ? " · More available" : ""}
           </p>
-          <div className="package-grid market-cards service-tiles">
+          <div className="account-card-grid">
             {resource.data.items.map((row) => (
-              <article className="catalog-section market-card" key={row.id}>
-                {row.images[0] ? (
-                  <AccountImage
-                    key={row.images[0]}
-                    src={row.images[0]}
-                    title={`${row.product.title} — listing preview`}
-                  />
-                ) : (
-                  <div className="account-image-placeholder">
-                    <span
-                      aria-hidden="true"
-                      className="account-placeholder-mark"
-                    >
-                      ◈
-                    </span>
-                    <strong>{row.game}</strong>
-                    <small>No account screenshot</small>
-                  </div>
-                )}
-                <p>
-                  {row.game} · {row.product.region}
-                </p>
-                <CardHeading>
-                  <Link
-                    preventScrollReset
-                    to={`/games/${encodeURIComponent(row.slug)}/accounts/${row.id}`}
-                    state={{ market: query, globalMarket: !gameSlug }}
-                  >
-                    {row.product.title}
-                  </Link>
-                </CardHeading>
-                <p>{row.product.rank}</p>
-                <p className="package-price">
-                  {row.product.currency}{" "}
-                  {minorDisplay(row.product.amount_minor)}
-                  {row.product.commission && (
-                    <small>Includes 5% buyer commission</small>
-                  )}
-                </p>
-                <Link
-                  className="button compact"
-                  preventScrollReset
-                  to={`/games/${encodeURIComponent(row.slug)}/accounts/${row.id}`}
-                  state={{ market: query, globalMarket: !gameSlug }}
-                >
-                  Review account
-                </Link>
-              </article>
+              <AccountCard
+                key={row.id}
+                listing={row}
+                heading={CardHeading}
+                market={query}
+                globalMarket={!gameSlug}
+              />
             ))}
           </div>
           {!resource.data.items.length && (
@@ -352,11 +266,21 @@ function Purchase({
   const inspectionPanel = useRef<HTMLElement>(null);
   const previousReview = useRef(review);
   useEffect(() => {
-    if (review) reviewPanel.current?.focus();
-    else if (previousReview.current)
-      inspectionPanel.current
-        ?.querySelector<HTMLButtonElement>("button")
-        ?.focus();
+    const target = review
+      ? reviewPanel.current
+      : previousReview.current
+        ? inspectionPanel.current?.querySelector<HTMLButtonElement>("button")
+        : null;
+    if (target) {
+      target.focus({ preventScroll: true });
+      // The native focus scroll centers a tall panel and can hide its title.
+      // scrollIntoView honors the storefront's measured sticky-header inset.
+      if (typeof target.scrollIntoView === "function")
+        target.scrollIntoView({
+          block: review ? "start" : "center",
+          behavior: "instant",
+        });
+    }
     previousReview.current = review;
   }, [review]);
   function step(value: string) {
@@ -441,23 +365,36 @@ function Purchase({
   }
   if (listing.state !== "published")
     return (
-      <p role="status">
-        This account is {listing.state}.{" "}
+      <section
+        className="account-purchase account-unavailable"
+        aria-label="Account availability"
+      >
+        <AccountPrice listing={listing} />
+        <p role="status">
+          This account is {listing.state}. It cannot be reserved right now.
+        </p>
         <Link preventScrollReset to={base}>
           Browse available accounts
         </Link>
-        .
-      </p>
+      </section>
     );
   if (!review)
     return (
       <section
         ref={inspectionPanel}
-        className="catalog-section account-purchase"
+        className="account-purchase"
+        aria-label="Purchase this account"
       >
-        <p>
-          Review the exact account and transfer terms before reserving it.
-          Viewing this listing does not reserve stock or create a payment.
+        <AccountPrice listing={listing} />
+        {listing.product.commission && (
+          <details className="account-price-details">
+            <summary>Price breakdown</summary>
+            <BuyerBreakdown price={listing.product.commission} />
+          </details>
+        )}
+        <p className="account-delivery-note">
+          Delivery: {listing.product.delivery_min_hours}–
+          {listing.product.delivery_max_hours} hours after verified payment.
         </p>
         <Action
           onClick={() => {
@@ -466,6 +403,9 @@ function Purchase({
         >
           Review this account purchase
         </Action>
+        <p className="account-purchase-note">
+          Review the terms next. No reservation or payment yet.
+        </p>
       </section>
     );
   return (
@@ -473,36 +413,30 @@ function Purchase({
       ref={reviewPanel}
       tabIndex={-1}
       aria-label="Account purchase review"
-      className="catalog-section account-purchase"
+      className="account-purchase account-purchase-review"
     >
-      <Action
+      <button
+        type="button"
+        className="button compact account-secondary-action"
         disabled={busy}
         onClick={() => {
           step("");
         }}
       >
         Back to account listing
-      </Action>
-      <h3>{listing.product.title}</h3>
-      <p>
-        {listing.game} · {listing.product.region} · {listing.product.rank}
-      </p>
+      </button>
+      <AccountTitle listing={listing} />
+      <AccountFacts listing={listing} />
       {listing.product.commission ? (
         <BuyerBreakdown price={listing.product.commission} />
       ) : (
-        <p className="package-price">
-          {listing.product.currency}{" "}
-          {minorDisplay(listing.product.amount_minor)}
-        </p>
+        <AccountPrice listing={listing} />
       )}
-      <p>
-        One unique account. A reservation is confirmed only after the server
-        accepts this request.
-      </p>
-      <details>
-        <summary>Review the exact account and transfer terms</summary>
-        <ProductTerms listing={listing} />
+      <details className="account-review-description">
+        <summary>Account description & features</summary>
+        <AccountDescription listing={listing} />
       </details>
+      <AccountConditions listing={listing} />
       <ErrorNotice error={error ?? session.error} />
       {!!session.error && (
         <Action onClick={session.reload}>Check sign-in again</Action>
@@ -520,9 +454,8 @@ function Purchase({
         <fieldset disabled={busy || session.loading}>
           <legend>Reserve this exact account</legend>
           <p>
-            The next step opens this purchase in My account. Payment is required
-            before delivery. Your reservation has a limited checkout window; the
-            order page shows its expiry.
+            Next: your order opens in My account with a checkout deadline. Pay
+            before delivery can begin.
           </p>
           <Anchor href="/terms" target="_blank" rel="noopener noreferrer">
             Read site terms in a new tab
@@ -591,12 +524,19 @@ export function AccountProduct({
       >
         ← Account marketplace
       </Link>
-      <Heading>
-        {review ? "Review your account purchase" : "Account details"}
-      </Heading>
-      <Action disabled={resource.loading} onClick={resource.reload}>
-        Refresh listing availability and terms
-      </Action>
+      <div className="account-page-toolbar">
+        <Heading className={review ? undefined : "account-page-heading"}>
+          {review ? "Review your account purchase" : "Account details"}
+        </Heading>
+        <button
+          type="button"
+          className="button compact account-secondary-action"
+          disabled={resource.loading}
+          onClick={resource.reload}
+        >
+          Refresh availability & terms
+        </button>
+      </div>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading account…</p>}
       {!!resource.error && (
@@ -613,39 +553,60 @@ export function AccountProduct({
         (!gameSlug || resource.data.slug === gameSlug) && (
           <>
             <div hidden={review}>
-              <ProductTerms listing={resource.data} />
-              <FavoriteButton
-                kind="account"
-                slug={resource.data.slug}
-                pack={resource.data.id}
-              />
-              <details className="market-alerts">
-                <summary>Availability notifications</summary>
-                <AccountAlerts
-                  slug={resource.data.slug}
-                  listingID={resource.data.id}
+              <AccountTitle listing={resource.data} />
+            </div>
+            <div
+              className={`account-detail-layout${review ? " is-review" : ""}`}
+            >
+              <div className="account-detail-summary">
+                <div hidden={review}>
+                  <AccountFacts listing={resource.data} />
+                </div>
+                <RequestJourney>
+                  <Purchase
+                    key={resource.data.release_id}
+                    listing={resource.data}
+                    base={base}
+                  />
+                </RequestJourney>
+              </div>
+              <div hidden={review} className="account-detail-media">
+                <AccountGallery
+                  images={resource.data.images}
+                  title={resource.data.product.title}
                 />
-              </details>
-              <div className="catalog-actions">
+                <AccountDescription listing={resource.data} />
+              </div>
+              <div hidden={review} className="account-detail-help">
+                <div className="catalog-actions">
+                  <FavoriteButton
+                    kind="account"
+                    slug={resource.data.slug}
+                    pack={resource.data.id}
+                  />
+                  <Link
+                    to={`/support?listing=${encodeURIComponent(resource.data.id)}`}
+                  >
+                    Ask about this account
+                  </Link>
+                </div>
+                <details className="market-alerts">
+                  <summary>Availability notifications</summary>
+                  <AccountAlerts
+                    slug={resource.data.slug}
+                    listingID={resource.data.id}
+                  />
+                </details>
                 <Link
                   to={`/games/${resource.data.slug}/reviews?service=account_sale`}
                 >
-                  Account purchase reviews
-                </Link>
-                <Link
-                  to={`/support?listing=${encodeURIComponent(resource.data.id)}`}
-                >
-                  Ask about this account
+                  Account purchase reviews →
                 </Link>
               </div>
             </div>
-            <RequestJourney>
-              <Purchase
-                key={resource.data.release_id}
-                listing={resource.data}
-                base={base}
-              />
-            </RequestJourney>
+            <div hidden={review}>
+              <AccountConditions listing={resource.data} />
+            </div>
           </>
         )}
     </Container>

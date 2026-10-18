@@ -1,0 +1,411 @@
+/* Account browsing has its own rhythm; service tiles and hero prices must not
+   enlarge cards or squeeze their supporting text. */
+.account-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+.account-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #365447;
+  border-radius: 1.25rem;
+  background: #10291f;
+}
+.account-card-media {
+  aspect-ratio: 1;
+  background: #0b1b15;
+  border-bottom: 1px solid #365447;
+  overflow: hidden;
+}
+.account-card-media > :is(img, .account-image-placeholder) {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  margin: 0;
+}
+.account-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  padding: 1.25rem;
+  min-width: 0;
+}
+.account-card .account-game-label,
+.account-detail-title .account-game-label {
+  color: #d9c8a8;
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+  margin: 0;
+}
+.account-card :is(h2, h3, h4) {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: #f1f4ee;
+  overflow-wrap: anywhere;
+}
+.account-key-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+.account-key-facts > div,
+.account-detail-facts > div,
+.account-delivery-facts > div {
+  min-width: 0;
+}
+.account-key-facts dt,
+.account-detail-facts dt,
+.account-delivery-facts dt,
+.account-card-highlights dt {
+  color: #aec7b9;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.account-key-facts dd,
+.account-detail-facts dd,
+.account-delivery-facts dd {
+  margin: 0.3rem 0 0;
+  color: #f1f4ee;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+.account-key-facts dd {
+  text-transform: capitalize;
+}
+.account-card-highlights {
+  margin: 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid #355044;
+  display: grid;
+  gap: 0.45rem;
+}
+.account-card-highlights > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 0.75rem;
+  align-items: baseline;
+  overflow-wrap: anywhere;
+}
+.account-card-highlights dd {
+  margin: 0;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #ecf1ea;
+  line-height: 1.5;
+}
+.account-card-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #355044;
+  display: grid;
+  gap: 1rem;
+}
+.account-total {
+  display: grid;
+  gap: 0.3rem;
+  letter-spacing: normal;
+  overflow-wrap: anywhere;
+}
+.account-total > span {
+  font-size: 0.8rem;
+  color: #aec7b9;
+  line-height: 1.5;
+}
+.account-total strong {
+  color: #ece0c8;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+.account-total small {
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: #bdd0c5;
+}
+.account-card-footer > .button {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+}
+.account-page-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-block: 1rem 1.5rem;
+}
+.account-page-toolbar .account-secondary-action,
+.account-purchase-review .account-secondary-action {
+  color: #d9c8a8;
+  background: transparent;
+  border: 1px solid #627364;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.marketplace .account-page-toolbar .account-page-heading {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: #bdd0c5;
+  margin: 0;
+}
+.account-detail-title {
+  margin-block: 0 1.5rem;
+}
+.account-detail-title h3 {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+}
+.account-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+.account-detail-layout > * {
+  min-width: 0;
+}
+.account-detail-layout > .account-detail-summary {
+  grid-column: 2;
+  grid-row: 1;
+}
+.account-detail-layout > .account-detail-media {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+.account-detail-layout > .account-detail-help {
+  grid-column: 2;
+  grid-row: 2;
+  padding-block: 0;
+}
+.account-detail-layout.is-review {
+  display: block;
+  max-width: 48rem;
+  margin-inline: auto;
+}
+.account-detail-summary > .account-key-facts,
+.account-detail-summary > div:not([hidden]) > .account-key-facts {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid #365447;
+  border-radius: 1rem;
+  background: #10291f;
+  margin-bottom: 1rem;
+}
+.account-purchase {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid #627364;
+  border-radius: 1rem;
+  background: #132e23;
+  overflow-wrap: anywhere;
+}
+.account-purchase > .button {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+.account-purchase .account-delivery-note {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #d6e5db;
+  margin-block: 1.25rem;
+}
+.account-purchase .account-purchase-note {
+  margin: 0.8rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #bdd0c5;
+}
+.account-price-details {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+}
+.account-detail-summary .account-price-breakdown > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.account-detail-summary .account-price-breakdown dd {
+  text-align: right;
+}
+.account-detail-help {
+  padding-block: 1.25rem;
+  font-size: 0.875rem;
+}
+.account-detail-help .catalog-actions {
+  margin: 0;
+}
+.account-detail-help .market-alerts {
+  margin-block: 1rem;
+}
+.account-description {
+  margin-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+}
+.account-description h3,
+.account-conditions h3 {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 0 0 1rem;
+  letter-spacing: normal;
+}
+.account-description p,
+.account-conditions .payment-policy {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #cfddd4;
+  margin-block: 0.75rem;
+  max-width: 75ch;
+}
+.account-detail-facts {
+  margin: 1.25rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.5rem;
+}
+.account-detail-facts > div {
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #355044;
+}
+.account-conditions {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #10251ddd;
+  border: 1px solid #365447;
+  border-radius: 1rem;
+  overflow-wrap: anywhere;
+}
+.account-delivery-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+}
+.account-conditions .account-rights-note {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-block: 1rem 1.25rem;
+  color: #bdd0c5;
+}
+.account-conditions.account-conditions > details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid #365447;
+  border-radius: 0;
+}
+.account-conditions summary,
+.account-review-description > summary {
+  padding-block: 0.9rem;
+  font-size: 0.95rem;
+  color: #ece0c8;
+}
+.account-purchase-review > .account-secondary-action {
+  margin-bottom: 1.25rem;
+}
+.account-purchase-review {
+  scroll-margin-top: 1rem;
+}
+.account-purchase-review .account-key-facts {
+  margin-bottom: 1rem;
+}
+.account-purchase-review .account-conditions {
+  padding: 1rem;
+  margin-block: 1rem;
+}
+.account-purchase-review fieldset {
+  margin: 1.5rem 0 0;
+  padding: 1rem;
+  border: 1px solid #627364;
+  border-radius: 0.75rem;
+  min-width: 0;
+}
+.account-purchase-review fieldset > p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-top: 0;
+}
+.account-purchase-review fieldset > .button {
+  width: 100%;
+  margin: 1rem 0 0;
+}
+.account-card-grid.private-account-card-preview {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 23rem;
+  margin-block: 1.5rem;
+}
+.account-preview-label {
+  font-size: 0.85rem;
+  color: #bdd0c5;
+}
+.account-detail-record {
+  margin-block: 1.5rem;
+}
+@media (max-width: 1100px) {
+  .account-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1000px) and (min-height: 601px) {
+  /* Reserve the header inset before the independently hydrated activity widget
+     makes the mobile header sticky. Its observer refines the actual height. */
+  .account-purchase-review {
+    scroll-margin-top: calc(var(--activity-header-height, 120px) + 1rem);
+  }
+}
+@media (max-width: 760px) {
+  .account-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-detail-layout
+    > :is(
+      .account-detail-summary,
+      .account-detail-media,
+      .account-detail-help
+    ) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .account-detail-help {
+    padding-bottom: 0;
+  }
+  .account-conditions {
+    padding: 1.1rem;
+  }
+}
+@media (max-width: 580px) {
+  .account-card-grid,
+  .account-delivery-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-card {
+    max-width: 26rem;
+  }
+  .account-card-body {
+    padding: 1.1rem;
+  }
+}
