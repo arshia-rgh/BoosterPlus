@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 43
+const SchemaVersion = 44
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_connections.current_import": "varchar", "supplier_connections.purchases_enabled": "tinyint", "supplier_imports.metadata": "json", "supplier_imports.lease_until": "datetime", "supplier_items.data": "json", "supplier_prices.override_minor": "varchar",
 		"conversation_forms.fields": "json", "conversation_forms.answers": "json", "conversation_forms.recipient_id": "varchar", "conversation_forms.state": "enum", "conversation_forms.expires_at": "datetime",
 		"conversation_messages.form_id": "varchar", "account_deliveries.form_id": "varchar", "secret_bundles.purpose": "enum",
 		"manual_payouts.snapshot": "json", "manual_payouts.transaction_hash": "varchar", "manual_payouts.request_hash": "varchar", "manual_payouts.completed_at": "datetime",
@@ -110,6 +111,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_items.supplier_import_product": "import_id,product_id", "supplier_prices.supplier_offer_price": "connection_id,product_id,offer_id", "supplier_prices.supplier_bound_product": "shop_product_id",
 		"conversation_forms.PRIMARY": "id", "conversation_forms.conversation_form_request": "conversation_id,created_by,request_key",
 		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",
 		"identity_namespace_splits.PRIMARY": "original_id", "identity_namespace_splits.identity_split_customer": "customer_id", "identity_namespace_splits.identity_split_booster": "booster_id",

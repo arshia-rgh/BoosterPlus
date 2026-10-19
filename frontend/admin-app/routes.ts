@@ -32,6 +32,7 @@ export default [
   route("admin?/news/:id", "../app/routes/news-editor-admin.tsx"),
   route("admin?/shop", "../app/routes/shop-admin.tsx"),
   route("admin?/shop/orders", "../app/routes/shop-orders-admin.tsx"),
+  route("admin?/shop/suppliers", "../app/routes/suppliers-admin.tsx"),
   route("admin?/shop/:id", "../app/routes/shop-product-admin.tsx"),
   route("admin?/catalog", "../app/routes/catalog-admin.tsx"),
   route("admin?/coupons", "../app/routes/coupon-admin.tsx"),

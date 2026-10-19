@@ -76,6 +76,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierconnection"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierimport"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
@@ -3033,6 +3037,190 @@ func init() {
 	submissionevent.DefaultID = submissioneventDescID.Default.(func() string)
 	// submissionevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	submissionevent.IDValidator = submissioneventDescID.Validators[0].(func(string) error)
+	supplierconnectionFields := schema.SupplierConnection{}.Fields()
+	_ = supplierconnectionFields
+	// supplierconnectionDescVersion is the schema descriptor for version field.
+	supplierconnectionDescVersion := supplierconnectionFields[1].Descriptor()
+	// supplierconnection.DefaultVersion holds the default value on creation for the version field.
+	supplierconnection.DefaultVersion = supplierconnectionDescVersion.Default.(int)
+	// supplierconnectionDescMarkupBps is the schema descriptor for markup_bps field.
+	supplierconnectionDescMarkupBps := supplierconnectionFields[2].Descriptor()
+	// supplierconnection.DefaultMarkupBps holds the default value on creation for the markup_bps field.
+	supplierconnection.DefaultMarkupBps = supplierconnectionDescMarkupBps.Default.(int)
+	// supplierconnectionDescCurrentImport is the schema descriptor for current_import field.
+	supplierconnectionDescCurrentImport := supplierconnectionFields[3].Descriptor()
+	// supplierconnection.DefaultCurrentImport holds the default value on creation for the current_import field.
+	supplierconnection.DefaultCurrentImport = supplierconnectionDescCurrentImport.Default.(string)
+	// supplierconnection.CurrentImportValidator is a validator for the "current_import" field. It is called by the builders before save.
+	supplierconnection.CurrentImportValidator = supplierconnectionDescCurrentImport.Validators[0].(func(string) error)
+	// supplierconnectionDescActiveImport is the schema descriptor for active_import field.
+	supplierconnectionDescActiveImport := supplierconnectionFields[4].Descriptor()
+	// supplierconnection.DefaultActiveImport holds the default value on creation for the active_import field.
+	supplierconnection.DefaultActiveImport = supplierconnectionDescActiveImport.Default.(string)
+	// supplierconnection.ActiveImportValidator is a validator for the "active_import" field. It is called by the builders before save.
+	supplierconnection.ActiveImportValidator = supplierconnectionDescActiveImport.Validators[0].(func(string) error)
+	// supplierconnectionDescPurchasesEnabled is the schema descriptor for purchases_enabled field.
+	supplierconnectionDescPurchasesEnabled := supplierconnectionFields[5].Descriptor()
+	// supplierconnection.DefaultPurchasesEnabled holds the default value on creation for the purchases_enabled field.
+	supplierconnection.DefaultPurchasesEnabled = supplierconnectionDescPurchasesEnabled.Default.(bool)
+	// supplierconnectionDescUpdatedAt is the schema descriptor for updated_at field.
+	supplierconnectionDescUpdatedAt := supplierconnectionFields[6].Descriptor()
+	// supplierconnection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	supplierconnection.DefaultUpdatedAt = supplierconnectionDescUpdatedAt.Default.(func() time.Time)
+	// supplierconnectionDescID is the schema descriptor for id field.
+	supplierconnectionDescID := supplierconnectionFields[0].Descriptor()
+	// supplierconnection.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierconnection.IDValidator = supplierconnectionDescID.Validators[0].(func(string) error)
+	supplierimportFields := schema.SupplierImport{}.Fields()
+	_ = supplierimportFields
+	// supplierimportDescConnectionID is the schema descriptor for connection_id field.
+	supplierimportDescConnectionID := supplierimportFields[1].Descriptor()
+	// supplierimport.ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
+	supplierimport.ConnectionIDValidator = supplierimportDescConnectionID.Validators[0].(func(string) error)
+	// supplierimportDescCreatedBy is the schema descriptor for created_by field.
+	supplierimportDescCreatedBy := supplierimportFields[2].Descriptor()
+	// supplierimport.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	supplierimport.CreatedByValidator = supplierimportDescCreatedBy.Validators[0].(func(string) error)
+	// supplierimportDescState is the schema descriptor for state field.
+	supplierimportDescState := supplierimportFields[4].Descriptor()
+	// supplierimport.DefaultState holds the default value on creation for the state field.
+	supplierimport.DefaultState = supplierimportDescState.Default.(string)
+	// supplierimport.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	supplierimport.StateValidator = supplierimportDescState.Validators[0].(func(string) error)
+	// supplierimportDescLeaseOwner is the schema descriptor for lease_owner field.
+	supplierimportDescLeaseOwner := supplierimportFields[5].Descriptor()
+	// supplierimport.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
+	supplierimport.DefaultLeaseOwner = supplierimportDescLeaseOwner.Default.(string)
+	// supplierimport.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
+	supplierimport.LeaseOwnerValidator = supplierimportDescLeaseOwner.Validators[0].(func(string) error)
+	// supplierimportDescProductCount is the schema descriptor for product_count field.
+	supplierimportDescProductCount := supplierimportFields[8].Descriptor()
+	// supplierimport.DefaultProductCount holds the default value on creation for the product_count field.
+	supplierimport.DefaultProductCount = supplierimportDescProductCount.Default.(int)
+	// supplierimportDescOfferCount is the schema descriptor for offer_count field.
+	supplierimportDescOfferCount := supplierimportFields[9].Descriptor()
+	// supplierimport.DefaultOfferCount holds the default value on creation for the offer_count field.
+	supplierimport.DefaultOfferCount = supplierimportDescOfferCount.Default.(int)
+	// supplierimportDescIssue is the schema descriptor for issue field.
+	supplierimportDescIssue := supplierimportFields[10].Descriptor()
+	// supplierimport.DefaultIssue holds the default value on creation for the issue field.
+	supplierimport.DefaultIssue = supplierimportDescIssue.Default.(string)
+	// supplierimport.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	supplierimport.IssueValidator = supplierimportDescIssue.Validators[0].(func(string) error)
+	// supplierimportDescCreatedAt is the schema descriptor for created_at field.
+	supplierimportDescCreatedAt := supplierimportFields[11].Descriptor()
+	// supplierimport.DefaultCreatedAt holds the default value on creation for the created_at field.
+	supplierimport.DefaultCreatedAt = supplierimportDescCreatedAt.Default.(func() time.Time)
+	// supplierimportDescUpdatedAt is the schema descriptor for updated_at field.
+	supplierimportDescUpdatedAt := supplierimportFields[12].Descriptor()
+	// supplierimport.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	supplierimport.DefaultUpdatedAt = supplierimportDescUpdatedAt.Default.(func() time.Time)
+	// supplierimportDescID is the schema descriptor for id field.
+	supplierimportDescID := supplierimportFields[0].Descriptor()
+	// supplierimport.DefaultID holds the default value on creation for the id field.
+	supplierimport.DefaultID = supplierimportDescID.Default.(func() string)
+	// supplierimport.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierimport.IDValidator = supplierimportDescID.Validators[0].(func(string) error)
+	supplieritemFields := schema.SupplierItem{}.Fields()
+	_ = supplieritemFields
+	// supplieritemDescImportID is the schema descriptor for import_id field.
+	supplieritemDescImportID := supplieritemFields[1].Descriptor()
+	// supplieritem.ImportIDValidator is a validator for the "import_id" field. It is called by the builders before save.
+	supplieritem.ImportIDValidator = supplieritemDescImportID.Validators[0].(func(string) error)
+	// supplieritemDescConnectionID is the schema descriptor for connection_id field.
+	supplieritemDescConnectionID := supplieritemFields[2].Descriptor()
+	// supplieritem.ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
+	supplieritem.ConnectionIDValidator = supplieritemDescConnectionID.Validators[0].(func(string) error)
+	// supplieritemDescProductID is the schema descriptor for product_id field.
+	supplieritemDescProductID := supplieritemFields[3].Descriptor()
+	// supplieritem.ProductIDValidator is a validator for the "product_id" field. It is called by the builders before save.
+	supplieritem.ProductIDValidator = supplieritemDescProductID.Validators[0].(func(string) error)
+	// supplieritemDescGameID is the schema descriptor for game_id field.
+	supplieritemDescGameID := supplieritemFields[4].Descriptor()
+	// supplieritem.DefaultGameID holds the default value on creation for the game_id field.
+	supplieritem.DefaultGameID = supplieritemDescGameID.Default.(string)
+	// supplieritem.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	supplieritem.GameIDValidator = supplieritemDescGameID.Validators[0].(func(string) error)
+	// supplieritemDescCategoryID is the schema descriptor for category_id field.
+	supplieritemDescCategoryID := supplieritemFields[5].Descriptor()
+	// supplieritem.DefaultCategoryID holds the default value on creation for the category_id field.
+	supplieritem.DefaultCategoryID = supplieritemDescCategoryID.Default.(string)
+	// supplieritem.CategoryIDValidator is a validator for the "category_id" field. It is called by the builders before save.
+	supplieritem.CategoryIDValidator = supplieritemDescCategoryID.Validators[0].(func(string) error)
+	// supplieritemDescTitle is the schema descriptor for title field.
+	supplieritemDescTitle := supplieritemFields[6].Descriptor()
+	// supplieritem.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	supplieritem.TitleValidator = supplieritemDescTitle.Validators[0].(func(string) error)
+	// supplieritemDescCreatedAt is the schema descriptor for created_at field.
+	supplieritemDescCreatedAt := supplieritemFields[8].Descriptor()
+	// supplieritem.DefaultCreatedAt holds the default value on creation for the created_at field.
+	supplieritem.DefaultCreatedAt = supplieritemDescCreatedAt.Default.(func() time.Time)
+	// supplieritemDescID is the schema descriptor for id field.
+	supplieritemDescID := supplieritemFields[0].Descriptor()
+	// supplieritem.DefaultID holds the default value on creation for the id field.
+	supplieritem.DefaultID = supplieritemDescID.Default.(func() string)
+	// supplieritem.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplieritem.IDValidator = supplieritemDescID.Validators[0].(func(string) error)
+	supplierpriceFields := schema.SupplierPrice{}.Fields()
+	_ = supplierpriceFields
+	// supplierpriceDescConnectionID is the schema descriptor for connection_id field.
+	supplierpriceDescConnectionID := supplierpriceFields[1].Descriptor()
+	// supplierprice.ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
+	supplierprice.ConnectionIDValidator = supplierpriceDescConnectionID.Validators[0].(func(string) error)
+	// supplierpriceDescProductID is the schema descriptor for product_id field.
+	supplierpriceDescProductID := supplierpriceFields[2].Descriptor()
+	// supplierprice.ProductIDValidator is a validator for the "product_id" field. It is called by the builders before save.
+	supplierprice.ProductIDValidator = supplierpriceDescProductID.Validators[0].(func(string) error)
+	// supplierpriceDescOfferID is the schema descriptor for offer_id field.
+	supplierpriceDescOfferID := supplierpriceFields[3].Descriptor()
+	// supplierprice.OfferIDValidator is a validator for the "offer_id" field. It is called by the builders before save.
+	supplierprice.OfferIDValidator = supplierpriceDescOfferID.Validators[0].(func(string) error)
+	// supplierpriceDescVersion is the schema descriptor for version field.
+	supplierpriceDescVersion := supplierpriceFields[4].Descriptor()
+	// supplierprice.DefaultVersion holds the default value on creation for the version field.
+	supplierprice.DefaultVersion = supplierpriceDescVersion.Default.(int)
+	// supplierpriceDescOverrideMinor is the schema descriptor for override_minor field.
+	supplierpriceDescOverrideMinor := supplierpriceFields[6].Descriptor()
+	// supplierprice.DefaultOverrideMinor holds the default value on creation for the override_minor field.
+	supplierprice.DefaultOverrideMinor = supplierpriceDescOverrideMinor.Default.(string)
+	// supplierprice.OverrideMinorValidator is a validator for the "override_minor" field. It is called by the builders before save.
+	supplierprice.OverrideMinorValidator = supplierpriceDescOverrideMinor.Validators[0].(func(string) error)
+	// supplierpriceDescGameID is the schema descriptor for game_id field.
+	supplierpriceDescGameID := supplierpriceFields[7].Descriptor()
+	// supplierprice.DefaultGameID holds the default value on creation for the game_id field.
+	supplierprice.DefaultGameID = supplierpriceDescGameID.Default.(string)
+	// supplierprice.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	supplierprice.GameIDValidator = supplierpriceDescGameID.Validators[0].(func(string) error)
+	// supplierpriceDescRegion is the schema descriptor for region field.
+	supplierpriceDescRegion := supplierpriceFields[8].Descriptor()
+	// supplierprice.DefaultRegion holds the default value on creation for the region field.
+	supplierprice.DefaultRegion = supplierpriceDescRegion.Default.(string)
+	// supplierprice.RegionValidator is a validator for the "region" field. It is called by the builders before save.
+	supplierprice.RegionValidator = supplierpriceDescRegion.Validators[0].(func(string) error)
+	// supplierpriceDescDeliveryMethod is the schema descriptor for delivery_method field.
+	supplierpriceDescDeliveryMethod := supplierpriceFields[9].Descriptor()
+	// supplierprice.DefaultDeliveryMethod holds the default value on creation for the delivery_method field.
+	supplierprice.DefaultDeliveryMethod = supplierpriceDescDeliveryMethod.Default.(string)
+	// supplierprice.DeliveryMethodValidator is a validator for the "delivery_method" field. It is called by the builders before save.
+	supplierprice.DeliveryMethodValidator = supplierpriceDescDeliveryMethod.Validators[0].(func(string) error)
+	// supplierpriceDescShopProductID is the schema descriptor for shop_product_id field.
+	supplierpriceDescShopProductID := supplierpriceFields[10].Descriptor()
+	// supplierprice.ShopProductIDValidator is a validator for the "shop_product_id" field. It is called by the builders before save.
+	supplierprice.ShopProductIDValidator = supplierpriceDescShopProductID.Validators[0].(func(string) error)
+	// supplierpriceDescUpdatedBy is the schema descriptor for updated_by field.
+	supplierpriceDescUpdatedBy := supplierpriceFields[11].Descriptor()
+	// supplierprice.UpdatedByValidator is a validator for the "updated_by" field. It is called by the builders before save.
+	supplierprice.UpdatedByValidator = supplierpriceDescUpdatedBy.Validators[0].(func(string) error)
+	// supplierpriceDescUpdatedAt is the schema descriptor for updated_at field.
+	supplierpriceDescUpdatedAt := supplierpriceFields[12].Descriptor()
+	// supplierprice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	supplierprice.DefaultUpdatedAt = supplierpriceDescUpdatedAt.Default.(func() time.Time)
+	// supplierpriceDescID is the schema descriptor for id field.
+	supplierpriceDescID := supplierpriceFields[0].Descriptor()
+	// supplierprice.DefaultID holds the default value on creation for the id field.
+	supplierprice.DefaultID = supplierpriceDescID.Default.(func() string)
+	// supplierprice.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierprice.IDValidator = supplierpriceDescID.Validators[0].(func(string) error)
 	transferattemptFields := schema.TransferAttempt{}.Fields()
 	_ = transferattemptFields
 	// transferattemptDescTransferID is the schema descriptor for transfer_id field.

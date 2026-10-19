@@ -849,6 +849,54 @@ func (f SubmissionEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubmissionEventMutation", m)
 }
 
+// The SupplierConnectionFunc type is an adapter to allow the use of ordinary
+// function as SupplierConnection mutator.
+type SupplierConnectionFunc func(context.Context, *ent.SupplierConnectionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierConnectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierConnectionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierConnectionMutation", m)
+}
+
+// The SupplierImportFunc type is an adapter to allow the use of ordinary
+// function as SupplierImport mutator.
+type SupplierImportFunc func(context.Context, *ent.SupplierImportMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierImportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierImportMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierImportMutation", m)
+}
+
+// The SupplierItemFunc type is an adapter to allow the use of ordinary
+// function as SupplierItem mutator.
+type SupplierItemFunc func(context.Context, *ent.SupplierItemMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierItemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierItemMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierItemMutation", m)
+}
+
+// The SupplierPriceFunc type is an adapter to allow the use of ordinary
+// function as SupplierPrice mutator.
+type SupplierPriceFunc func(context.Context, *ent.SupplierPriceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierPriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierPriceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPriceMutation", m)
+}
+
 // The TransferAttemptFunc type is an adapter to allow the use of ordinary
 // function as TransferAttempt mutator.
 type TransferAttemptFunc func(context.Context, *ent.TransferAttemptMutation) (ent.Value, error)

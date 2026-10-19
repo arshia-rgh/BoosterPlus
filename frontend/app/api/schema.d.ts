@@ -5653,6 +5653,125 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/shop/suppliers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    get: operations["getSupplierConnections"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/suppliers/{connection}/library": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    get: operations["getSupplierLibrary"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/suppliers/{connection}/imports": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    post: operations["createSupplierImport"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/suppliers/{connection}/markup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    post: operations["setSupplierMarkup"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/suppliers/{connection}/prices": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    post: operations["setSupplierOfferPrice"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/supplier-imports/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    get: operations["getSupplierImport"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/supplier-imports/{id}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private supplier catalog management; does not publish products or purchase from suppliers */
+    post: operations["cancelSupplierImport"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8700,6 +8819,151 @@ export interface components {
         percent: string;
       }[];
       when?: components["schemas"]["CatalogCondition"];
+    };
+    SupplierConnection: {
+      /** @enum {string} */
+      id:
+        | "nexus-sandbox"
+        | "nexus-production"
+        | "vendoria-test"
+        | "vendoria-production";
+      testing: boolean;
+      configured: boolean;
+      version: number;
+      markup_bps: number;
+      current_import: string;
+      active_import: string;
+      purchases_enabled: boolean;
+    };
+    SupplierConnections: {
+      items: components["schemas"]["SupplierConnection"][];
+    };
+    SupplierImport: {
+      id: string;
+      /** @enum {string} */
+      connection:
+        | "nexus-sandbox"
+        | "nexus-production"
+        | "vendoria-test"
+        | "vendoria-production";
+      /** @enum {string} */
+      state: "queued" | "loading" | "complete" | "failed" | "cancelled";
+      product_count: number;
+      offer_count: number;
+      issue: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    SupplierPriceInput: {
+      /** Format: uuid */
+      import_id: string;
+      version: number;
+      markup_bps: number | null;
+      override_minor: string;
+      game_id: string;
+      region: string;
+      /** @enum {string} */
+      delivery_method: "" | "id" | "account" | "code";
+    };
+    SupplierPricing: {
+      version: number;
+      markup_bps: number | null;
+      effective_markup_bps: number;
+      override_minor: string;
+      cost_usd: string;
+      preview_quantity: string;
+      preview_amount_minor: string;
+      game_id: string;
+      region: string;
+      delivery_method: string;
+      shop_product_id: string;
+      issues: string[];
+    };
+    SupplierOffer: {
+      id: string;
+      name: string;
+      available: boolean;
+      suggested_delivery: string;
+      fields: {
+        id: string;
+        label: string;
+        kind: string;
+        required: boolean;
+        secret: boolean;
+        transient: boolean;
+        min: string | null;
+        max: string | null;
+        step: string | null;
+        options: {
+          id: string;
+          label: string;
+        }[];
+      }[];
+      quantity: {
+        kind: string;
+        min: string;
+        max: string;
+        step: string;
+      };
+      pricing: components["schemas"]["SupplierPricing"];
+      instruction: string;
+      code_request: boolean;
+      google_prompt: boolean;
+      game_exit: boolean;
+    };
+    SupplierProduct: {
+      id: string;
+      game_id: string;
+      category_id: string;
+      name: string;
+      icon: string;
+      description: string;
+      kind: string;
+      platform: string;
+      instruction_available: boolean;
+      region: {
+        global: boolean;
+        regions: string[] | null;
+        countries: string[] | null;
+        excluded_countries: string[] | null;
+        policy_kind: string;
+        policy_countries: string[] | null;
+      };
+      review_issues: string[];
+      offers: components["schemas"]["SupplierOffer"][];
+    };
+    SupplierLibrary: {
+      connection: components["schemas"]["SupplierConnection"];
+      import: components["schemas"]["SupplierImport"] | null;
+      games: {
+        id: string;
+        name: string;
+        icon: string;
+        closed: boolean;
+      }[];
+      categories: {
+        id: string;
+        game_id: string;
+        name: string;
+      }[];
+      items: components["schemas"]["SupplierProduct"][];
+      next: string;
+    };
+    SupplierProblem: {
+      code: string;
+    };
+    SupplierImportRequest: {
+      /** Format: uuid */
+      request_id: string;
+    };
+    SupplierMarkupInput: {
+      version: number;
+      markup_bps: number;
+    };
+    SupplierOfferSettings: {
+      product_id: string;
+      offer_id: string;
+      settings: components["schemas"]["SupplierPriceInput"];
     };
   };
   responses: never;
@@ -24877,6 +25141,267 @@ export interface operations {
         };
         content: {
           "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSupplierConnections: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierConnections"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  getSupplierLibrary: {
+    parameters: {
+      query?: {
+        import?: string;
+        after?: string;
+        q?: string;
+        game?: string;
+        category?: string;
+      };
+      header?: never;
+      path: {
+        connection:
+          | "nexus-sandbox"
+          | "nexus-production"
+          | "vendoria-test"
+          | "vendoria-production";
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierLibrary"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  createSupplierImport: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        connection:
+          | "nexus-sandbox"
+          | "nexus-production"
+          | "vendoria-test"
+          | "vendoria-production";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SupplierImportRequest"];
+      };
+    };
+    responses: {
+      /** @description Private supplier projection */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierImport"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  setSupplierMarkup: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        connection:
+          | "nexus-sandbox"
+          | "nexus-production"
+          | "vendoria-test"
+          | "vendoria-production";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SupplierMarkupInput"];
+      };
+    };
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierConnection"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  setSupplierOfferPrice: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        connection:
+          | "nexus-sandbox"
+          | "nexus-production"
+          | "vendoria-test"
+          | "vendoria-production";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SupplierOfferSettings"];
+      };
+    };
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierPricing"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  getSupplierImport: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierImport"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  cancelSupplierImport: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": Record<string, never>;
+      };
+    };
+    responses: {
+      /** @description Private supplier projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierImport"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or supplier availability rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
         };
       };
     };

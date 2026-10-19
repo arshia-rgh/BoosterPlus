@@ -216,6 +216,18 @@ type StaffProfile func(*sql.Selector)
 // SubmissionEvent is the predicate function for submissionevent builders.
 type SubmissionEvent func(*sql.Selector)
 
+// SupplierConnection is the predicate function for supplierconnection builders.
+type SupplierConnection func(*sql.Selector)
+
+// SupplierImport is the predicate function for supplierimport builders.
+type SupplierImport func(*sql.Selector)
+
+// SupplierItem is the predicate function for supplieritem builders.
+type SupplierItem func(*sql.Selector)
+
+// SupplierPrice is the predicate function for supplierprice builders.
+type SupplierPrice func(*sql.Selector)
+
 // TransferAttempt is the predicate function for transferattempt builders.
 type TransferAttempt func(*sql.Selector)
 

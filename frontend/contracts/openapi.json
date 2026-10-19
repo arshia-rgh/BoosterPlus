@@ -24876,6 +24876,443 @@
           }
         }
       }
+    },
+    "/api/v1/admin/shop/suppliers": {
+      "get": {
+        "operationId": "getSupplierConnections",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierConnections"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/suppliers/{connection}/library": {
+      "get": {
+        "operationId": "getSupplierLibrary",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "connection",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nexus-sandbox",
+                "nexus-production",
+                "vendoria-test",
+                "vendoria-production"
+              ]
+            }
+          },
+          {
+            "name": "import",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 240
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 240
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 240
+            }
+          },
+          {
+            "name": "game",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 240
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 240
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierLibrary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/suppliers/{connection}/imports": {
+      "post": {
+        "operationId": "createSupplierImport",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "connection",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nexus-sandbox",
+                "nexus-production",
+                "vendoria-test",
+                "vendoria-production"
+              ]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierImport"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierImportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/suppliers/{connection}/markup": {
+      "post": {
+        "operationId": "setSupplierMarkup",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "connection",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nexus-sandbox",
+                "nexus-production",
+                "vendoria-test",
+                "vendoria-production"
+              ]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierConnection"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierMarkupInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/suppliers/{connection}/prices": {
+      "post": {
+        "operationId": "setSupplierOfferPrice",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "connection",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "nexus-sandbox",
+                "nexus-production",
+                "vendoria-test",
+                "vendoria-production"
+              ]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierPricing"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierOfferSettings"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/supplier-imports/{id}": {
+      "get": {
+        "operationId": "getSupplierImport",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierImport"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/supplier-imports/{id}/cancel": {
+      "post": {
+        "operationId": "cancelSupplierImport",
+        "summary": "Private supplier catalog management; does not publish products or purchase from suppliers",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private supplier projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierImport"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or supplier availability rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -35931,6 +36368,690 @@
           },
           "when": {
             "$ref": "#/components/schemas/CatalogCondition"
+          }
+        }
+      },
+      "SupplierConnection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "testing",
+          "configured",
+          "version",
+          "markup_bps",
+          "current_import",
+          "active_import",
+          "purchases_enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "nexus-sandbox",
+              "nexus-production",
+              "vendoria-test",
+              "vendoria-production"
+            ]
+          },
+          "testing": {
+            "type": "boolean"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "markup_bps": {
+            "type": "integer"
+          },
+          "current_import": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "active_import": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "purchases_enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SupplierConnections": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplierConnection"
+            }
+          }
+        }
+      },
+      "SupplierImport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "connection",
+          "state",
+          "product_count",
+          "offer_count",
+          "issue",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "connection": {
+            "type": "string",
+            "enum": [
+              "nexus-sandbox",
+              "nexus-production",
+              "vendoria-test",
+              "vendoria-production"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": ["queued", "loading", "complete", "failed", "cancelled"]
+          },
+          "product_count": {
+            "type": "integer"
+          },
+          "offer_count": {
+            "type": "integer"
+          },
+          "issue": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SupplierPriceInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "import_id",
+          "version",
+          "markup_bps",
+          "override_minor",
+          "game_id",
+          "region",
+          "delivery_method"
+        ],
+        "properties": {
+          "import_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "markup_bps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "override_minor": {
+            "type": "string",
+            "pattern": "^$|^[1-9][0-9]{0,11}$"
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "delivery_method": {
+            "type": "string",
+            "enum": ["", "id", "account", "code"]
+          }
+        }
+      },
+      "SupplierPricing": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "markup_bps",
+          "effective_markup_bps",
+          "override_minor",
+          "cost_usd",
+          "preview_quantity",
+          "preview_amount_minor",
+          "game_id",
+          "region",
+          "delivery_method",
+          "shop_product_id",
+          "issues"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "markup_bps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effective_markup_bps": {
+            "type": "integer"
+          },
+          "override_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "cost_usd": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "preview_quantity": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "preview_amount_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "delivery_method": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "shop_product_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        }
+      },
+      "SupplierOffer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "available",
+          "suggested_delivery",
+          "fields",
+          "quantity",
+          "pricing",
+          "instruction",
+          "code_request",
+          "google_prompt",
+          "game_exit"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "suggested_delivery": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "kind",
+                "required",
+                "secret",
+                "transient",
+                "min",
+                "max",
+                "step",
+                "options"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "kind": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "secret": {
+                  "type": "boolean"
+                },
+                "transient": {
+                  "type": "boolean"
+                },
+                "min": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "max": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "step": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["id", "label"],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 240
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "quantity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "min", "max", "step"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "maxLength": 50
+              },
+              "min": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "max": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "step": {
+                "type": "string",
+                "maxLength": 80
+              }
+            }
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/SupplierPricing"
+          },
+          "instruction": {
+            "type": "string",
+            "maxLength": 64000
+          },
+          "code_request": {
+            "type": "boolean"
+          },
+          "google_prompt": {
+            "type": "boolean"
+          },
+          "game_exit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SupplierProduct": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "game_id",
+          "category_id",
+          "name",
+          "icon",
+          "description",
+          "kind",
+          "platform",
+          "instruction_available",
+          "region",
+          "review_issues",
+          "offers"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "category_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 64000
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "instruction_available": {
+            "type": "boolean"
+          },
+          "region": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "global",
+              "regions",
+              "countries",
+              "excluded_countries",
+              "policy_kind",
+              "policy_countries"
+            ],
+            "properties": {
+              "global": {
+                "type": "boolean"
+              },
+              "regions": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 1000
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "countries": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 1000
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "excluded_countries": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 1000
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "policy_kind": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "policy_countries": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 1000
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "review_issues": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplierOffer"
+            }
+          }
+        }
+      },
+      "SupplierLibrary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connection",
+          "import",
+          "games",
+          "categories",
+          "items",
+          "next"
+        ],
+        "properties": {
+          "connection": {
+            "$ref": "#/components/schemas/SupplierConnection"
+          },
+          "import": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupplierImport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "name", "icon", "closed"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "icon": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "closed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "game_id", "name"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "game_id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplierProduct"
+            }
+          },
+          "next": {
+            "type": "string",
+            "maxLength": 36
+          }
+        }
+      },
+      "SupplierProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 100
+          }
+        }
+      },
+      "SupplierImportRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_id"],
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SupplierMarkupInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "markup_bps"],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "markup_bps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        }
+      },
+      "SupplierOfferSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["product_id", "offer_id", "settings"],
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "offer_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SupplierPriceInput"
           }
         }
       }

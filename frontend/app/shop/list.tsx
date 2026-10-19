@@ -60,6 +60,9 @@ export function ShopProducts() {
       </p>
       <CreateProduct search={query.toString()} />
       <section aria-label="Find shop products">
+        <Link className="button" to="/admin/shop/suppliers">
+          Supplier catalog
+        </Link>
         <Link className="button" to="/admin/shop/orders">
           Shop delivery queue
         </Link>

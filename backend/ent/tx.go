@@ -154,6 +154,14 @@ type Tx struct {
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
 	SubmissionEvent *SubmissionEventClient
+	// SupplierConnection is the client for interacting with the SupplierConnection builders.
+	SupplierConnection *SupplierConnectionClient
+	// SupplierImport is the client for interacting with the SupplierImport builders.
+	SupplierImport *SupplierImportClient
+	// SupplierItem is the client for interacting with the SupplierItem builders.
+	SupplierItem *SupplierItemClient
+	// SupplierPrice is the client for interacting with the SupplierPrice builders.
+	SupplierPrice *SupplierPriceClient
 	// TransferAttempt is the client for interacting with the TransferAttempt builders.
 	TransferAttempt *TransferAttemptClient
 	// TransferEvent is the client for interacting with the TransferEvent builders.
@@ -365,6 +373,10 @@ func (tx *Tx) init() {
 	tx.SiteSetting = NewSiteSettingClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)
 	tx.SubmissionEvent = NewSubmissionEventClient(tx.config)
+	tx.SupplierConnection = NewSupplierConnectionClient(tx.config)
+	tx.SupplierImport = NewSupplierImportClient(tx.config)
+	tx.SupplierItem = NewSupplierItemClient(tx.config)
+	tx.SupplierPrice = NewSupplierPriceClient(tx.config)
 	tx.TransferAttempt = NewTransferAttemptClient(tx.config)
 	tx.TransferEvent = NewTransferEventClient(tx.config)
 	tx.TransferObservation = NewTransferObservationClient(tx.config)

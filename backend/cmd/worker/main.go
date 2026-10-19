@@ -24,6 +24,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/supply"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
@@ -112,6 +113,11 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	go func() { defer close(financeDone); finance.RunMaintenance(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-financeDone }()
 	handlers["news.publish"] = news.New(client, auth, nil).PublishHandler()
+	supplierStore, supplierErr := supply.FromConfig(client, auth, cfg.Suppliers)
+	if supplierErr != nil {
+		return supplierErr
+	}
+	handlers["supplier.import"] = supplierStore.ImportHandler()
 	handlers["payments.refund"] = finance.RefundHandler()
 	handlers["payments.payout"] = finance.RefundHandler()
 	handlers["payments.seller_obligation"] = finance.SellerObligationHandler()

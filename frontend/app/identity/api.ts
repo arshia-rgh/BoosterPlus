@@ -87,6 +87,22 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "supplier_invalid",
+    "Review the highlighted supplier settings and try again.",
+  ],
+  [
+    "supplier_conflict",
+    "The catalog or saved settings changed. Your edits are still here. Discard them to reload the latest saved settings, then review before saving again.",
+  ],
+  [
+    "supplier_unavailable",
+    "The supplier connection is unavailable. Your last complete catalog and saved settings remain unchanged.",
+  ],
+  [
+    "supplier_not_found",
+    "This supplier record is no longer available. Refresh the private catalog.",
+  ],
+  [
     "payment_below_minimum",
     "This order is below NOWPayments’ current minimum for the selected network. No checkout was created. Contact support to review the order amount or choose another available network.",
   ],

@@ -2265,6 +2265,120 @@ var (
 			},
 		},
 	}
+	// SupplierConnectionsColumns holds the columns for the "supplier_connections" table.
+	SupplierConnectionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 32},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "markup_bps", Type: field.TypeInt, Default: 1500},
+		{Name: "current_import", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "active_import", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "purchases_enabled", Type: field.TypeBool, Default: false},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SupplierConnectionsTable holds the schema information for the "supplier_connections" table.
+	SupplierConnectionsTable = &schema.Table{
+		Name:       "supplier_connections",
+		Columns:    SupplierConnectionsColumns,
+		PrimaryKey: []*schema.Column{SupplierConnectionsColumns[0]},
+	}
+	// SupplierImportsColumns holds the columns for the "supplier_imports" table.
+	SupplierImportsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "auth_version", Type: field.TypeInt64},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "queued"},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+		{Name: "product_count", Type: field.TypeInt, Default: 0},
+		{Name: "offer_count", Type: field.TypeInt, Default: 0},
+		{Name: "issue", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SupplierImportsTable holds the schema information for the "supplier_imports" table.
+	SupplierImportsTable = &schema.Table{
+		Name:       "supplier_imports",
+		Columns:    SupplierImportsColumns,
+		PrimaryKey: []*schema.Column{SupplierImportsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_import_history",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierImportsColumns[1], SupplierImportsColumns[11], SupplierImportsColumns[0]},
+			},
+		},
+	}
+	// SupplierItemsColumns holds the columns for the "supplier_items" table.
+	SupplierItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "import_id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "product_id", Type: field.TypeString, Size: 240},
+		{Name: "game_id", Type: field.TypeString, Size: 240, Default: ""},
+		{Name: "category_id", Type: field.TypeString, Size: 240, Default: ""},
+		{Name: "title", Type: field.TypeString, Size: 500},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SupplierItemsTable holds the schema information for the "supplier_items" table.
+	SupplierItemsTable = &schema.Table{
+		Name:       "supplier_items",
+		Columns:    SupplierItemsColumns,
+		PrimaryKey: []*schema.Column{SupplierItemsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_import_product",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierItemsColumns[1], SupplierItemsColumns[3]},
+			},
+			{
+				Name:    "supplier_import_game",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierItemsColumns[1], SupplierItemsColumns[4], SupplierItemsColumns[0]},
+			},
+			{
+				Name:    "supplier_import_category",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierItemsColumns[1], SupplierItemsColumns[5], SupplierItemsColumns[0]},
+			},
+		},
+	}
+	// SupplierPricesColumns holds the columns for the "supplier_prices" table.
+	SupplierPricesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "product_id", Type: field.TypeString, Size: 240},
+		{Name: "offer_id", Type: field.TypeString, Size: 240},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "markup_bps", Type: field.TypeInt, Nullable: true},
+		{Name: "override_minor", Type: field.TypeString, Size: 12, Default: ""},
+		{Name: "game_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "region", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "delivery_method", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "shop_product_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "updated_by", Type: field.TypeString, Size: 36},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SupplierPricesTable holds the schema information for the "supplier_prices" table.
+	SupplierPricesTable = &schema.Table{
+		Name:       "supplier_prices",
+		Columns:    SupplierPricesColumns,
+		PrimaryKey: []*schema.Column{SupplierPricesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_offer_price",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPricesColumns[1], SupplierPricesColumns[2], SupplierPricesColumns[3]},
+			},
+			{
+				Name:    "supplier_bound_product",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPricesColumns[10]},
+			},
+		},
+	}
 	// TransferAttemptsColumns holds the columns for the "transfer_attempts" table.
 	TransferAttemptsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2499,6 +2613,10 @@ var (
 		SiteSettingsTable,
 		StaffProfilesTable,
 		SubmissionEventsTable,
+		SupplierConnectionsTable,
+		SupplierImportsTable,
+		SupplierItemsTable,
+		SupplierPricesTable,
 		TransferAttemptsTable,
 		TransferEventsTable,
 		TransferObservationsTable,
