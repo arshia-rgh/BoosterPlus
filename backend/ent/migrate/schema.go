@@ -1823,14 +1823,14 @@ var (
 	// SecretBundlesColumns holds the columns for the "secret_bundles" table.
 	SecretBundlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
-		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer", "chat_form"}},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer", "chat_form", "supplier_input", "supplier_delivery"}},
 		{Name: "resource_id", Type: field.TypeString, Size: 36},
 		{Name: "owner_id", Type: field.TypeString, Size: 36},
 		{Name: "cipher_owner_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "key_version", Type: field.TypeString, Size: 32},
 		{Name: "wrapped_key", Type: field.TypeBytes, Nullable: true},
-		{Name: "encrypted_payload", Type: field.TypeBytes, Nullable: true},
+		{Name: "encrypted_payload", Type: field.TypeBytes, Nullable: true, SchemaType: map[string]string{"mysql": "mediumblob"}},
 		{Name: "state", Type: field.TypeEnum, Enums: []string{"active", "deleted"}, Default: "active"},
 		{Name: "request_key", Type: field.TypeString, Size: 36},
 		{Name: "request_hash", Type: field.TypeString, Size: 64},
@@ -2379,6 +2379,87 @@ var (
 			},
 		},
 	}
+	// SupplierPurchasesColumns holds the columns for the "supplier_purchases" table.
+	SupplierPurchasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "contract_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "product", Type: field.TypeJSON},
+		{Name: "offer_id", Type: field.TypeString, Size: 240},
+		{Name: "quantity", Type: field.TypeString, Size: 64},
+		{Name: "maximum_cost", Type: field.TypeString, Size: 64},
+		{Name: "amount_minor", Type: field.TypeString, Size: 12},
+		{Name: "input_secret_id", Type: field.TypeString, Size: 36},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "awaiting_payment"},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "post_claimed", Type: field.TypeBool, Default: false},
+		{Name: "provider_id", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "candidate_provider_id", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "next_check", Type: field.TypeTime},
+		{Name: "scan_offset", Type: field.TypeInt, Default: 0},
+		{Name: "issue", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "provider_status", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "actual_cost", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "delivered", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "delivery_secret_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SupplierPurchasesTable holds the schema information for the "supplier_purchases" table.
+	SupplierPurchasesTable = &schema.Table{
+		Name:       "supplier_purchases",
+		Columns:    SupplierPurchasesColumns,
+		PrimaryKey: []*schema.Column{SupplierPurchasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_purchase_order",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPurchasesColumns[1]},
+			},
+			{
+				Name:    "supplier_purchase_contract",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPurchasesColumns[2]},
+			},
+			{
+				Name:    "supplier_purchase_provider",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPurchasesColumns[4], SupplierPurchasesColumns[14]},
+			},
+			{
+				Name:    "supplier_purchase_due",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierPurchasesColumns[18], SupplierPurchasesColumns[0]},
+			},
+		},
+	}
+	// SupplierSignalsColumns holds the columns for the "supplier_signals" table.
+	SupplierSignalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "digest", Type: field.TypeString, Size: 64},
+		{Name: "purchase_id", Type: field.TypeString, Size: 36},
+		{Name: "provider_id", Type: field.TypeString, Size: 32},
+		{Name: "signal_type", Type: field.TypeString, Size: 80},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SupplierSignalsTable holds the schema information for the "supplier_signals" table.
+	SupplierSignalsTable = &schema.Table{
+		Name:       "supplier_signals",
+		Columns:    SupplierSignalsColumns,
+		PrimaryKey: []*schema.Column{SupplierSignalsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_signal_digest",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierSignalsColumns[1], SupplierSignalsColumns[2]},
+			},
+		},
+	}
 	// TransferAttemptsColumns holds the columns for the "transfer_attempts" table.
 	TransferAttemptsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2617,6 +2698,8 @@ var (
 		SupplierImportsTable,
 		SupplierItemsTable,
 		SupplierPricesTable,
+		SupplierPurchasesTable,
+		SupplierSignalsTable,
 		TransferAttemptsTable,
 		TransferEventsTable,
 		TransferObservationsTable,

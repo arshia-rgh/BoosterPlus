@@ -107,9 +107,11 @@ type Purpose string
 
 // Purpose values.
 const (
-	PurposeGameAccess      Purpose = "game_access"
-	PurposeAccountTransfer Purpose = "account_transfer"
-	PurposeChatForm        Purpose = "chat_form"
+	PurposeGameAccess       Purpose = "game_access"
+	PurposeAccountTransfer  Purpose = "account_transfer"
+	PurposeChatForm         Purpose = "chat_form"
+	PurposeSupplierInput    Purpose = "supplier_input"
+	PurposeSupplierDelivery Purpose = "supplier_delivery"
 )
 
 func (pu Purpose) String() string {
@@ -119,7 +121,7 @@ func (pu Purpose) String() string {
 // PurposeValidator is a validator for the "purpose" field enum values. It is called by the builders before save.
 func PurposeValidator(pu Purpose) error {
 	switch pu {
-	case PurposeGameAccess, PurposeAccountTransfer, PurposeChatForm:
+	case PurposeGameAccess, PurposeAccountTransfer, PurposeChatForm, PurposeSupplierInput, PurposeSupplierDelivery:
 		return nil
 	default:
 		return fmt.Errorf("secretbundle: invalid enum value for purpose field: %q", pu)

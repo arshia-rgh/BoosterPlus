@@ -897,6 +897,30 @@ func (f SupplierPriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPriceMutation", m)
 }
 
+// The SupplierPurchaseFunc type is an adapter to allow the use of ordinary
+// function as SupplierPurchase mutator.
+type SupplierPurchaseFunc func(context.Context, *ent.SupplierPurchaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierPurchaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierPurchaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPurchaseMutation", m)
+}
+
+// The SupplierSignalFunc type is an adapter to allow the use of ordinary
+// function as SupplierSignal mutator.
+type SupplierSignalFunc func(context.Context, *ent.SupplierSignalMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierSignalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierSignalMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierSignalMutation", m)
+}
+
 // The TransferAttemptFunc type is an adapter to allow the use of ordinary
 // function as TransferAttempt mutator.
 type TransferAttemptFunc func(context.Context, *ent.TransferAttemptMutation) (ent.Value, error)

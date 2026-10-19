@@ -24,6 +24,14 @@ func TestWebhookUsesRawBytesAndExactEnvironmentToken(t *testing.T) {
 	if err != nil || !signal.Recognized || signal.Connection != NexusSandbox || signal.OrderID != "42" || signal.Reference != testReference || len(signal.Digest) != 64 {
 		t.Fatal("valid callback rejected")
 	}
+	plainDigest := sha256.Sum256([]byte(raw))
+	if signal.Digest != sign(raw, testToken) || signal.Digest == hex.EncodeToString(plainDigest[:]) {
+		t.Fatal("receipt fingerprint exposes an unkeyed credential-body hash")
+	}
+	upper, e := client.VerifyWebhook([]byte(raw), []string{strings.ToUpper(sign(raw, testToken))})
+	if e != nil || upper.Digest != signal.Digest {
+		t.Fatal("signature casing bypassed replay identity", e)
+	}
 	for _, signatures := range [][]string{nil, {""}, {sign(raw, testToken), sign(raw, testToken)}, {sign(raw, "another-test-token")}, {sign(strings.ReplaceAll(raw, ", ", ","), testToken)}} {
 		if _, err = client.VerifyWebhook([]byte(raw), signatures); !errors.Is(err, ErrSignature) {
 			t.Fatal("unverified callback accepted")

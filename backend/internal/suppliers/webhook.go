@@ -60,8 +60,10 @@ func (c *Client) VerifyWebhook(raw []byte, signatures []string) (Signal, error) 
 	if decode(raw, &wire) != nil || !plain(wire.Type, 1, 80) {
 		return Signal{}, ErrEvidence
 	}
-	digest := sha256.Sum256(raw)
-	out := Signal{Connection: c.connection, Digest: hex.EncodeToString(digest[:]), Type: wire.Type}
+	// Use the authenticated fingerprint rather than an unkeyed hash of a body
+	// that may contain low-entropy delivery credentials. The receipt must not
+	// become an offline guessing oracle if the application database is exposed.
+	out := Signal{Connection: c.connection, Digest: hex.EncodeToString(mac.Sum(nil)), Type: wire.Type}
 	allowed := []string{"statusChange", "codeRequest", "googlePrompt", "gameExitRequest"}
 	if c.connection.nexus() {
 		allowed = []string{"statusChange", "robloxSuperpassInGame", "robloxLogpassVerification"}

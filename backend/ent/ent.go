@@ -86,6 +86,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierimport"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/suppliersignal"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
@@ -225,6 +227,8 @@ func checkColumn(t, c string) error {
 			supplierimport.Table:           supplierimport.ValidColumn,
 			supplieritem.Table:             supplieritem.ValidColumn,
 			supplierprice.Table:            supplierprice.ValidColumn,
+			supplierpurchase.Table:         supplierpurchase.ValidColumn,
+			suppliersignal.Table:           suppliersignal.ValidColumn,
 			transferattempt.Table:          transferattempt.ValidColumn,
 			transferevent.Table:            transferevent.ValidColumn,
 			transferobservation.Table:      transferobservation.ValidColumn,

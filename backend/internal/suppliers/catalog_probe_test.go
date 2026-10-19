@@ -4,7 +4,6 @@ package suppliers
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -27,10 +26,19 @@ func checkCapturedCatalogs(t *testing.T, nexusConnection, vendoriaConnection Con
 	if root == "" {
 		t.Fatal("SUPPLIER_CATALOG_PROBE_DIR is required")
 	}
+	captures, err := os.OpenRoot(root)
+	if err != nil {
+		t.Fatal("capture directory unavailable")
+	}
+	t.Cleanup(func() {
+		if e := captures.Close(); e != nil {
+			t.Error(e)
+		}
+	})
 	read := func(name string) []byte {
 		t.Helper()
-		raw, err := os.ReadFile(filepath.Join(root, name))
-		if err != nil {
+		raw, readErr := captures.ReadFile(name)
+		if readErr != nil {
 			t.Fatal("captured catalog missing")
 		}
 		return raw

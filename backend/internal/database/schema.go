@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 44
+const SchemaVersion = 45
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_purchases.product": "json", "supplier_purchases.post_claimed": "tinyint", "supplier_purchases.maximum_cost": "varchar", "supplier_purchases.lease_until": "datetime", "supplier_signals.digest": "char",
 		"supplier_connections.current_import": "varchar", "supplier_connections.purchases_enabled": "tinyint", "supplier_imports.metadata": "json", "supplier_imports.lease_until": "datetime", "supplier_items.data": "json", "supplier_prices.override_minor": "varchar",
 		"conversation_forms.fields": "json", "conversation_forms.answers": "json", "conversation_forms.recipient_id": "varchar", "conversation_forms.state": "enum", "conversation_forms.expires_at": "datetime",
 		"conversation_messages.form_id": "varchar", "account_deliveries.form_id": "varchar", "secret_bundles.purpose": "enum",
@@ -70,7 +71,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"conversations.fulfillment_order_id": "varchar", "conversations.booster_shared": "tinyint", "conversation_messages.purpose": "enum",
 		"staff_profiles.timezone": "varchar", "availability_windows.starts_at": "datetime", "bookings.starts_at": "datetime", "bookings.state": "varchar", "booking_events.note": "text",
 		"fulfillments.order_id": "varchar", "fulfillments.assigned_id": "varchar", "fulfillments.answers": "json", "fulfillments.version": "bigint", "fulfillments.access_version": "bigint",
-		"secret_bundles.encrypted_payload": "blob", "secret_bundles.wrapped_key": "blob", "secret_bundles.key_version": "varchar", "secret_bundles.expires_at": "datetime",
+		"secret_bundles.encrypted_payload": "mediumblob", "secret_bundles.wrapped_key": "blob", "secret_bundles.key_version": "varchar", "secret_bundles.expires_at": "datetime",
 		"media_files.intake_key": "varchar", "media_files.intake_order_id": "varchar", "media_files.id": "varchar", "media_files.checksum": "char", "media_files.clean_checksum": "char", "media_files.clean_content_type": "varchar", "media_files.state": "varchar", "media_files.message_id": "varchar", "conversation_messages.attachments": "json",
 		"conversations.id": "varchar", "conversations.user_id": "varchar", "conversations.public_sequence": "bigint", "conversation_messages.visibility": "varchar", "conversation_messages.body": "text", "conversation_reads.sequence": "bigint", "notifications.email_state": "varchar",
 		"orders.id": "varchar", "orders.user_id": "varchar", "orders.version": "bigint", "orders.request_hash": "char", "orders.answers": "json", "orders.snapshot": "json", "orders.state": "varchar", "order_quotes.data": "json", "order_contracts.data": "json", "order_contracts.payment_state": "varchar", "order_contracts.active_order_id": "varchar", "order_contracts.capacity_held": "tinyint", "order_events.version": "bigint", "favorites.user_id": "varchar", "favorites.target": "varchar",
@@ -111,6 +112,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_purchases.supplier_purchase_order": "order_id", "supplier_purchases.supplier_purchase_contract": "contract_id", "supplier_purchases.supplier_purchase_provider": "connection_id,provider_id", "supplier_signals.supplier_signal_digest": "connection_id,digest",
 		"supplier_items.supplier_import_product": "import_id,product_id", "supplier_prices.supplier_offer_price": "connection_id,product_id,offer_id", "supplier_prices.supplier_bound_product": "shop_product_id",
 		"conversation_forms.PRIMARY": "id", "conversation_forms.conversation_form_request": "conversation_id,created_by,request_key",
 		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",

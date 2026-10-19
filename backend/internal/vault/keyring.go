@@ -16,6 +16,10 @@ import (
 // MaxBytes bounds a bundle of temporary game/account access instructions.
 const MaxBytes = 8192
 
+// Supplier delivery may contain multiple purchased codes from one bounded
+// provider response. Existing credential/form scopes retain their 8 KiB limit.
+const maxSupplierDeliveryBytes = 256 << 10
+
 // ErrUnavailable deliberately excludes key identifiers, ciphertext and plaintext.
 var ErrUnavailable = errors.New("protected secret unavailable")
 
@@ -27,6 +31,13 @@ var keyID = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,31}$`)
 // Scope is authenticated as part of both encryption envelopes.
 type Scope struct{ Purpose, ResourceID, OwnerID string }
 
+func (s Scope) maxBytes() int {
+	if s.Purpose == "supplier_delivery" {
+		return maxSupplierDeliveryBytes
+	}
+	return MaxBytes
+}
+
 func (s Scope) aad(id string) ([]byte, error) {
 	for _, value := range []string{id, s.ResourceID, s.OwnerID} {
 		parsed, err := uuid.Parse(value)
@@ -34,7 +45,7 @@ func (s Scope) aad(id string) ([]byte, error) {
 			return nil, ErrInvalid
 		}
 	}
-	if s.Purpose != "game_access" && s.Purpose != "account_transfer" && s.Purpose != "chat_form" {
+	if s.Purpose != "game_access" && s.Purpose != "account_transfer" && s.Purpose != "chat_form" && s.Purpose != "supplier_input" && s.Purpose != "supplier_delivery" {
 		return nil, ErrInvalid
 	}
 	return json.Marshal([]string{"boosterplus-vault-v1", id, s.Purpose, s.ResourceID, s.OwnerID})
@@ -104,7 +115,7 @@ func decrypt(key, data, aad []byte) ([]byte, error) {
 
 // Seal binds the encrypted payload and wrapped data key to the resource identity.
 func (k *Keyring) Seal(id string, scope Scope, plaintext []byte) (Envelope, error) {
-	if len(plaintext) < 1 || len(plaintext) > MaxBytes {
+	if len(plaintext) < 1 || len(plaintext) > scope.maxBytes() {
 		return Envelope{}, ErrInvalid
 	}
 	aad, err := scope.aad(id)
@@ -131,7 +142,7 @@ func (k *Keyring) unwrap(id string, scope Scope, envelope Envelope) ([]byte, []b
 	if err != nil {
 		return nil, nil, err
 	}
-	if len(envelope.WrappedKey) != 60 || len(envelope.Payload) < 29 || len(envelope.Payload) > MaxBytes+28 {
+	if len(envelope.WrappedKey) != 60 || len(envelope.Payload) < 29 || len(envelope.Payload) > scope.maxBytes()+28 {
 		return nil, nil, ErrUnavailable
 	}
 	key, ok := k.keys[envelope.KeyID]

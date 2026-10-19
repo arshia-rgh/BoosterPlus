@@ -162,6 +162,10 @@ type Tx struct {
 	SupplierItem *SupplierItemClient
 	// SupplierPrice is the client for interacting with the SupplierPrice builders.
 	SupplierPrice *SupplierPriceClient
+	// SupplierPurchase is the client for interacting with the SupplierPurchase builders.
+	SupplierPurchase *SupplierPurchaseClient
+	// SupplierSignal is the client for interacting with the SupplierSignal builders.
+	SupplierSignal *SupplierSignalClient
 	// TransferAttempt is the client for interacting with the TransferAttempt builders.
 	TransferAttempt *TransferAttemptClient
 	// TransferEvent is the client for interacting with the TransferEvent builders.
@@ -377,6 +381,8 @@ func (tx *Tx) init() {
 	tx.SupplierImport = NewSupplierImportClient(tx.config)
 	tx.SupplierItem = NewSupplierItemClient(tx.config)
 	tx.SupplierPrice = NewSupplierPriceClient(tx.config)
+	tx.SupplierPurchase = NewSupplierPurchaseClient(tx.config)
+	tx.SupplierSignal = NewSupplierSignalClient(tx.config)
 	tx.TransferAttempt = NewTransferAttemptClient(tx.config)
 	tx.TransferEvent = NewTransferEventClient(tx.config)
 	tx.TransferObservation = NewTransferObservationClient(tx.config)

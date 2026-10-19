@@ -228,6 +228,12 @@ type SupplierItem func(*sql.Selector)
 // SupplierPrice is the predicate function for supplierprice builders.
 type SupplierPrice func(*sql.Selector)
 
+// SupplierPurchase is the predicate function for supplierpurchase builders.
+type SupplierPurchase func(*sql.Selector)
+
+// SupplierSignal is the predicate function for suppliersignal builders.
+type SupplierSignal func(*sql.Selector)
+
 // TransferAttempt is the predicate function for transferattempt builders.
 type TransferAttempt func(*sql.Selector)
 
