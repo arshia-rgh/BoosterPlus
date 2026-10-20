@@ -183,3 +183,61 @@ The third commit attempt (`checkout-commit3.log`) could not acquire a stale empt
 Commit `dbc6babd1833886c8e62b83060c15f6073e038e4` completed the normal focused hook in `checkout-commit5.log`. Repository/secret checks, generated Ent consistency, vet/golangci/standalone gosec, live Go vulnerability scan, race tests,47SQL migrations and backend builds passed. Govulncheck found zero affected code paths, zero vulnerable imported packages and one unused module advisory. Frontend contracts, format/types/lint,208component files with981cases, dependency audit, all three portal builds and server checks passed. Deployment preparation ran83configuration cases successfully. These are focused checks, not the owner-triggered full gate or signed deployment qualification.
 
 All six independent review rounds are closed with a scoped pass. The local test database container `playora-supplier168-checkout` was removed after its focused persistence tests; its receipts remain private. User-owned prototype/cameo files were left unchanged. The current implementation is committed for Sandbox deployment; no production schema/configuration/publication change or SSH check occurred. Public callback delivery and real provider-specific Roblox interactions remain explicitly unqualified.
+
+## Isolated server Sandbox —20October2026
+
+The owner subsequently authorized the isolated deployment through SSH, requested new tests on the server rather than locally, and required complete removal of the separate test environment after qualification. Production deployment follows focused checks, with live supplier purchases still disabled. The previously closed connectivity investigation was not reopened.
+
+Signed candidate `d030aacbbf0ca823a5793fe94e133a2f1d09f81c` passed exact CI39396632335 and image release39399710129. Its signature and all2611source-file hashes were verified before preparing the separate project `boosterplus-nexus-sandbox168`. Its database is schema47; production remains9abf4ff/schema43. The test instance has separate database/storage/authentication/vault/certificate state, a local mail capture service, resource limits, private application listeners and only the Nexus Sandbox token. Vendoria, Google, NOWPayments and live-mail credentials were not installed.
+
+The registry had no retained server login. After automatic approval review rejected relying on past deployments for a credential transfer, the owner explicitly approved one temporary transfer of the existing GitHub authentication token solely for pulling the signed images. Pulls completed and the server-side registry login was immediately removed; the removal receipt and wrapper cleanup are retained privately. This is not a reusable credential-transfer authorization.
+
+The private stack passed explicit migrations, schema readiness, storage round trip, antivirus freshness, private HTTPS, portal boundaries and isolated sign-in checks. The scanner initially loaded old cached definitions even though its updater had downloaded current ones. A reload of only the isolated scanner resolved the mismatch; the72-hour freshness guard was preserved. The original diagnostics and the reload receipt are retained.
+
+Only this exact public route was added to the shared gateway:
+
+`https://playoragames.com/api/v1/webhooks/suppliers/nexus-sandbox`
+
+It accepts POST requests into the isolated receiver. Production's API/database and all ordinary portal routes remain unchanged. The gateway's original bytes/network memberships were saved, its candidate configuration validated before activation, and existing public/admin/pro pages verified afterward. An independent source review required and verified rollback/cleanup health checks, resource ownership checks, bounded resources and registry cleanup.
+
+Twenty endpoint cases passed: raw HMAC handling, wrong/duplicate signatures, changed bytes, malformed/duplicate JSON, content type/encoding,256KiB bound, unknown-reference retry response, method restrictions, absent adjacent/live/Vendoria/staff routes and healthy existing portals. These are synthetic endpoint checks, **not proof of an actual provider webhook or durable event replay**. Two original harness failures are preserved: equivalent repeated `no-store` headers were initially treated as unequal, and unchanged staff hosts correctly returned404 rather than the assumed403.
+
+New focused Go race checks for config/suppliers/supply passed on the server. Their first launcher failed before tests because of nested shell quoting; the corrected uploaded script and successful receipt remain separate. No full gate or new local tests ran.
+
+### Production proxy correction, not yet released
+
+The normal frontend proxy omitted Nexus's `Sign` header and imposed its ordinary16KiB limit on supplier callbacks. The pending correction forwards raw signed bodies only for the exact Nexus Sandbox/production routes, allows only customer-host POSTs, rejects missing/duplicate signatures, strips session/portal-selector credentials, preserves encoding declarations for backend rejection and enforces256KiB for declared and streamed bodies. Other routes never receive the Nexus signature.
+
+Three focused tests passed inside bounded, network-isolated signed containers on the server: raw signature/body handling (including exact262144/262145byte boundaries), customer/pro host isolation and admin host isolation. Independent source review closed with no remaining blocker. This later source change is not part of d030aac; its normal focused hook, CI and signed production image qualification remain pending.
+
+### Next checkpoint and cleanup
+
+- The owner has been asked to save the verified URL in **Nexus Sandbox only**.
+- Actual provider callbacks, durable receipt/reconciliation, paid synthetic checkout through a real Sandbox purchase, restart/replay behavior and private delivery-state evidence remain to be completed. No new provider purchase occurred during receiver deployment.
+- Keep production supplier purchasing disabled. Existing fixture-based payment evidence must remain explicitly synthetic; no live NOWPayments invoice/funds action is authorized.
+- Once qualification finishes, copy compact private evidence to the owner workspace, restore and verify the original gateway routes, remove the exact temporary project containers/volumes/networks/signature copy and its private source/cache/secrets/certificates. Do not prune production data, unrelated Docker resources or shared release images.
+- Finish focused release checks, exact signed candidate/preflight and the required fresh production recovery decision before activating the final release.
+
+Private server receipts: `/srv/playora-qualification/supplier168/sandbox-deployment-d030aac/`. Local preparation/checkpoints: `.cache/suppliers/sandbox-deploy/`. These locations contain protected configuration; do not publish their contents.
+
+
+### Actual provider callback qualification
+
+The owner saved the verified URL in Nexus Sandbox. Three virtual-fund orders were created from isolated PLAYORA checkouts only after synthetic NOWPayments settlement and allocation; unpaid dispatch and repeated reservation guards passed. No real NOWPayments invoice, payment or external email was created.
+
+The first attempt stopped before any provider POST because the deterministic catalog examples omit descriptions. The private fixture now authors a clearly synthetic description; the original failure and narrowly guarded unsent-fixture reset are retained. The second run created exactly three orders. Nexus sent actual notifications for delayed success and delayed failure, accepted by the deployed receiver while its signed worker was stopped. The immediate code order completed through its create/GET evidence without a separate callback being observed. The original expectation of three callbacks timed out and remains a failed harness expectation, not a passing test.
+
+A separate continuation inspected only those existing orders and refused all new create calls. It verified real callback timestamps before worker restoration, successful processing of the durable jobs, customer completion and failure/support-review states, recent synthetic customer authentication, owning-customer code access and another customer's denial. Three pairs of subsequent synthetic signed replay notifications produced one durable receipt each, and the signed worker processed them after another stop/start. The continuation passed; total real Sandbox create calls stayed at three. This qualifies these deterministic Sandbox outcomes, not every provider-specific delivery flow or test/live parity.
+
+Compact private evidence contains90files (174,093bytes), SHA256 `66338ec9c522b85d2e5719c4e8a0a0586e885b845f57215626e165a87c657bfc`. It excludes runtime credentials, database volumes, compiled binaries, source caches and private certificates. Cleanup and final focused-release receipts follow separately. Live supplier purchasing remains disabled; Vendoria remains paused.
+
+
+### Temporary environment removed
+
+The compact evidence was copied to the owner workspace and every archived file hash verified. Cleanup restored the shared gateway's original bytes and network membership, verified public/admin/pro responses200 and the former Sandbox callback404, removed every owned test container/volume/network and all three possible helper containers, then deleted the exact Sandbox directory including its source, cache, secrets and certificates. It reclaimed1,709,645,824bytes. Shared release images and production data were preserved. Final cleanup receipt: `.cache/suppliers/sandbox-deploy/sandbox-cleanup-final.json`.
+
+The previously supplied Sandbox webhook URL is no longer active after this requested cleanup. Leave production/Vendoria webhook settings unchanged. A production receiver URL will be supplied only after the final production deployment is verified; live supplier buying remains disabled. Final normal focused commit checks run in a separate source-only server checkout, with pinned tools and an exact Git tree; this does not recreate the Sandbox runtime or run the full gate.
+
+### Final focused hook formatting correction
+
+The first server-only final focused hook passed backend formatting, generated-code, vet, golangci, standalone gosec, vulnerability/dependency checks, race-enabled unit tests, all47 migration-file validation and backend builds, then stopped at Prettier for `frontend/server.mjs`. Preserve `focused-release-final1/commit.log`, the candidate archive and pre-format file. Applying the pinned formatter changes presentation only; the next normal focused hook reuses the server build cache and does not run the full gate. No production activation occurred.

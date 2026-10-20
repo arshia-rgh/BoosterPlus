@@ -156,19 +156,41 @@ app.use((req, res, next) => {
 app.use("/api", (req, res) => {
   if (proxyKey.length < 32)
     return res.status(503).json({ code: "unavailable" });
+  const nexusCallback =
+    /^\/v1\/webhooks\/suppliers\/nexus-(sandbox|production)$/.test(req.path);
+  if (nexusCallback) {
+    if (
+      ["admin", "booster"].includes(application) ||
+      (origins && req.headers["x-playora-frontend-portal"] !== "customer")
+    )
+      return res.status(403).json({ code: "forbidden" });
+    if (req.method !== "POST")
+      return res.status(405).set("Allow", "POST").end();
+    // Do not merge duplicate signatures into one apparently valid credential.
+    const signatures = req.rawHeaders.filter(
+      (value, index) => index % 2 === 0 && value.toLowerCase() === "sign",
+    );
+    if (signatures.length !== 1)
+      return res.status(403).json({ code: "forbidden" });
+    if (Number(req.headers["content-length"]) > 262144)
+      return res.status(413).end();
+  }
   const headers = {};
-  for (const name of [
-    "accept",
-    "content-type",
-    "cookie",
-    "origin",
-    "sec-fetch-site",
-    "x-csrf-token",
-    "x-playora-portal",
-    "last-event-id",
-    "if-none-match",
-    "x-nowpayments-sig",
-  ]) {
+  const forwardedHeaders = nexusCallback
+    ? ["accept", "content-type", "content-encoding", "sign"]
+    : [
+        "accept",
+        "content-type",
+        "cookie",
+        "origin",
+        "sec-fetch-site",
+        "x-csrf-token",
+        "x-playora-portal",
+        "last-event-id",
+        "if-none-match",
+        "x-nowpayments-sig",
+      ];
+  for (const name of forwardedHeaders) {
     if (req.headers[name]) headers[name] = req.headers[name];
   }
   headers["x-booster-proxy-key"] = proxyKey;
@@ -231,6 +253,7 @@ app.use("/api", (req, res) => {
             req.path.startsWith("/v1/admin/media")
           ? 16384
           : req.path === "/v1/admin/finance/policy" ||
+              nexusCallback ||
               req.path === "/v1/webhooks/payments/nowpayments" ||
               req.path.startsWith("/v1/conversations") ||
               req.path.startsWith("/v1/admin/conversations") ||

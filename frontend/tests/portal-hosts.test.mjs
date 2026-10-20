@@ -292,6 +292,37 @@ for (const application of ["storefront", "admin"]) {
           internal: null,
           forwardedHost: null,
         });
+        for (const connection of ["nexus-sandbox", "nexus-production"]) {
+          const callback = await send(
+            port,
+            host,
+            "/api/v1/webhooks/suppliers/" + connection,
+            {
+              method: "POST",
+              headers: {
+                Sign: "synthetic-signature",
+                "X-Playora-Frontend-Portal": "customer",
+                "X-Forwarded-Host": "playora.example",
+                "X-Playora-Portal": "admin",
+              },
+            },
+          );
+          assert.equal(callback.status, portal === "customer" ? 200 : 403);
+          if (portal === "customer") {
+            assert.equal(JSON.parse(callback.body).authority, origins.customer);
+            assert.equal(JSON.parse(callback.body).selector, null);
+          }
+          const duplicate = await send(
+            port,
+            host,
+            "/api/v1/webhooks/suppliers/" + connection,
+            {
+              method: "POST",
+              headers: { Sign: ["synthetic-signature", "synthetic-signature"] },
+            },
+          );
+          assert.equal(duplicate.status, 403);
+        }
         const opposite = portal === "admin" ? "booster" : "admin";
         const mismatch = await send(port, host, "/api/v1/probe", {
           headers: { "X-Playora-Portal": opposite },

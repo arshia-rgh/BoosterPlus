@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
-import { randomBytes } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 import { once } from "node:events";
 
 async function listen(server) {
@@ -41,8 +41,35 @@ test(
   { timeout: 20000 },
   async (t) => {
     const secret = randomBytes(32).toString("hex");
+    const supplierSecret = randomBytes(32);
     const backend = createServer((req, res) => {
       res.setHeader("Content-Type", "application/json");
+      if (
+        /^\/api\/v1\/webhooks\/suppliers\/nexus-(sandbox|production)$/.test(
+          req.url,
+        )
+      ) {
+        const chunks = [];
+        req.on("data", (chunk) => chunks.push(chunk));
+        req.on("end", () => {
+          const body = Buffer.concat(chunks);
+          const valid =
+            req.headers.sign ===
+            createHmac("sha256", supplierSecret).update(body).digest("hex");
+          res.statusCode = valid ? 200 : 403;
+          res.end(
+            JSON.stringify({
+              valid,
+              size: body.length,
+              encoding: req.headers["content-encoding"] ?? null,
+              cookie: req.headers.cookie ?? null,
+              authorization: req.headers.authorization ?? null,
+              selector: req.headers["x-playora-portal"] ?? null,
+            }),
+          );
+        });
+        return;
+      }
       if (req.url?.startsWith("/api/v1/admin/artwork/")) {
         let size = 0;
         req.on("data", (chunk) => {
@@ -87,6 +114,7 @@ test(
           cookie: req.headers.cookie ?? null,
           portal: req.headers["x-playora-portal"] ?? null,
           signature: req.headers["x-nowpayments-sig"] ?? null,
+          supplierSignature: req.headers.sign ?? null,
         }),
       );
     });
@@ -156,6 +184,84 @@ test(
     );
     assert.equal(callback.status, 200);
     assert.equal((await callback.json()).signature, "synthetic-signature");
+    // The frontend must forward the exact signed bytes, including bodies above
+    // the ordinary form limit. Verification stays in the supplier backend.
+    const supplierBody = Buffer.from(
+      '{ "type": "futureEvent", "padding": "' + "x".repeat(20000) + '" }\n',
+    );
+    const supplierSignature = createHmac("sha256", supplierSecret)
+      .update(supplierBody)
+      .digest("hex");
+    for (const connection of ["nexus-sandbox", "nexus-production"]) {
+      const callbackPath = "/api/v1/webhooks/suppliers/" + connection;
+      const headers = {
+        "Content-Type": "application/json",
+        Sign: supplierSignature,
+        Cookie: "session=must-not-leak",
+        Authorization: "Bearer must-not-leak",
+        "X-Playora-Portal": "admin",
+      };
+      const accepted = await fetch(url + callbackPath, {
+        method: "POST",
+        headers,
+        body: supplierBody,
+      });
+      assert.equal(accepted.status, 200);
+      assert.deepEqual(await accepted.json(), {
+        valid: true,
+        size: supplierBody.length,
+        encoding: null,
+        cookie: null,
+        authorization: null,
+        selector: null,
+      });
+      const tampered = await fetch(url + callbackPath, {
+        method: "POST",
+        headers,
+        body: Buffer.concat([supplierBody, Buffer.from(" ")]),
+      });
+      assert.equal(tampered.status, 403);
+      const encoded = await fetch(url + callbackPath, {
+        method: "POST",
+        headers: { ...headers, "Content-Encoding": "gzip" },
+        body: supplierBody,
+      });
+      assert.equal((await encoded.json()).encoding, "gzip");
+      // Forward the declaration so the real backend can reject encoding;
+      // never silently strip it and treat the content as an ordinary webhook.
+      assert.equal((await fetch(url + callbackPath)).status, 405);
+      assert.equal(
+        (await fetch(url + callbackPath, { method: "POST" })).status,
+        403,
+      );
+      for (const size of [262144, 262145]) {
+        const body = Buffer.alloc(size, "x");
+        const bounded = await fetch(url + callbackPath, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Sign: createHmac("sha256", supplierSecret)
+              .update(body)
+              .digest("hex"),
+          },
+          body,
+        });
+        assert.equal(bounded.status, size === 262144 ? 200 : 413);
+        if (size === 262144) assert.equal((await bounded.json()).size, size);
+      }
+    }
+    for (const path of [
+      "/api/v1/test",
+      "/api/v1/webhooks/suppliers/vendoria-test",
+      "/api/v1/webhooks/suppliers/nexus-sandbox/child",
+    ]) {
+      const other = await fetch(url + path, {
+        method: "POST",
+        headers: { Sign: supplierSignature },
+        body: "{}",
+      });
+      assert.equal((await other.json()).supplierSignature, null);
+    }
     for (const path of [
       "/api/v1/admin/news/article/save",
       "/api/v1/admin/shop/product/save",
