@@ -16,13 +16,13 @@ import { Loading } from "../ui/loading";
 import { Button } from "../ui/primitives";
 import { SupplierErrorNotice } from "../suppliers/feedback";
 import {
-  supplierMethodNames,
   supplierQuoteSchema,
   type SupplierField,
   type SupplierQuote,
 } from "../suppliers/contracts";
 import { deliverySchema, type PublicProduct } from "./model";
 import ShopArtwork from "./artwork";
+import { productDeliveryLabel } from "./delivery-method";
 
 type Acceptance = {
   request_key: string;
@@ -315,7 +315,7 @@ export function SupplierPurchase({
           alt={product.definition.asset_alt}
         />
         <div>
-          <p className="eyebrow">{supplierMethodNames[source.method]}</p>
+          <p className="eyebrow">{productDeliveryLabel(product.definition)}</p>
           <h2>{product.definition.title}</h2>
           <p>{product.definition.description}</p>
           <p>{product.definition.variants[0]?.region}</p>
@@ -454,7 +454,7 @@ export function SupplierPurchase({
                 {quantity} × {product.definition.title}
               </p>
               <p>
-                {supplierMethodNames[source.method]} ·{" "}
+                {productDeliveryLabel(product.definition)} ·{" "}
                 {product.definition.variants[0]?.region}
               </p>
               <p className="shop-review-total">

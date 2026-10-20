@@ -1,5 +1,4 @@
 import { Link } from "../portal-router";
-import { supplierMethodNames } from "../suppliers/contracts";
 import { AgreementTemplate } from "../resale/agreement-template";
 import ArtworkUpload from "../artwork/upload";
 import {
@@ -11,6 +10,7 @@ import {
   nextKey,
 } from "../catalog/controls";
 import type { Definition, RecipientField, Variant } from "./model";
+import { instantDeliveryNames } from "./delivery-method";
 
 export function ProductFields({
   section,
@@ -96,7 +96,7 @@ export function ProductFields({
                 ? "Reviewed supplier offer"
                 : "Required delivery details"}
             </h3>
-            <p>{supplierMethodNames[value.supplier.method]}</p>
+            <p>{instantDeliveryNames[value.supplier.method]}</p>
             <p>
               Quantity:{" "}
               {value.supplier.quantity.kind === "one"
@@ -282,26 +282,39 @@ export function ProductFields({
         <>
           <h3>Delivery and commercial terms</h3>
           <p>
-            Enter approved terms for this product. No commercial terms or
-            delivery promises are supplied automatically.
+            Review the delivery method and approved commercial terms before
+            saving.
           </p>
           <div className="catalog-grid">
-            <NumberInput
-              name="policy.delivery_min_hours"
-              label="Minimum delivery hours"
-              value={value.policy.delivery_min_hours}
-              change={(delivery_min_hours) => {
-                policy({ delivery_min_hours });
-              }}
-            />
-            <NumberInput
-              name="policy.delivery_max_hours"
-              label="Maximum delivery hours"
-              value={value.policy.delivery_max_hours}
-              change={(delivery_max_hours) => {
-                policy({ delivery_max_hours });
-              }}
-            />
+            {value.supplier ? (
+              <div>
+                <strong>Delivery method</strong>
+                <p>{instantDeliveryNames[value.supplier.method]}</p>
+                <p>
+                  Set by the reviewed supplier offer. Delivery starts after
+                  verified payment and complete required details.
+                </p>
+              </div>
+            ) : (
+              <>
+                <NumberInput
+                  name="policy.delivery_min_hours"
+                  label="Minimum delivery hours"
+                  value={value.policy.delivery_min_hours}
+                  change={(delivery_min_hours) => {
+                    policy({ delivery_min_hours });
+                  }}
+                />
+                <NumberInput
+                  name="policy.delivery_max_hours"
+                  label="Maximum delivery hours"
+                  value={value.policy.delivery_max_hours}
+                  change={(delivery_max_hours) => {
+                    policy({ delivery_max_hours });
+                  }}
+                />
+              </>
+            )}
             <NumberInput
               name="policy.reservation_minutes"
               label="Reservation minutes"
@@ -324,7 +337,7 @@ export function ProductFields({
             }}
           />
           <p>
-            Confirm this product’s actual availability, delivery range and
+            Confirm this product’s actual availability, delivery method and
             recipient requirements before publishing.
           </p>
           <Text

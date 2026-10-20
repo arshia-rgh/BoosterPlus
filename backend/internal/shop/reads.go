@@ -153,7 +153,7 @@ func (s *Store) Preview(ctx context.Context, p *identity.Principal, id string) (
 		if e != nil {
 			return e
 		}
-		out.Issues = Validate(out.Draft.Definition, true)
+		out.Issues = validateCurrentPublication(out.Draft.Definition)
 		if out.Draft.Definition.Supplier != nil {
 			if e = s.supplierPublication(ctx, tx, row, out.Draft.Definition, ""); e != nil {
 				out.Issues = append(out.Issues, Issue{Path: "supplier", Message: "Refresh the supplier binding from the current configured merchant before publishing."})

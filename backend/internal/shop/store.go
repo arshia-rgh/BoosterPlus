@@ -217,6 +217,7 @@ func (s *Store) Save(ctx context.Context, p *identity.Principal, id string, vers
 	if issues := Validate(value, false); len(issues) > 0 {
 		return out, &Invalid{issues}
 	}
+	setSupplierDelivery(&value)
 	data, err := document(value)
 	if err != nil {
 		return out, err

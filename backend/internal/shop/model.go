@@ -1,4 +1,4 @@
-// Package shop implements administrator-declared products with manual delivery.
+// Package shop implements administrator-declared manual and supplier products.
 package shop
 
 import (
@@ -156,7 +156,8 @@ func Validate(value Definition, publish bool) []Issue {
 		add("policy", "Keep delivery and reservation values within supported bounds.")
 	}
 	if publish {
-		if policy.DeliveryMinHours < 1 || policy.DeliveryMaxHours < policy.DeliveryMinHours {
+		instant := value.Supplier != nil && slices.Contains([]string{"id", "code"}, value.Supplier.Method) && policy.DeliveryMinHours == 0 && policy.DeliveryMaxHours == 0
+		if !instant && (policy.DeliveryMinHours < 1 || policy.DeliveryMaxHours < policy.DeliveryMinHours) {
 			add("policy.delivery", "Set an explicit ordered delivery estimate.")
 		}
 		if policy.ReservationMinutes < 15 {

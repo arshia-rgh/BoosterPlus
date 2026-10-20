@@ -107,9 +107,7 @@ func (s *Store) PrepareSupplier(ctx context.Context, p *identity.Principal, inpu
 		value.Recipient = []RecipientField{}
 		value.Variants = []Variant{{Key: "supplier", Label: offer.Name, Region: price.Region, Platform: "See product requirements", Server: "See product requirements", Currency: "USD", UnitAmountMinor: amount, MinQuantity: 1, MaxQuantity: 1, Enabled: true}}
 		value.Reviewed = false
-		if price.DeliveryMethod == "account" {
-			value.Policy.DeliveryMinHours, value.Policy.DeliveryMaxHours = 24, 72
-		}
+		setSupplierDelivery(&value)
 		if issues := Validate(value, false); len(issues) > 0 {
 			return &Invalid{issues}
 		}

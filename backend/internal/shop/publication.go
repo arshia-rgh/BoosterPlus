@@ -65,7 +65,7 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id string, ve
 			if decodeErr != nil {
 				return decodeErr
 			}
-			if issues := Validate(value, true); len(issues) > 0 {
+			if issues := validateCurrentPublication(value); len(issues) > 0 {
 				return &Invalid{issues}
 			}
 			if artworkErr := checkArtwork(ctx, tx.Client(), value); artworkErr != nil {

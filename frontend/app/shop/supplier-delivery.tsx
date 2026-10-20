@@ -9,9 +9,9 @@ import { minorDisplay } from "../catalog/dynamic-form";
 import {
   supplierActionSchema,
   supplierCodesSchema,
-  supplierMethodNames,
 } from "../suppliers/contracts";
 import type { ShopDelivery } from "./model";
+import { productDeliveryLabel } from "./delivery-method";
 import type { z } from "../validation";
 
 const statusLabels = new Map(
@@ -134,12 +134,7 @@ function PrivateDelivery({ data, admin, refresh }: DeliveryProps) {
     }
   }
   const method = data.purchase.product.supplier?.method ?? "id";
-  const methodLabel =
-    method === "account"
-      ? supplierMethodNames.account
-      : method === "code"
-        ? supplierMethodNames.code
-        : supplierMethodNames.id;
+  const methodLabel = productDeliveryLabel(data.purchase.product);
   const verifiedAction =
     action &&
     ((action.kind === "verification" &&

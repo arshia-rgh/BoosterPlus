@@ -1,5 +1,5 @@
 import { SupplierPurchase } from "./supplier-purchase";
-import { supplierMethodNames } from "../suppliers/contracts";
+import { instantDeliveryNames, productDeliveryLabel } from "./delivery-method";
 import { Loading } from "../ui/loading";
 import "../catalog/service-tiles.css";
 import ShopArtwork from "./artwork";
@@ -131,9 +131,9 @@ function ShopBrowse({ slug }: { slug: string }) {
           change={setMethod}
           options={[
             ["", "All delivery methods"],
-            ["id", supplierMethodNames.id],
-            ["account", supplierMethodNames.account],
-            ["code", supplierMethodNames.code],
+            ["id", instantDeliveryNames.id],
+            ["account", instantDeliveryNames.account],
+            ["code", instantDeliveryNames.code],
             ["manual", "PLAYORA staff delivery"],
           ]}
         />
@@ -183,7 +183,7 @@ function ShopBrowse({ slug }: { slug: string }) {
                       <ProductPrice product={p} />
                       {p.definition.supplier && (
                         <p className="supplier-badge">
-                          {supplierMethodNames[p.definition.supplier.method]}
+                          {productDeliveryLabel(p.definition)}
                         </p>
                       )}
                       <p>

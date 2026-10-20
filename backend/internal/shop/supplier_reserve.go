@@ -125,7 +125,7 @@ func (s *Store) ReserveSupplier(ctx context.Context, p *identity.Principal, slug
 		if e != nil {
 			return e
 		}
-		commercial, e := snapshot(orders.Commercial{Revision: product.Version, Currency: "USD", SubtotalMinor: quote.AmountMinor, AmountMinor: quote.AmountMinor, Lines: []catalog.PriceLine{}, Scope: product.Definition.Title, Reason: product.Definition.Policy.DeliveryTerms, DeliveryMinHours: product.Definition.Policy.DeliveryMinHours, DeliveryMaxHours: product.Definition.Policy.DeliveryMaxHours, ExpiresAt: expires, TermsVersion: terms})
+		commercial, e := snapshot(orders.Commercial{Revision: product.Version, Currency: "USD", SubtotalMinor: quote.AmountMinor, AmountMinor: quote.AmountMinor, Lines: []catalog.PriceLine{}, Scope: product.Definition.Title, Reason: product.Definition.Policy.DeliveryTerms, DeliveryMinHours: product.Definition.Policy.DeliveryMinHours, DeliveryMaxHours: product.Definition.Policy.DeliveryMaxHours, DeliveryBasis: supplierDeliveryBasis(product.Definition), ExpiresAt: expires, TermsVersion: terms})
 		if e != nil {
 			return e
 		}

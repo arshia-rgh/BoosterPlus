@@ -1,5 +1,6 @@
 import { ActionFields, requireText } from "../ui/action-fields";
 import { agreedDeliveryClock } from "../catalog/delivery-hours";
+import { supplierContractDelivery } from "../shop/delivery-method";
 import "../ui/secondary.css";
 import { DownloadImage } from "../media/attachment";
 import { useEffect, useRef, useState } from "react";
@@ -46,6 +47,7 @@ function selectionLabel(
 export function Agreement({ data }: { data: Commercial }) {
   // Parsing here also protects shared displays when a future caller adds a source.
   const price = commercialSchema.parse(data);
+  const supplierDelivery = supplierContractDelivery(price.delivery_basis);
   return (
     <div className="order-agreement">
       <p className="package-price">
@@ -61,13 +63,22 @@ export function Agreement({ data }: { data: Commercial }) {
         ))}
       </ul>
       <p>
-        {price.delivery_basis === "payment_and_access_v1"
-          ? "Agreed delivery: "
-          : "Delivery estimate: "}
-        {price.delivery_min_hours}–{price.delivery_max_hours}{" "}
-        {price.delivery_basis === "payment_and_access_v1"
-          ? "hours. " + agreedDeliveryClock
-          : "hours after fulfillment can start."}
+        {supplierDelivery ? (
+          <>
+            {supplierDelivery} after verified payment and complete required
+            details. Follow the order status for confirmed delivery.
+          </>
+        ) : (
+          <>
+            {price.delivery_basis === "payment_and_access_v1"
+              ? "Agreed delivery: "
+              : "Delivery estimate: "}
+            {price.delivery_min_hours}–{price.delivery_max_hours}{" "}
+            {price.delivery_basis === "payment_and_access_v1"
+              ? "hours. " + agreedDeliveryClock
+              : "hours after fulfillment can start."}
+          </>
+        )}
       </p>
       <p>
         Quote acceptance deadline{" "}

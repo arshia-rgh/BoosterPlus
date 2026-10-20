@@ -1,7 +1,7 @@
-import { supplierMethodNames } from "../suppliers/contracts";
 import ShopArtwork from "./artwork";
 import { price } from "../catalog/model";
 import type { Definition } from "./model";
+import { productDeliveryLabel } from "./delivery-method";
 export function ProductPreview({ value }: { value: Definition }) {
   return (
     <article className="shop-preview" aria-label="Private customer preview">
@@ -22,8 +22,8 @@ export function ProductPreview({ value }: { value: Definition }) {
               <>
                 {" "}
                 indicative total for {value.supplier.quantity.min} ·{" "}
-                {variant.region} · {supplierMethodNames[value.supplier.method]}{" "}
-                · Quantity {value.supplier.quantity.min}–
+                {variant.region} · {productDeliveryLabel(value)} · Quantity{" "}
+                {value.supplier.quantity.min}–
                 {value.supplier.quantity.max === "0"
                   ? "no maximum"
                   : value.supplier.quantity.max}{" "}
@@ -45,11 +45,8 @@ export function ProductPreview({ value }: { value: Definition }) {
         ))}
       </ul>
       <dl>
-        <dt>Estimated delivery</dt>
-        <dd>
-          {value.policy.delivery_min_hours}–{value.policy.delivery_max_hours}{" "}
-          hours
-        </dd>
+        <dt>{value.supplier ? "Delivery method" : "Estimated delivery"}</dt>
+        <dd>{productDeliveryLabel(value)}</dd>
         <dt>Delivery</dt>
         <dd>{value.policy.delivery_terms || "Not specified"}</dd>
         <dt>Cancellation</dt>
