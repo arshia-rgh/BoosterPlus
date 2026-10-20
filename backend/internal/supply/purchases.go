@@ -24,6 +24,7 @@ import (
 // PurchaseProvider is environment-bound. Network effects always run outside SQL.
 type PurchaseProvider interface {
 	Connection() suppliers.Connection
+	MerchantID() string
 	QuoteOffer(context.Context, suppliers.Product, string, suppliers.Decimal) (suppliers.Quote, error)
 	CreateOrder(context.Context, suppliers.PurchaseRequest) (suppliers.Order, error)
 	GetOrder(context.Context, string) (suppliers.Order, error)
@@ -52,7 +53,7 @@ func NewPurchaser(client *ent.Client, keys *vault.Keyring, providers []PurchaseP
 	}
 	out := &Purchaser{client: client, keys: keys, providers: map[suppliers.Connection]PurchaseProvider{}, enabled: enabled, now: now}
 	for _, provider := range providers {
-		if provider == nil || !validConnection(provider.Connection()) || out.providers[provider.Connection()] != nil || enabled && !provider.Connection().Testing() {
+		if provider == nil || !validConnection(provider.Connection()) || !validMerchant(provider.MerchantID()) || out.providers[provider.Connection()] != nil || enabled && !provider.Connection().Testing() {
 			return nil, ErrInvalid
 		}
 		out.providers[provider.Connection()] = provider
@@ -106,6 +107,14 @@ func (s *Purchaser) PrepareInTransaction(ctx context.Context, tx *ent.Tx, purcha
 	if !matched {
 		return nil, ErrInvalid
 	}
+	conn, err := tx.SupplierConnection.Get(ctx, string(quote.Connection))
+	if err != nil {
+		return nil, err
+	}
+	merchant := s.providers[quote.Connection].MerchantID()
+	if !s.enabled || !quote.Connection.Testing() || !conn.PurchasesEnabled || conn.MerchantID != merchant || quote.MerchantID != merchant {
+		return nil, suppliers.ErrReadOnly
+	}
 	exists, err := tx.SupplierPurchase.Query().Where(supplierpurchase.OrderIDEQ(purchase.ID)).Exist(ctx)
 	if err != nil {
 		return nil, err
@@ -118,7 +127,7 @@ func (s *Purchaser) PrepareInTransaction(ctx context.Context, tx *ent.Tx, purcha
 	if err != nil {
 		return nil, err
 	}
-	return tx.SupplierPurchase.Create().SetID(id).SetOrderID(purchase.ID).SetContractID(contract.ID).SetUserID(purchase.UserID).SetConnectionID(string(quote.Connection)).SetProduct(&quote.Product).SetOfferID(quote.Offer.ID).SetQuantity(string(quote.Quantity)).SetMaximumCost(string(quote.TotalCost)).SetAmountMinor(amount).SetInputSecretID(secretID).SetNextCheck(s.now()).SetCreatedAt(s.now()).SetUpdatedAt(s.now()).Save(ctx)
+	return tx.SupplierPurchase.Create().SetID(id).SetOrderID(purchase.ID).SetContractID(contract.ID).SetUserID(purchase.UserID).SetConnectionID(string(quote.Connection)).SetMerchantID(merchant).SetProduct(&quote.Product).SetOfferID(quote.Offer.ID).SetQuantity(string(quote.Quantity)).SetMaximumCost(string(quote.TotalCost)).SetAmountMinor(amount).SetInputSecretID(secretID).SetNextCheck(s.now()).SetCreatedAt(s.now()).SetUpdatedAt(s.now()).Save(ctx)
 }
 
 func sameCommercial(contract *ent.OrderContract, amount string) bool {

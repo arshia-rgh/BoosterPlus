@@ -5772,6 +5772,86 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/webhooks/suppliers/nexus-sandbox": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Configured merchant callback; verified status signals schedule read-only reconciliation
+     * @description Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.
+     */
+    post: operations["receiveNexusSandboxSignal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/webhooks/suppliers/vendoria-test": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Configured merchant callback; verified status signals schedule read-only reconciliation
+     * @description Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.
+     */
+    post: operations["receiveVendoriaTestSignal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/webhooks/suppliers/nexus-production": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Configured merchant callback; verified status signals schedule read-only reconciliation
+     * @description Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.
+     */
+    post: operations["receiveNexusProductionSignal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/webhooks/suppliers/vendoria-production": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Configured merchant callback; verified status signals schedule read-only reconciliation
+     * @description Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.
+     */
+    post: operations["receiveVendoriaProductionSignal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -25403,6 +25483,278 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SupplierProblem"];
         };
+      };
+    };
+  };
+  receiveNexusSandboxSignal: {
+    parameters: {
+      query?: never;
+      header: {
+        Sign: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          [key: string]: unknown;
+        };
+      };
+    };
+    responses: {
+      /** @description Recognized status signal recorded, duplicate received, or authenticated unknown event ignored */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing, ambiguous or incorrect signature */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Connection is not configured in this application */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body exceeds the 256 KiB limit */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unsupported content type or encoding */
+      415: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Authenticated payload is invalid */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Signal cannot be recorded or requires an unfinished interactive workflow; retry later */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  receiveVendoriaTestSignal: {
+    parameters: {
+      query?: never;
+      header: {
+        Sign: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          [key: string]: unknown;
+        };
+      };
+    };
+    responses: {
+      /** @description Recognized status signal recorded, duplicate received, or authenticated unknown event ignored */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing, ambiguous or incorrect signature */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Connection is not configured in this application */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body exceeds the 256 KiB limit */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unsupported content type or encoding */
+      415: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Authenticated payload is invalid */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Signal cannot be recorded or requires an unfinished interactive workflow; retry later */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  receiveNexusProductionSignal: {
+    parameters: {
+      query?: never;
+      header: {
+        Sign: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          [key: string]: unknown;
+        };
+      };
+    };
+    responses: {
+      /** @description Recognized status signal recorded, duplicate received, or authenticated unknown event ignored */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing, ambiguous or incorrect signature */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Connection is not configured in this application */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body exceeds the 256 KiB limit */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unsupported content type or encoding */
+      415: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Authenticated payload is invalid */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Signal cannot be recorded or requires an unfinished interactive workflow; retry later */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  receiveVendoriaProductionSignal: {
+    parameters: {
+      query?: never;
+      header: {
+        Sign: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          [key: string]: unknown;
+        };
+      };
+    };
+    responses: {
+      /** @description Recognized status signal recorded, duplicate received, or authenticated unknown event ignored */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Missing, ambiguous or incorrect signature */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Connection is not configured in this application */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Body exceeds the 256 KiB limit */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unsupported content type or encoding */
+      415: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Authenticated payload is invalid */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Signal cannot be recorded or requires an unfinished interactive workflow; retry later */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

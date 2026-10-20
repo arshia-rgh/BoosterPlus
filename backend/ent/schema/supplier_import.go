@@ -17,6 +17,7 @@ func (SupplierImport) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.String("connection_id").MaxLen(32).Immutable(),
+		field.String("merchant_id").MaxLen(20).Immutable(),
 		field.String("created_by").MaxLen(36).Immutable(),
 		field.Int64("auth_version").Immutable(),
 		field.String("state").MaxLen(32).Default("queued"),

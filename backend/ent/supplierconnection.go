@@ -17,6 +17,8 @@ type SupplierConnection struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// MerchantID holds the value of the "merchant_id" field.
+	MerchantID string `json:"merchant_id,omitempty"`
 	// Version holds the value of the "version" field.
 	Version int `json:"version,omitempty"`
 	// MarkupBps holds the value of the "markup_bps" field.
@@ -41,7 +43,7 @@ func (*SupplierConnection) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case supplierconnection.FieldVersion, supplierconnection.FieldMarkupBps:
 			values[i] = new(sql.NullInt64)
-		case supplierconnection.FieldID, supplierconnection.FieldCurrentImport, supplierconnection.FieldActiveImport:
+		case supplierconnection.FieldID, supplierconnection.FieldMerchantID, supplierconnection.FieldCurrentImport, supplierconnection.FieldActiveImport:
 			values[i] = new(sql.NullString)
 		case supplierconnection.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -65,6 +67,12 @@ func (_m *SupplierConnection) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case supplierconnection.FieldMerchantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_id", values[i])
+			} else if value.Valid {
+				_m.MerchantID = value.String
 			}
 		case supplierconnection.FieldVersion:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -138,6 +146,9 @@ func (_m *SupplierConnection) String() string {
 	var builder strings.Builder
 	builder.WriteString("SupplierConnection(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("merchant_id=")
+	builder.WriteString(_m.MerchantID)
+	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Version))
 	builder.WriteString(", ")

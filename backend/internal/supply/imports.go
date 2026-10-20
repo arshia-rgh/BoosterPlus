@@ -42,7 +42,7 @@ func (s *Store) RequestImport(ctx context.Context, p *identity.Principal, id sup
 		}
 		existing, e := tx.SupplierImport.Get(ctx, requestID)
 		if e == nil {
-			if existing.ConnectionID != string(id) || existing.CreatedBy != current.User.ID {
+			if existing.ConnectionID != string(id) || existing.CreatedBy != current.User.ID || existing.MerchantID != s.readers[id].MerchantID() {
 				return ErrConflict
 			}
 			out = importView(existing)
@@ -58,13 +58,17 @@ func (s *Store) RequestImport(ctx context.Context, p *identity.Principal, id sup
 		if row.ActiveImport != "" {
 			return ErrConflict
 		}
+		merchant := s.readers[id].MerchantID()
+		if row.MerchantID != merchant && (row.MerchantID != "" || row.CurrentImport != "") {
+			return ErrConflict
+		}
 		now := s.now()
-		run, e := tx.SupplierImport.Create().SetID(requestID).SetConnectionID(string(id)).SetCreatedBy(current.User.ID).
+		run, e := tx.SupplierImport.Create().SetID(requestID).SetConnectionID(string(id)).SetMerchantID(merchant).SetCreatedBy(current.User.ID).
 			SetAuthVersion(current.User.AuthVersion).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
 		if e != nil {
 			return e
 		}
-		if _, e = tx.SupplierConnection.UpdateOne(row).SetActiveImport(run.ID).SetUpdatedAt(now).Save(ctx); e != nil {
+		if _, e = tx.SupplierConnection.UpdateOne(row).SetMerchantID(merchant).SetActiveImport(run.ID).SetUpdatedAt(now).Save(ctx); e != nil {
 			return e
 		}
 		raw, e := json.Marshal(importJob{run.ID})
@@ -146,7 +150,7 @@ func (s *Store) ImportHandler() jobs.Handler {
 			return nil
 		}
 		reader := s.readers[suppliers.Connection(row.ConnectionID)]
-		if reader == nil {
+		if reader == nil || reader.MerchantID() != row.MerchantID {
 			return ErrUnavailable
 		}
 		lease := uuid.NewString()
@@ -162,6 +166,9 @@ func (s *Store) ImportHandler() jobs.Handler {
 			}
 			if conn.ActiveImport != row.ID || current.State == "cancelled" || current.State == "failed" || current.State == "complete" {
 				return nil
+			}
+			if conn.MerchantID != row.MerchantID || current.MerchantID != row.MerchantID {
+				return ErrConflict
 			}
 			if current.State == "loading" && current.LeaseUntil != nil && current.LeaseUntil.After(s.now()) {
 				return ErrConflict
@@ -196,7 +203,8 @@ func (s *Store) fenced(ctx context.Context, tx *ent.Tx, row *ent.SupplierImport,
 	if err != nil {
 		return err
 	}
-	if conn.ActiveImport != row.ID || current.State != "loading" || current.LeaseOwner != lease || current.LeaseUntil == nil || !current.LeaseUntil.After(s.now()) {
+	reader := s.readers[suppliers.Connection(row.ConnectionID)]
+	if reader == nil || reader.MerchantID() != row.MerchantID || conn.MerchantID != row.MerchantID || current.MerchantID != row.MerchantID || conn.ActiveImport != row.ID || current.State != "loading" || current.LeaseOwner != lease || current.LeaseUntil == nil || !current.LeaseUntil.After(s.now()) {
 		return ErrConflict
 	}
 	return nil

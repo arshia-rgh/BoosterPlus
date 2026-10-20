@@ -45,6 +45,12 @@ func (_c *SupplierPurchaseCreate) SetConnectionID(v string) *SupplierPurchaseCre
 	return _c
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (_c *SupplierPurchaseCreate) SetMerchantID(v string) *SupplierPurchaseCreate {
+	_c.mutation.SetMerchantID(v)
+	return _c
+}
+
 // SetProduct sets the "product" field.
 func (_c *SupplierPurchaseCreate) SetProduct(v *suppliers.Product) *SupplierPurchaseCreate {
 	_c.mutation.SetProduct(v)
@@ -438,6 +444,14 @@ func (_c *SupplierPurchaseCreate) check() error {
 			return &ValidationError{Name: "connection_id", err: fmt.Errorf(`ent: validator failed for field "SupplierPurchase.connection_id": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.MerchantID(); !ok {
+		return &ValidationError{Name: "merchant_id", err: errors.New(`ent: missing required field "SupplierPurchase.merchant_id"`)}
+	}
+	if v, ok := _c.mutation.MerchantID(); ok {
+		if err := supplierpurchase.MerchantIDValidator(v); err != nil {
+			return &ValidationError{Name: "merchant_id", err: fmt.Errorf(`ent: validator failed for field "SupplierPurchase.merchant_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Product(); !ok {
 		return &ValidationError{Name: "product", err: errors.New(`ent: missing required field "SupplierPurchase.product"`)}
 	}
@@ -628,6 +642,10 @@ func (_c *SupplierPurchaseCreate) createSpec() (*SupplierPurchase, *sqlgraph.Cre
 	if value, ok := _c.mutation.ConnectionID(); ok {
 		_spec.SetField(supplierpurchase.FieldConnectionID, field.TypeString, value)
 		_node.ConnectionID = value
+	}
+	if value, ok := _c.mutation.MerchantID(); ok {
+		_spec.SetField(supplierpurchase.FieldMerchantID, field.TypeString, value)
+		_node.MerchantID = value
 	}
 	if value, ok := _c.mutation.Product(); ok {
 		_spec.SetField(supplierpurchase.FieldProduct, field.TypeJSON, value)

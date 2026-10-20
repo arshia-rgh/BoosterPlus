@@ -61700,6 +61700,7 @@ type SupplierConnectionMutation struct {
 	op                Op
 	typ               string
 	id                *string
+	merchant_id       *string
 	version           *int
 	addversion        *int
 	markup_bps        *int
@@ -61816,6 +61817,42 @@ func (m *SupplierConnectionMutation) IDs(ctx context.Context) ([]string, error) 
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (m *SupplierConnectionMutation) SetMerchantID(s string) {
+	m.merchant_id = &s
+}
+
+// MerchantID returns the value of the "merchant_id" field in the mutation.
+func (m *SupplierConnectionMutation) MerchantID() (r string, exists bool) {
+	v := m.merchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantID returns the old "merchant_id" field's value of the SupplierConnection entity.
+// If the SupplierConnection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SupplierConnectionMutation) OldMerchantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantID: %w", err)
+	}
+	return oldValue.MerchantID, nil
+}
+
+// ResetMerchantID resets all changes to the "merchant_id" field.
+func (m *SupplierConnectionMutation) ResetMerchantID() {
+	m.merchant_id = nil
 }
 
 // SetVersion sets the "version" field.
@@ -62108,7 +62145,10 @@ func (m *SupplierConnectionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SupplierConnectionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
+	if m.merchant_id != nil {
+		fields = append(fields, supplierconnection.FieldMerchantID)
+	}
 	if m.version != nil {
 		fields = append(fields, supplierconnection.FieldVersion)
 	}
@@ -62135,6 +62175,8 @@ func (m *SupplierConnectionMutation) Fields() []string {
 // schema.
 func (m *SupplierConnectionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case supplierconnection.FieldMerchantID:
+		return m.MerchantID()
 	case supplierconnection.FieldVersion:
 		return m.Version()
 	case supplierconnection.FieldMarkupBps:
@@ -62156,6 +62198,8 @@ func (m *SupplierConnectionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SupplierConnectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case supplierconnection.FieldMerchantID:
+		return m.OldMerchantID(ctx)
 	case supplierconnection.FieldVersion:
 		return m.OldVersion(ctx)
 	case supplierconnection.FieldMarkupBps:
@@ -62177,6 +62221,13 @@ func (m *SupplierConnectionMutation) OldField(ctx context.Context, name string) 
 // type.
 func (m *SupplierConnectionMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case supplierconnection.FieldMerchantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantID(v)
+		return nil
 	case supplierconnection.FieldVersion:
 		v, ok := value.(int)
 		if !ok {
@@ -62295,6 +62346,9 @@ func (m *SupplierConnectionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SupplierConnectionMutation) ResetField(name string) error {
 	switch name {
+	case supplierconnection.FieldMerchantID:
+		m.ResetMerchantID()
+		return nil
 	case supplierconnection.FieldVersion:
 		m.ResetVersion()
 		return nil
@@ -62372,6 +62426,7 @@ type SupplierImportMutation struct {
 	typ              string
 	id               *string
 	connection_id    *string
+	merchant_id      *string
 	created_by       *string
 	auth_version     *int64
 	addauth_version  *int64
@@ -62530,6 +62585,42 @@ func (m *SupplierImportMutation) OldConnectionID(ctx context.Context) (v string,
 // ResetConnectionID resets all changes to the "connection_id" field.
 func (m *SupplierImportMutation) ResetConnectionID() {
 	m.connection_id = nil
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (m *SupplierImportMutation) SetMerchantID(s string) {
+	m.merchant_id = &s
+}
+
+// MerchantID returns the value of the "merchant_id" field in the mutation.
+func (m *SupplierImportMutation) MerchantID() (r string, exists bool) {
+	v := m.merchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantID returns the old "merchant_id" field's value of the SupplierImport entity.
+// If the SupplierImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SupplierImportMutation) OldMerchantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantID: %w", err)
+	}
+	return oldValue.MerchantID, nil
+}
+
+// ResetMerchantID resets all changes to the "merchant_id" field.
+func (m *SupplierImportMutation) ResetMerchantID() {
+	m.merchant_id = nil
 }
 
 // SetCreatedBy sets the "created_by" field.
@@ -63048,9 +63139,12 @@ func (m *SupplierImportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SupplierImportMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.connection_id != nil {
 		fields = append(fields, supplierimport.FieldConnectionID)
+	}
+	if m.merchant_id != nil {
+		fields = append(fields, supplierimport.FieldMerchantID)
 	}
 	if m.created_by != nil {
 		fields = append(fields, supplierimport.FieldCreatedBy)
@@ -63095,6 +63189,8 @@ func (m *SupplierImportMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case supplierimport.FieldConnectionID:
 		return m.ConnectionID()
+	case supplierimport.FieldMerchantID:
+		return m.MerchantID()
 	case supplierimport.FieldCreatedBy:
 		return m.CreatedBy()
 	case supplierimport.FieldAuthVersion:
@@ -63128,6 +63224,8 @@ func (m *SupplierImportMutation) OldField(ctx context.Context, name string) (ent
 	switch name {
 	case supplierimport.FieldConnectionID:
 		return m.OldConnectionID(ctx)
+	case supplierimport.FieldMerchantID:
+		return m.OldMerchantID(ctx)
 	case supplierimport.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
 	case supplierimport.FieldAuthVersion:
@@ -63165,6 +63263,13 @@ func (m *SupplierImportMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetConnectionID(v)
+		return nil
+	case supplierimport.FieldMerchantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantID(v)
 		return nil
 	case supplierimport.FieldCreatedBy:
 		v, ok := value.(string)
@@ -63348,6 +63453,9 @@ func (m *SupplierImportMutation) ResetField(name string) error {
 	switch name {
 	case supplierimport.FieldConnectionID:
 		m.ResetConnectionID()
+		return nil
+	case supplierimport.FieldMerchantID:
+		m.ResetMerchantID()
 		return nil
 	case supplierimport.FieldCreatedBy:
 		m.ResetCreatedBy()
@@ -65191,6 +65299,7 @@ type SupplierPurchaseMutation struct {
 	contract_id           *string
 	user_id               *string
 	connection_id         *string
+	merchant_id           *string
 	product               **suppliers.Product
 	offer_id              *string
 	quantity              *string
@@ -65467,6 +65576,42 @@ func (m *SupplierPurchaseMutation) OldConnectionID(ctx context.Context) (v strin
 // ResetConnectionID resets all changes to the "connection_id" field.
 func (m *SupplierPurchaseMutation) ResetConnectionID() {
 	m.connection_id = nil
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (m *SupplierPurchaseMutation) SetMerchantID(s string) {
+	m.merchant_id = &s
+}
+
+// MerchantID returns the value of the "merchant_id" field in the mutation.
+func (m *SupplierPurchaseMutation) MerchantID() (r string, exists bool) {
+	v := m.merchant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMerchantID returns the old "merchant_id" field's value of the SupplierPurchase entity.
+// If the SupplierPurchase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SupplierPurchaseMutation) OldMerchantID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMerchantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMerchantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMerchantID: %w", err)
+	}
+	return oldValue.MerchantID, nil
+}
+
+// ResetMerchantID resets all changes to the "merchant_id" field.
+func (m *SupplierPurchaseMutation) ResetMerchantID() {
+	m.merchant_id = nil
 }
 
 // SetProduct sets the "product" field.
@@ -66361,7 +66506,7 @@ func (m *SupplierPurchaseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SupplierPurchaseMutation) Fields() []string {
-	fields := make([]string, 0, 26)
+	fields := make([]string, 0, 27)
 	if m.order_id != nil {
 		fields = append(fields, supplierpurchase.FieldOrderID)
 	}
@@ -66373,6 +66518,9 @@ func (m *SupplierPurchaseMutation) Fields() []string {
 	}
 	if m.connection_id != nil {
 		fields = append(fields, supplierpurchase.FieldConnectionID)
+	}
+	if m.merchant_id != nil {
+		fields = append(fields, supplierpurchase.FieldMerchantID)
 	}
 	if m.product != nil {
 		fields = append(fields, supplierpurchase.FieldProduct)
@@ -66456,6 +66604,8 @@ func (m *SupplierPurchaseMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case supplierpurchase.FieldConnectionID:
 		return m.ConnectionID()
+	case supplierpurchase.FieldMerchantID:
+		return m.MerchantID()
 	case supplierpurchase.FieldProduct:
 		return m.Product()
 	case supplierpurchase.FieldOfferID:
@@ -66517,6 +66667,8 @@ func (m *SupplierPurchaseMutation) OldField(ctx context.Context, name string) (e
 		return m.OldUserID(ctx)
 	case supplierpurchase.FieldConnectionID:
 		return m.OldConnectionID(ctx)
+	case supplierpurchase.FieldMerchantID:
+		return m.OldMerchantID(ctx)
 	case supplierpurchase.FieldProduct:
 		return m.OldProduct(ctx)
 	case supplierpurchase.FieldOfferID:
@@ -66597,6 +66749,13 @@ func (m *SupplierPurchaseMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetConnectionID(v)
+		return nil
+	case supplierpurchase.FieldMerchantID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMerchantID(v)
 		return nil
 	case supplierpurchase.FieldProduct:
 		v, ok := value.(*suppliers.Product)
@@ -66854,6 +67013,9 @@ func (m *SupplierPurchaseMutation) ResetField(name string) error {
 		return nil
 	case supplierpurchase.FieldConnectionID:
 		m.ResetConnectionID()
+		return nil
+	case supplierpurchase.FieldMerchantID:
+		m.ResetMerchantID()
 		return nil
 	case supplierpurchase.FieldProduct:
 		m.ResetProduct()

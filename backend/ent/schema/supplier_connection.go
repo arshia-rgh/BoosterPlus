@@ -14,6 +14,7 @@ type SupplierConnection struct{ ent.Schema }
 func (SupplierConnection) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(32).Immutable(),
+		field.String("merchant_id").MaxLen(20).Default(""),
 		field.Int("version").Default(1),
 		field.Int("markup_bps").Default(1500),
 		field.String("current_import").MaxLen(36).Default(""),

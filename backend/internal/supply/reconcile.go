@@ -28,6 +28,9 @@ func (s *Purchaser) Reconcile(ctx context.Context, id string) error {
 		if !row.PostClaimed {
 			return ErrConflict
 		}
+		if e = s.purchaseConnection(ctx, tx, row, false); e != nil {
+			return e
+		}
 		if needsManualReview(row.Issue) {
 			return ErrConflict
 		}
@@ -112,6 +115,9 @@ func (s *Purchaser) apply(ctx context.Context, id, lease string, result supplier
 		}
 		if !row.PostClaimed || row.LeaseOwner != lease {
 			return ErrConflict
+		}
+		if err = s.purchaseConnection(ctx, tx, row, false); err != nil {
+			return err
 		}
 		input, err := request(row)
 		if err != nil {

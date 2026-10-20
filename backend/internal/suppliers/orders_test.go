@@ -77,25 +77,78 @@ func TestUncertainCreateNeverRetries(t *testing.T) {
 }
 func TestVendoriaCreateKeepsProductFormAndQuantity(t *testing.T) {
 	client := fixtureClient(t, VendoriaTest, func(w http.ResponseWriter, r *http.Request) {
-		var request struct {
-			Product   int             `json:"productId"`
-			Form      int             `json:"formId"`
-			Quantity  json.RawMessage `json:"quantity"`
-			Reference string          `json:"shopOrderId"`
+		if r.Method != http.MethodPost || r.URL.Path != "/api/orders" || r.Header.Get("Authorization") != "Shop "+testToken {
+			t.Error("incorrect Vendoria endpoint or truncated shop token")
 		}
-		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		var request struct {
+			Product   int               `json:"productId"`
+			Form      int               `json:"formId"`
+			Quantity  json.RawMessage   `json:"quantity"`
+			Reference string            `json:"shopOrderId"`
+			Values    map[string]string `json:"deliveryData"`
+		}
+		decoder := json.NewDecoder(r.Body)
+		// Vendoria silently ignores unknown fields. Reject them in this fixture
+		// so a Nexus-only price/idempotency field cannot appear to protect us.
+		decoder.DisallowUnknownFields()
+		if err := decoder.Decode(&request); err != nil {
 			t.Error(err)
 		}
-		if request.Product != 5 || request.Form != 7 || string(request.Quantity) != "1" || request.Reference != testReference {
+		if request.Product != 5 || request.Form != 7 || string(request.Quantity) != "1" || request.Reference != testReference || request.Values["player"] != "synthetic-player" {
 			t.Error("incorrect request")
 		}
-		reply(t, w, `{"id":42,"productId":5,"quantity":1,"price":0.515,"shopOrderId":"`+testReference+`","status":"pending"}`)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		// Actual price may exceed the earlier read; retain the provider ID and
+		// charged total for the purchase layer's review, never substitute our cap.
+		reply(t, w, `{"id":42,"productId":5,"quantity":1,"price":0.625,"shopOrderId":"`+testReference+`","status":"pending"}`)
 	})
 	input := testPurchase()
 	input.ProductID = "5"
 	input.Offer.ID = "7"
-	if _, err := client.CreateOrder(t.Context(), input); err != nil {
-		t.Fatal(err)
+	if result, err := client.CreateOrder(t.Context(), input); err != nil || result.ID != "42" || result.Cost != "0.625" {
+		t.Fatal("actual charged amount or accepted order lost", err)
+	}
+}
+
+func TestVendoriaCreateErrorsNeverRepeatPurchase(t *testing.T) {
+	for _, status := range []int{http.StatusBadRequest, http.StatusPaymentRequired, http.StatusUnprocessableEntity, http.StatusTooManyRequests, http.StatusInternalServerError, http.StatusBadGateway} {
+		t.Run(http.StatusText(status), func(t *testing.T) {
+			var posts atomic.Int32
+			client := fixtureClient(t, VendoriaTest, func(w http.ResponseWriter, r *http.Request) {
+				if r.Method != http.MethodPost || r.URL.Path != "/api/orders" {
+					t.Error("unexpected request")
+				}
+				posts.Add(1)
+				w.WriteHeader(status)
+				reply(t, w, `{"message":"private-synthetic-delivery-value"}`)
+			})
+			input := testPurchase()
+			input.ProductID, input.Offer.ID = "5", "7"
+			_, err := client.CreateOrder(t.Context(), input)
+			if err == nil || posts.Load() != 1 || strings.Contains(err.Error(), "private-synthetic") {
+				t.Fatal("create retried or private response exposed", err)
+			}
+		})
+	}
+}
+
+func TestVendoriaCancellationAndNewestFirstReferenceSearch(t *testing.T) {
+	client := fixtureClient(t, VendoriaTest, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/api/orders" || r.URL.Query().Get("take") != "100" || r.URL.Query().Get("offset") != "0" {
+			t.Error("reference lookup used an unsupported filter or write")
+		}
+		// A cancelled order and a second chargeable purchase may share the same
+		// reference. Preserve both; neither newest-first ordering nor cancellation
+		// establishes which one the purchase layer should select.
+		reply(t, w, `[{"id":43,"productId":5,"quantity":1,"price":0.625,"shopOrderId":"`+testReference+`","status":"pending"},{"id":42,"productId":5,"quantity":1,"price":0.515,"shopOrderId":"`+testReference+`","status":"cancelled","cancellationReason":{"type":"vendor_rejection"}}]`)
+	})
+	orders, more, err := client.FindOrders(t.Context(), testReference, 0)
+	if err != nil || more || len(orders) != 2 || orders[0].ID != "43" || orders[1].Status != "cancelled" || orders[1].Reason != "vendor_rejection" {
+		t.Fatal("lost duplicate/cancellation evidence", err)
+	}
+	if _, err = client.decodeOrder([]byte(`{"id":42,"productId":5,"quantity":1,"price":0.515,"status":"failed"}`)); !errors.Is(err, ErrEvidence) {
+		t.Fatal("accepted nonexistent Vendoria failed status", err)
 	}
 }
 func TestPartialFulfillmentIsNotFullDelivery(t *testing.T) {

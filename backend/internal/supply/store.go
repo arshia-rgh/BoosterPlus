@@ -25,6 +25,7 @@ var (
 // CatalogReader is read-only. Purchasing is deliberately outside the import path.
 type CatalogReader interface {
 	Connection() suppliers.Connection
+	MerchantID() string
 	Catalog(context.Context) (suppliers.Catalog, error)
 }
 
@@ -59,7 +60,7 @@ func New(client *ent.Client, auth *identity.Service, readers []CatalogReader, no
 	}
 	s := &Store{client: client, auth: auth, readers: map[suppliers.Connection]CatalogReader{}, now: now}
 	for _, reader := range readers {
-		if reader == nil || !validConnection(reader.Connection()) || s.readers[reader.Connection()] != nil {
+		if reader == nil || !validConnection(reader.Connection()) || !validMerchant(reader.MerchantID()) || s.readers[reader.Connection()] != nil {
 			return nil, ErrInvalid
 		}
 		s.readers[reader.Connection()] = reader

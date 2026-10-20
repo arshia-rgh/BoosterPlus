@@ -20,13 +20,15 @@ import (
 )
 
 type supplierReader struct {
-	value  suppliers.Catalog
-	err    error
-	calls  atomic.Int32
-	before func()
+	merchant string
+	value    suppliers.Catalog
+	err      error
+	calls    atomic.Int32
+	before   func()
 }
 
 func (r *supplierReader) Connection() suppliers.Connection { return r.value.Connection }
+func (r *supplierReader) MerchantID() string               { return r.merchant }
 func (r *supplierReader) Catalog(context.Context) (suppliers.Catalog, error) {
 	r.calls.Add(1)
 	if r.before != nil {
@@ -37,7 +39,7 @@ func (r *supplierReader) Catalog(context.Context) (suppliers.Catalog, error) {
 
 func supplierFixture(t *testing.T, f *orderFixture) (*supply.Store, *supplierReader) {
 	t.Helper()
-	reader := &supplierReader{value: suppliers.Catalog{Connection: suppliers.NexusSandbox, Games: []suppliers.Game{{ID: "test", Name: "Test game"}}, Categories: []suppliers.Category{{ID: "test:coins", GameID: "test", Name: "Coins"}},
+	reader := &supplierReader{merchant: "101", value: suppliers.Catalog{Connection: suppliers.NexusSandbox, Games: []suppliers.Game{{ID: "test", Name: "Test game"}}, Categories: []suppliers.Category{{ID: "test:coins", GameID: "test", Name: "Coins"}},
 		Products: []suppliers.Product{{ID: "test:coins:p1", GameID: "test", CategoryID: "test:coins", Name: "Test coins", Offers: []suppliers.Offer{{ID: "default", Name: "ID delivery", Cost: "1.005", Available: true, SuggestedDelivery: "id", Quantity: suppliers.Quantity{Kind: "one", Min: "1", Max: "1", Step: "1"}}}},
 			{ID: "unavailable", Name: "Unpriced fixture", ReviewIssues: []string{"supplier_category_missing"}, Offers: []suppliers.Offer{}}}}}
 	store, err := supply.New(f.auth.client, f.auth.service, []supply.CatalogReader{reader}, func() time.Time { return time.Unix(f.auth.clock.Load(), 0) })

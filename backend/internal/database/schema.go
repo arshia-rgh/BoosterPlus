@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 45
+const SchemaVersion = 46
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_connections.merchant_id": "varchar", "supplier_imports.merchant_id": "varchar", "supplier_purchases.merchant_id": "varchar",
 		"supplier_purchases.product": "json", "supplier_purchases.post_claimed": "tinyint", "supplier_purchases.maximum_cost": "varchar", "supplier_purchases.lease_until": "datetime", "supplier_signals.digest": "char",
 		"supplier_connections.current_import": "varchar", "supplier_connections.purchases_enabled": "tinyint", "supplier_imports.metadata": "json", "supplier_imports.lease_until": "datetime", "supplier_items.data": "json", "supplier_prices.override_minor": "varchar",
 		"conversation_forms.fields": "json", "conversation_forms.answers": "json", "conversation_forms.recipient_id": "varchar", "conversation_forms.state": "enum", "conversation_forms.expires_at": "datetime",

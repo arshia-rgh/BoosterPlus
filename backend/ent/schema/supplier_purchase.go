@@ -22,6 +22,7 @@ func (SupplierPurchase) Fields() []ent.Field {
 		field.String("contract_id").MaxLen(36).Immutable(),
 		field.String("user_id").MaxLen(36).Immutable(),
 		field.String("connection_id").MaxLen(32).Immutable(),
+		field.String("merchant_id").MaxLen(20).Immutable(),
 		field.JSON("product", &suppliers.Product{}).Immutable().Sensitive(),
 		field.String("offer_id").MaxLen(240).Immutable(),
 		field.String("quantity").MaxLen(64).Immutable(),

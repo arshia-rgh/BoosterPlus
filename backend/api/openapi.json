@@ -25313,6 +25313,218 @@
           }
         }
       }
+    },
+    "/api/v1/webhooks/suppliers/nexus-sandbox": {
+      "post": {
+        "operationId": "receiveNexusSandboxSignal",
+        "summary": "Configured merchant callback; verified status signals schedule read-only reconciliation",
+        "description": "Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "Sign",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recognized status signal recorded, duplicate received, or authenticated unknown event ignored"
+          },
+          "403": {
+            "description": "Missing, ambiguous or incorrect signature"
+          },
+          "404": {
+            "description": "Connection is not configured in this application"
+          },
+          "413": {
+            "description": "Body exceeds the 256 KiB limit"
+          },
+          "415": {
+            "description": "Unsupported content type or encoding"
+          },
+          "422": {
+            "description": "Authenticated payload is invalid"
+          },
+          "503": {
+            "description": "Signal cannot be recorded or requires an unfinished interactive workflow; retry later"
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/suppliers/vendoria-test": {
+      "post": {
+        "operationId": "receiveVendoriaTestSignal",
+        "summary": "Configured merchant callback; verified status signals schedule read-only reconciliation",
+        "description": "Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "Sign",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recognized status signal recorded, duplicate received, or authenticated unknown event ignored"
+          },
+          "403": {
+            "description": "Missing, ambiguous or incorrect signature"
+          },
+          "404": {
+            "description": "Connection is not configured in this application"
+          },
+          "413": {
+            "description": "Body exceeds the 256 KiB limit"
+          },
+          "415": {
+            "description": "Unsupported content type or encoding"
+          },
+          "422": {
+            "description": "Authenticated payload is invalid"
+          },
+          "503": {
+            "description": "Signal cannot be recorded or requires an unfinished interactive workflow; retry later"
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/suppliers/nexus-production": {
+      "post": {
+        "operationId": "receiveNexusProductionSignal",
+        "summary": "Configured merchant callback; verified status signals schedule read-only reconciliation",
+        "description": "Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "Sign",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recognized status signal recorded, duplicate received, or authenticated unknown event ignored"
+          },
+          "403": {
+            "description": "Missing, ambiguous or incorrect signature"
+          },
+          "404": {
+            "description": "Connection is not configured in this application"
+          },
+          "413": {
+            "description": "Body exceeds the 256 KiB limit"
+          },
+          "415": {
+            "description": "Unsupported content type or encoding"
+          },
+          "422": {
+            "description": "Authenticated payload is invalid"
+          },
+          "503": {
+            "description": "Signal cannot be recorded or requires an unfinished interactive workflow; retry later"
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/suppliers/vendoria-production": {
+      "post": {
+        "operationId": "receiveVendoriaProductionSignal",
+        "summary": "Configured merchant callback; verified status signals schedule read-only reconciliation",
+        "description": "Registered only for this explicitly configured environment. HMAC-SHA256 covers the exact request bytes using the full Shop token. No callback settles customer payment or creates a supplier purchase. Interactive delivery requests are not acknowledged until their separate workflow is available.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "Sign",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recognized status signal recorded, duplicate received, or authenticated unknown event ignored"
+          },
+          "403": {
+            "description": "Missing, ambiguous or incorrect signature"
+          },
+          "404": {
+            "description": "Connection is not configured in this application"
+          },
+          "413": {
+            "description": "Body exceeds the 256 KiB limit"
+          },
+          "415": {
+            "description": "Unsupported content type or encoding"
+          },
+          "422": {
+            "description": "Authenticated payload is invalid"
+          },
+          "503": {
+            "description": "Signal cannot be recorded or requires an unfinished interactive workflow; retry later"
+          }
+        }
+      }
     }
   },
   "components": {

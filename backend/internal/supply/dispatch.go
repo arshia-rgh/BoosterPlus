@@ -34,9 +34,8 @@ func (s *Purchaser) Dispatch(ctx context.Context, id string) error {
 		if row.PostClaimed {
 			return nil
 		}
-		conn := suppliers.Connection(row.ConnectionID)
-		if !s.enabled || !conn.Testing() || s.providers[conn] == nil {
-			return suppliers.ErrReadOnly
+		if e = s.purchaseConnection(ctx, tx, row, true); e != nil {
+			return e
 		}
 		if row.State != "awaiting_payment" && row.State != "checking" {
 			return nil
@@ -70,7 +69,7 @@ func (s *Purchaser) Dispatch(ctx context.Context, id string) error {
 	}
 	cost, e1 := quote.TotalCost.Rational()
 	maximum, e2 := suppliers.Decimal(row.MaximumCost).Rational()
-	if e1 != nil || e2 != nil || cost.Sign() <= 0 || cost.Cmp(maximum) > 0 || quote.Connection != suppliers.Connection(row.ConnectionID) || quote.Product.ID != row.Product.ID || quote.Offer.ID != row.OfferID || quote.Quantity != suppliers.Decimal(row.Quantity) {
+	if e1 != nil || e2 != nil || cost.Sign() <= 0 || cost.Cmp(maximum) > 0 || quote.Connection != suppliers.Connection(row.ConnectionID) || quote.MerchantID != row.MerchantID || quote.Product.ID != row.Product.ID || quote.Offer.ID != row.OfferID || quote.Quantity != suppliers.Decimal(row.Quantity) {
 		return s.beforeSendFailure(ctx, row.ID, lease, "price_review")
 	}
 	input, err := request(row)
@@ -85,6 +84,9 @@ func (s *Purchaser) Dispatch(ctx context.Context, id string) error {
 		}
 		if current.PostClaimed || current.State != "checking" || current.LeaseOwner != lease || current.LeaseUntil == nil || !current.LeaseUntil.After(s.now()) {
 			return ErrConflict
+		}
+		if e = s.purchaseConnection(ctx, tx, current, true); e != nil {
+			return e
 		}
 		if e = paid(ctx, tx, current); e != nil {
 			return e

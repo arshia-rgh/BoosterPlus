@@ -146,6 +146,9 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 		if int64(steps) > current {
 			return errors.New("rollback exceeds applied migrations")
 		}
+		if current >= 46 && current-int64(steps) < 46 {
+			return errors.New("supplier merchant evidence is forward-only; rollback across schema 46 requires a separately verified pre-migration restore")
+		}
 		if current >= 45 && current-int64(steps) < 45 {
 			return errors.New("supplier purchase evidence is forward-only; rollback across schema 45 requires a separately verified pre-migration restore")
 		}

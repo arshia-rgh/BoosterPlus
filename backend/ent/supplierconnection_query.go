@@ -262,12 +262,12 @@ func (_q *SupplierConnectionQuery) Clone() *SupplierConnectionQuery {
 // Example:
 //
 //	var v []struct {
-//		Version int `json:"version,omitempty"`
+//		MerchantID string `json:"merchant_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.SupplierConnection.Query().
-//		GroupBy(supplierconnection.FieldVersion).
+//		GroupBy(supplierconnection.FieldMerchantID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *SupplierConnectionQuery) GroupBy(field string, fields ...string) *SupplierConnectionGroupBy {
@@ -285,11 +285,11 @@ func (_q *SupplierConnectionQuery) GroupBy(field string, fields ...string) *Supp
 // Example:
 //
 //	var v []struct {
-//		Version int `json:"version,omitempty"`
+//		MerchantID string `json:"merchant_id,omitempty"`
 //	}
 //
 //	client.SupplierConnection.Query().
-//		Select(supplierconnection.FieldVersion).
+//		Select(supplierconnection.FieldMerchantID).
 //		Scan(ctx, &v)
 func (_q *SupplierConnectionQuery) Select(fields ...string) *SupplierConnectionSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

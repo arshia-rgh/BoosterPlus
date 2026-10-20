@@ -25,6 +25,7 @@ import (
 // reads credentials or contacts any supplier/payment service.
 type purchaseProvider struct {
 	connection    suppliers.Connection
+	merchant      string
 	quote         suppliers.Quote
 	result        suppliers.Order
 	rows          []suppliers.Order
@@ -38,6 +39,7 @@ type purchaseProvider struct {
 }
 
 func (p *purchaseProvider) Connection() suppliers.Connection { return p.connection }
+func (p *purchaseProvider) MerchantID() string               { return p.merchant }
 func (p *purchaseProvider) QuoteOffer(context.Context, suppliers.Product, string, suppliers.Decimal) (suppliers.Quote, error) {
 	if p.beforeQuote != nil {
 		p.beforeQuote()
@@ -176,7 +178,10 @@ func purchaseFixtureConnection(t *testing.T, f *paymentFixture, connection suppl
 		t.Fatal(err)
 	}
 	product := suppliers.Product{ID: "60", GameID: "30", CategoryID: "40", Name: "Synthetic product", Offers: []suppliers.Offer{{ID: "50", Available: true, Cost: "1.005", Quantity: suppliers.Quantity{Kind: "one", Min: "1", Max: "1", Step: "1"}, Fields: []suppliers.Field{{ID: "password", Label: "Access", Kind: "text", Secret: true, Required: true}}}}}
-	provider := &purchaseProvider{connection: connection, quote: suppliers.Quote{Connection: connection, Product: product, Offer: product.Offers[0], Quantity: "1", TotalCost: "1.005"}}
+	provider := &purchaseProvider{connection: connection, merchant: "101", quote: suppliers.Quote{Connection: connection, MerchantID: "101", Product: product, Offer: product.Offers[0], Quantity: "1", TotalCost: "1.005"}}
+	if _, err = f.base.auth.client.SupplierConnection.Create().SetID(string(connection)).SetMerchantID(provider.MerchantID()).SetPurchasesEnabled(true).Save(ctx); err != nil {
+		t.Fatal(err)
+	}
 	worker, err := supply.NewPurchaser(f.base.auth.client, keys, []supply.PurchaseProvider{provider}, true, func() time.Time { return time.Unix(f.base.auth.clock.Load(), 0) })
 	if err != nil {
 		t.Fatal(err)

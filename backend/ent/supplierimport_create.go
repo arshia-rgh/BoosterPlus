@@ -26,6 +26,12 @@ func (_c *SupplierImportCreate) SetConnectionID(v string) *SupplierImportCreate 
 	return _c
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (_c *SupplierImportCreate) SetMerchantID(v string) *SupplierImportCreate {
+	_c.mutation.SetMerchantID(v)
+	return _c
+}
+
 // SetCreatedBy sets the "created_by" field.
 func (_c *SupplierImportCreate) SetCreatedBy(v string) *SupplierImportCreate {
 	_c.mutation.SetCreatedBy(v)
@@ -249,6 +255,14 @@ func (_c *SupplierImportCreate) check() error {
 			return &ValidationError{Name: "connection_id", err: fmt.Errorf(`ent: validator failed for field "SupplierImport.connection_id": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.MerchantID(); !ok {
+		return &ValidationError{Name: "merchant_id", err: errors.New(`ent: missing required field "SupplierImport.merchant_id"`)}
+	}
+	if v, ok := _c.mutation.MerchantID(); ok {
+		if err := supplierimport.MerchantIDValidator(v); err != nil {
+			return &ValidationError{Name: "merchant_id", err: fmt.Errorf(`ent: validator failed for field "SupplierImport.merchant_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "SupplierImport.created_by"`)}
 	}
@@ -339,6 +353,10 @@ func (_c *SupplierImportCreate) createSpec() (*SupplierImport, *sqlgraph.CreateS
 	if value, ok := _c.mutation.ConnectionID(); ok {
 		_spec.SetField(supplierimport.FieldConnectionID, field.TypeString, value)
 		_node.ConnectionID = value
+	}
+	if value, ok := _c.mutation.MerchantID(); ok {
+		_spec.SetField(supplierimport.FieldMerchantID, field.TypeString, value)
+		_node.MerchantID = value
 	}
 	if value, ok := _c.mutation.CreatedBy(); ok {
 		_spec.SetField(supplierimport.FieldCreatedBy, field.TypeString, value)

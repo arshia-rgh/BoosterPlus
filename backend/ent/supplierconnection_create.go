@@ -20,6 +20,20 @@ type SupplierConnectionCreate struct {
 	hooks    []Hook
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (_c *SupplierConnectionCreate) SetMerchantID(v string) *SupplierConnectionCreate {
+	_c.mutation.SetMerchantID(v)
+	return _c
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_c *SupplierConnectionCreate) SetNillableMerchantID(v *string) *SupplierConnectionCreate {
+	if v != nil {
+		_c.SetMerchantID(*v)
+	}
+	return _c
+}
+
 // SetVersion sets the "version" field.
 func (_c *SupplierConnectionCreate) SetVersion(v int) *SupplierConnectionCreate {
 	_c.mutation.SetVersion(v)
@@ -145,6 +159,10 @@ func (_c *SupplierConnectionCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *SupplierConnectionCreate) defaults() {
+	if _, ok := _c.mutation.MerchantID(); !ok {
+		v := supplierconnection.DefaultMerchantID
+		_c.mutation.SetMerchantID(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := supplierconnection.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -173,6 +191,14 @@ func (_c *SupplierConnectionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SupplierConnectionCreate) check() error {
+	if _, ok := _c.mutation.MerchantID(); !ok {
+		return &ValidationError{Name: "merchant_id", err: errors.New(`ent: missing required field "SupplierConnection.merchant_id"`)}
+	}
+	if v, ok := _c.mutation.MerchantID(); ok {
+		if err := supplierconnection.MerchantIDValidator(v); err != nil {
+			return &ValidationError{Name: "merchant_id", err: fmt.Errorf(`ent: validator failed for field "SupplierConnection.merchant_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "SupplierConnection.version"`)}
 	}
@@ -240,6 +266,10 @@ func (_c *SupplierConnectionCreate) createSpec() (*SupplierConnection, *sqlgraph
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.MerchantID(); ok {
+		_spec.SetField(supplierconnection.FieldMerchantID, field.TypeString, value)
+		_node.MerchantID = value
 	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(supplierconnection.FieldVersion, field.TypeInt, value)

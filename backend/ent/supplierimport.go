@@ -20,6 +20,8 @@ type SupplierImport struct {
 	ID string `json:"id,omitempty"`
 	// ConnectionID holds the value of the "connection_id" field.
 	ConnectionID string `json:"connection_id,omitempty"`
+	// MerchantID holds the value of the "merchant_id" field.
+	MerchantID string `json:"merchant_id,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy string `json:"created_by,omitempty"`
 	// AuthVersion holds the value of the "auth_version" field.
@@ -54,7 +56,7 @@ func (*SupplierImport) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case supplierimport.FieldAuthVersion, supplierimport.FieldProductCount, supplierimport.FieldOfferCount:
 			values[i] = new(sql.NullInt64)
-		case supplierimport.FieldID, supplierimport.FieldConnectionID, supplierimport.FieldCreatedBy, supplierimport.FieldState, supplierimport.FieldLeaseOwner, supplierimport.FieldIssue:
+		case supplierimport.FieldID, supplierimport.FieldConnectionID, supplierimport.FieldMerchantID, supplierimport.FieldCreatedBy, supplierimport.FieldState, supplierimport.FieldLeaseOwner, supplierimport.FieldIssue:
 			values[i] = new(sql.NullString)
 		case supplierimport.FieldLeaseUntil, supplierimport.FieldCreatedAt, supplierimport.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -84,6 +86,12 @@ func (_m *SupplierImport) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field connection_id", values[i])
 			} else if value.Valid {
 				_m.ConnectionID = value.String
+			}
+		case supplierimport.FieldMerchantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_id", values[i])
+			} else if value.Valid {
+				_m.MerchantID = value.String
 			}
 		case supplierimport.FieldCreatedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -192,6 +200,9 @@ func (_m *SupplierImport) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("connection_id=")
 	builder.WriteString(_m.ConnectionID)
+	builder.WriteString(", ")
+	builder.WriteString("merchant_id=")
+	builder.WriteString(_m.MerchantID)
 	builder.WriteString(", ")
 	builder.WriteString("created_by=")
 	builder.WriteString(_m.CreatedBy)

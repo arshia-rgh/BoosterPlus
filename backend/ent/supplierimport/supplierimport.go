@@ -15,6 +15,8 @@ const (
 	FieldID = "id"
 	// FieldConnectionID holds the string denoting the connection_id field in the database.
 	FieldConnectionID = "connection_id"
+	// FieldMerchantID holds the string denoting the merchant_id field in the database.
+	FieldMerchantID = "merchant_id"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
 	// FieldAuthVersion holds the string denoting the auth_version field in the database.
@@ -45,6 +47,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldConnectionID,
+	FieldMerchantID,
 	FieldCreatedBy,
 	FieldAuthVersion,
 	FieldState,
@@ -71,6 +74,8 @@ func ValidColumn(column string) bool {
 var (
 	// ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
 	ConnectionIDValidator func(string) error
+	// MerchantIDValidator is a validator for the "merchant_id" field. It is called by the builders before save.
+	MerchantIDValidator func(string) error
 	// CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	CreatedByValidator func(string) error
 	// DefaultState holds the default value on creation for the "state" field.
@@ -110,6 +115,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByConnectionID orders the results by the connection_id field.
 func ByConnectionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConnectionID, opts...).ToFunc()
+}
+
+// ByMerchantID orders the results by the merchant_id field.
+func ByMerchantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMerchantID, opts...).ToFunc()
 }
 
 // ByCreatedBy orders the results by the created_by field.

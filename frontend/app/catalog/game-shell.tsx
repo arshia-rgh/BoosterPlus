@@ -18,6 +18,7 @@ import {
   useRouteError,
   useSearchParams,
   useRevalidator,
+  useMatches,
 } from "../portal-router";
 import { GameDiscovery } from "./game-discovery";
 import { selectedService } from "./public-discovery";
@@ -52,24 +53,52 @@ export function GameShell({
   const { pathname } = useLocation();
   const requested = query.get("path");
   const localContent = useRef<HTMLDivElement>(null);
-  const revalidator = useRevalidator();
-  const retryFocus = useRef(false);
-  useEffect(() => {
-    if (!retryFocus.current || revalidator.state !== "idle") return;
-    retryFocus.current = false;
-    const heading = localContent.current?.querySelector<HTMLElement>("h2");
-    if (heading) {
-      heading.tabIndex = -1;
-      heading.focus({ preventScroll: true });
-    }
-  }, [revalidator.state]);
-
   const focusPath =
     pathname +
     ":" +
     (query.get("service") ?? "") +
     ":" +
     (query.get("path") ?? "");
+  const revalidator = useRevalidator();
+  const matches = useMatches();
+  const retryFocus = useRef<{ path: string; matches: typeof matches } | null>(
+    null,
+  );
+  const [retryGeneration, setRetryGeneration] = useState(0);
+  const focusedGeneration = useRef(0);
+  useEffect(() => {
+    if (retryFocus.current?.path !== focusPath) {
+      retryFocus.current = null;
+      return;
+    }
+    if (revalidator.state !== "idle" || retryFocus.current.matches === matches)
+      return;
+    retryFocus.current = null;
+    // The pinned router can retain its old error when loading/idle are batched.
+    // Remount only this failed section after new route data has committed.
+    setRetryGeneration((value) => value + 1);
+  }, [focusPath, matches, revalidator.state]);
+  useEffect(() => {
+    if (retryGeneration === focusedGeneration.current) return;
+    focusedGeneration.current = retryGeneration;
+    const content = localContent.current;
+    if (!content) return;
+    const focus = () => {
+      const heading = content.querySelector<HTMLElement>("h2");
+      if (!heading) return false;
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      return true;
+    };
+    if (focus()) return;
+    const observer = new MutationObserver(() => {
+      if (focus()) observer.disconnect();
+    });
+    observer.observe(content, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+    };
+  }, [focusPath, retryGeneration]);
   const previousPath = useRef(focusPath);
   useEffect(() => {
     if (previousPath.current === focusPath) return;
@@ -150,10 +179,14 @@ export function GameShell({
         selected={selectedService(pathname, query)}
         action={<CustomBoostAction key={focusPath} release={release} />}
       >
-        <div ref={localContent} className="game-local-content">
+        <div
+          key={retryGeneration}
+          ref={localContent}
+          className="game-local-content"
+        >
           <RetryFocus
             value={() => {
-              retryFocus.current = true;
+              retryFocus.current = { path: focusPath, matches };
             }}
           >
             {children}

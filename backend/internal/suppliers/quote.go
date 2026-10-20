@@ -15,6 +15,7 @@ import (
 // purchase time. Vendoria's read must never be represented as an atomic cap.
 type Quote struct {
 	Connection Connection
+	MerchantID string
 	Product    Product
 	Offer      Offer
 	Quantity   Decimal
@@ -47,7 +48,7 @@ func (c *Client) QuoteOffer(ctx context.Context, reviewed Product, offerID strin
 	if !sameRequirements(reviewed, previous, current, next) {
 		return Quote{}, ErrChanged
 	}
-	return Quote{c.connection, current, next, quantity, cost}, nil
+	return Quote{c.connection, c.MerchantID(), current, next, quantity, cost}, nil
 }
 
 func findOffer(product Product, id string) (Offer, bool) {

@@ -2268,6 +2268,7 @@ var (
 	// SupplierConnectionsColumns holds the columns for the "supplier_connections" table.
 	SupplierConnectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 32},
+		{Name: "merchant_id", Type: field.TypeString, Size: 20, Default: ""},
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "markup_bps", Type: field.TypeInt, Default: 1500},
 		{Name: "current_import", Type: field.TypeString, Size: 36, Default: ""},
@@ -2285,6 +2286,7 @@ var (
 	SupplierImportsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "merchant_id", Type: field.TypeString, Size: 20},
 		{Name: "created_by", Type: field.TypeString, Size: 36},
 		{Name: "auth_version", Type: field.TypeInt64},
 		{Name: "state", Type: field.TypeString, Size: 32, Default: "queued"},
@@ -2306,7 +2308,7 @@ var (
 			{
 				Name:    "supplier_import_history",
 				Unique:  false,
-				Columns: []*schema.Column{SupplierImportsColumns[1], SupplierImportsColumns[11], SupplierImportsColumns[0]},
+				Columns: []*schema.Column{SupplierImportsColumns[1], SupplierImportsColumns[12], SupplierImportsColumns[0]},
 			},
 		},
 	}
@@ -2386,6 +2388,7 @@ var (
 		{Name: "contract_id", Type: field.TypeString, Size: 36},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
 		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "merchant_id", Type: field.TypeString, Size: 20},
 		{Name: "product", Type: field.TypeJSON},
 		{Name: "offer_id", Type: field.TypeString, Size: 240},
 		{Name: "quantity", Type: field.TypeString, Size: 64},
@@ -2428,12 +2431,12 @@ var (
 			{
 				Name:    "supplier_purchase_provider",
 				Unique:  true,
-				Columns: []*schema.Column{SupplierPurchasesColumns[4], SupplierPurchasesColumns[14]},
+				Columns: []*schema.Column{SupplierPurchasesColumns[4], SupplierPurchasesColumns[15]},
 			},
 			{
 				Name:    "supplier_purchase_due",
 				Unique:  false,
-				Columns: []*schema.Column{SupplierPurchasesColumns[18], SupplierPurchasesColumns[0]},
+				Columns: []*schema.Column{SupplierPurchasesColumns[19], SupplierPurchasesColumns[0]},
 			},
 		},
 	}

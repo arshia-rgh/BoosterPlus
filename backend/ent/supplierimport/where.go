@@ -69,6 +69,11 @@ func ConnectionID(v string) predicate.SupplierImport {
 	return predicate.SupplierImport(sql.FieldEQ(FieldConnectionID, v))
 }
 
+// MerchantID applies equality check predicate on the "merchant_id" field. It's identical to MerchantIDEQ.
+func MerchantID(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldEQ(FieldMerchantID, v))
+}
+
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
 func CreatedBy(v string) predicate.SupplierImport {
 	return predicate.SupplierImport(sql.FieldEQ(FieldCreatedBy, v))
@@ -182,6 +187,71 @@ func ConnectionIDEqualFold(v string) predicate.SupplierImport {
 // ConnectionIDContainsFold applies the ContainsFold predicate on the "connection_id" field.
 func ConnectionIDContainsFold(v string) predicate.SupplierImport {
 	return predicate.SupplierImport(sql.FieldContainsFold(FieldConnectionID, v))
+}
+
+// MerchantIDEQ applies the EQ predicate on the "merchant_id" field.
+func MerchantIDEQ(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldEQ(FieldMerchantID, v))
+}
+
+// MerchantIDNEQ applies the NEQ predicate on the "merchant_id" field.
+func MerchantIDNEQ(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldNEQ(FieldMerchantID, v))
+}
+
+// MerchantIDIn applies the In predicate on the "merchant_id" field.
+func MerchantIDIn(vs ...string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDNotIn applies the NotIn predicate on the "merchant_id" field.
+func MerchantIDNotIn(vs ...string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldNotIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDGT applies the GT predicate on the "merchant_id" field.
+func MerchantIDGT(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldGT(FieldMerchantID, v))
+}
+
+// MerchantIDGTE applies the GTE predicate on the "merchant_id" field.
+func MerchantIDGTE(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldGTE(FieldMerchantID, v))
+}
+
+// MerchantIDLT applies the LT predicate on the "merchant_id" field.
+func MerchantIDLT(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldLT(FieldMerchantID, v))
+}
+
+// MerchantIDLTE applies the LTE predicate on the "merchant_id" field.
+func MerchantIDLTE(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldLTE(FieldMerchantID, v))
+}
+
+// MerchantIDContains applies the Contains predicate on the "merchant_id" field.
+func MerchantIDContains(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldContains(FieldMerchantID, v))
+}
+
+// MerchantIDHasPrefix applies the HasPrefix predicate on the "merchant_id" field.
+func MerchantIDHasPrefix(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldHasPrefix(FieldMerchantID, v))
+}
+
+// MerchantIDHasSuffix applies the HasSuffix predicate on the "merchant_id" field.
+func MerchantIDHasSuffix(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldHasSuffix(FieldMerchantID, v))
+}
+
+// MerchantIDEqualFold applies the EqualFold predicate on the "merchant_id" field.
+func MerchantIDEqualFold(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldEqualFold(FieldMerchantID, v))
+}
+
+// MerchantIDContainsFold applies the ContainsFold predicate on the "merchant_id" field.
+func MerchantIDContainsFold(v string) predicate.SupplierImport {
+	return predicate.SupplierImport(sql.FieldContainsFold(FieldMerchantID, v))
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.

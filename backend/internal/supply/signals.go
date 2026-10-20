@@ -54,6 +54,9 @@ func (s *Purchaser) RecordStatusSignal(ctx context.Context, connection suppliers
 		if row.ProviderID != nil && *row.ProviderID != signal.OrderID {
 			return ErrConflict
 		}
+		if e = s.purchaseConnection(ctx, tx, row, false); e != nil {
+			return e
+		}
 		// The signed callback is still only a hint; a reference-only match never
 		// binds an unknown provider ID without an authoritative matching order read.
 		_, e = tx.SupplierSignal.Create().SetConnectionID(string(connection)).SetDigest(signal.Digest).SetPurchaseID(row.ID).SetProviderID(signal.OrderID).SetSignalType(signal.Type).SetCreatedAt(s.now()).Save(ctx)

@@ -118,6 +118,15 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		return supplierErr
 	}
 	handlers["supplier.import"] = supplierStore.ImportHandler()
+	supplierPurchaser, supplierErr := supply.PurchaserFromConfig(client, cfg.Vault, cfg.Suppliers)
+	if supplierErr != nil {
+		return supplierErr
+	}
+	handlers["supplier.dispatch"] = supplierPurchaser.Handler()
+	handlers["supplier.reconcile"] = supplierPurchaser.ReconcileHandler()
+	supplierDone := make(chan struct{})
+	go func() { defer close(supplierDone); supplierPurchaser.RunMaintenance(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-supplierDone }()
 	handlers["payments.refund"] = finance.RefundHandler()
 	handlers["payments.payout"] = finance.RefundHandler()
 	handlers["payments.seller_obligation"] = finance.SellerObligationHandler()

@@ -21,6 +21,8 @@ const (
 	FieldUserID = "user_id"
 	// FieldConnectionID holds the string denoting the connection_id field in the database.
 	FieldConnectionID = "connection_id"
+	// FieldMerchantID holds the string denoting the merchant_id field in the database.
+	FieldMerchantID = "merchant_id"
 	// FieldProduct holds the string denoting the product field in the database.
 	FieldProduct = "product"
 	// FieldOfferID holds the string denoting the offer_id field in the database.
@@ -76,6 +78,7 @@ var Columns = []string{
 	FieldContractID,
 	FieldUserID,
 	FieldConnectionID,
+	FieldMerchantID,
 	FieldProduct,
 	FieldOfferID,
 	FieldQuantity,
@@ -119,6 +122,8 @@ var (
 	UserIDValidator func(string) error
 	// ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
 	ConnectionIDValidator func(string) error
+	// MerchantIDValidator is a validator for the "merchant_id" field. It is called by the builders before save.
+	MerchantIDValidator func(string) error
 	// OfferIDValidator is a validator for the "offer_id" field. It is called by the builders before save.
 	OfferIDValidator func(string) error
 	// QuantityValidator is a validator for the "quantity" field. It is called by the builders before save.
@@ -207,6 +212,11 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 // ByConnectionID orders the results by the connection_id field.
 func ByConnectionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConnectionID, opts...).ToFunc()
+}
+
+// ByMerchantID orders the results by the merchant_id field.
+func ByMerchantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMerchantID, opts...).ToFunc()
 }
 
 // ByOfferID orders the results by the offer_id field.

@@ -64,6 +64,11 @@ func IDContainsFold(id string) predicate.SupplierConnection {
 	return predicate.SupplierConnection(sql.FieldContainsFold(FieldID, id))
 }
 
+// MerchantID applies equality check predicate on the "merchant_id" field. It's identical to MerchantIDEQ.
+func MerchantID(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldEQ(FieldMerchantID, v))
+}
+
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v int) predicate.SupplierConnection {
 	return predicate.SupplierConnection(sql.FieldEQ(FieldVersion, v))
@@ -92,6 +97,71 @@ func PurchasesEnabled(v bool) predicate.SupplierConnection {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.SupplierConnection {
 	return predicate.SupplierConnection(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// MerchantIDEQ applies the EQ predicate on the "merchant_id" field.
+func MerchantIDEQ(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldEQ(FieldMerchantID, v))
+}
+
+// MerchantIDNEQ applies the NEQ predicate on the "merchant_id" field.
+func MerchantIDNEQ(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldNEQ(FieldMerchantID, v))
+}
+
+// MerchantIDIn applies the In predicate on the "merchant_id" field.
+func MerchantIDIn(vs ...string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDNotIn applies the NotIn predicate on the "merchant_id" field.
+func MerchantIDNotIn(vs ...string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldNotIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDGT applies the GT predicate on the "merchant_id" field.
+func MerchantIDGT(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldGT(FieldMerchantID, v))
+}
+
+// MerchantIDGTE applies the GTE predicate on the "merchant_id" field.
+func MerchantIDGTE(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldGTE(FieldMerchantID, v))
+}
+
+// MerchantIDLT applies the LT predicate on the "merchant_id" field.
+func MerchantIDLT(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldLT(FieldMerchantID, v))
+}
+
+// MerchantIDLTE applies the LTE predicate on the "merchant_id" field.
+func MerchantIDLTE(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldLTE(FieldMerchantID, v))
+}
+
+// MerchantIDContains applies the Contains predicate on the "merchant_id" field.
+func MerchantIDContains(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldContains(FieldMerchantID, v))
+}
+
+// MerchantIDHasPrefix applies the HasPrefix predicate on the "merchant_id" field.
+func MerchantIDHasPrefix(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldHasPrefix(FieldMerchantID, v))
+}
+
+// MerchantIDHasSuffix applies the HasSuffix predicate on the "merchant_id" field.
+func MerchantIDHasSuffix(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldHasSuffix(FieldMerchantID, v))
+}
+
+// MerchantIDEqualFold applies the EqualFold predicate on the "merchant_id" field.
+func MerchantIDEqualFold(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldEqualFold(FieldMerchantID, v))
+}
+
+// MerchantIDContainsFold applies the ContainsFold predicate on the "merchant_id" field.
+func MerchantIDContainsFold(v string) predicate.SupplierConnection {
+	return predicate.SupplierConnection(sql.FieldContainsFold(FieldMerchantID, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.

@@ -85,6 +85,14 @@ func New(cfg Config) (*Client, error) {
 // Connection returns a nonsecret environment label for persistence and UI.
 func (c *Client) Connection() Connection { return c.connection }
 
+// MerchantID is the non-secret shop identifier, stable across token rotation.
+// Persist it with attempts so replacing a token cannot redirect an obligation
+// into another merchant account on the same platform/environment.
+func (c *Client) MerchantID() string {
+	id, _, _ := strings.Cut(c.token, ":")
+	return id
+}
+
 const maxResponse = 32 << 20
 const maxOrderResponse = 256 << 10
 

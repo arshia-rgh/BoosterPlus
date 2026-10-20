@@ -2,6 +2,14 @@
 
 Date: 1 October 2026. This is a preparation receipt, not launch qualification.
 
+## 20 October — connectivity incident, owner-reported resolved
+
+Latest owner update: the site is OK, and no SSH check is wanted. Close this incident on the owner’s report; no independent recovery probe or remote configuration change was performed. The evidence below is retained as historical failure evidence.
+
+The owner reported an SSL error at `https://playoragames.com/`. Public DNS still returns195.248.241.192 with the expected Cloudflare nameservers and no apexAAAA record. HTTPS to customer/admin/pro/mail failed from the workstation; a direct TLS ClientHello received plaintext `HTTP/1.1 502 Bad Gateway`, while unrelated public HTTPS hosts verified successfully. Two bounded SSH attempts timed out. An independent SSL Labs probe also reported `Unable to connect to the server` and obtained no certificate. A web search-tool homepage result was cached four days earlier and does not prove current health.
+
+These observations do not establish an expired certificate or identify the failing server/network component. No gateway configuration, firewall, certificate, DNS, service or production data was changed. The owner was asked to inspect the ParsPack running state and browser/VNC console; they deferred that check until tomorrow. Investigation remains paused and unresolved, with no scheduled automation. Resume from provider console/reachability, then inspect gateway health/logs/disk and actual served certificate through verified TLS; do not bypass verification or replace certificates based only on the browser symptom.
+
 ## Selected host and access
 
 The owner purchased ParsPack Germany deVPS6-Linux: eight virtual CPUs, 16 GB RAM and 150 GB storage. The owner reports provider confirmation of NVMe, resource upgrades, unrestricted ports and configurable PTR. The guest exposes a virtual disk; its physical storage technology is not independently established from that device name.

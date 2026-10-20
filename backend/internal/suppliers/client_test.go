@@ -59,6 +59,17 @@ func TestConnectionsFixedAndProductionPurchasesDisabled(t *testing.T) {
 		}
 	}
 }
+
+func TestMerchantIdentitySurvivesTokenRotationButNotAccountChange(t *testing.T) {
+	for _, row := range []struct{ token, merchant string }{
+		{"0:synthetic-old-token", "0"}, {"0:synthetic-rotated-token", "0"}, {"101:synthetic-other-shop", "101"},
+	} {
+		client, err := New(Config{Connection: VendoriaTest, Token: row.token})
+		if err != nil || client.MerchantID() != row.merchant {
+			t.Fatal("merchant identity was not bound to the shop", err)
+		}
+	}
+}
 func TestTransportDoesNotFollowRedirectsOrLeakRawErrors(t *testing.T) {
 	var destinationCalls atomic.Int32
 	destination := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { destinationCalls.Add(1); reply(t, w, `{}`) }))

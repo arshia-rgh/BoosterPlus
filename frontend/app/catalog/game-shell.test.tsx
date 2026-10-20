@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { createMemoryRouter, Link, Outlet, RouterProvider } from "react-router";
 import { beforeAll, afterAll, expect, it, vi } from "vitest";
 import { GameShell, GameContentError, GameUnavailable } from "./game-shell";
@@ -145,50 +151,72 @@ afterAll(() => {
   Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
 });
 
-it("retries a failed child without losing game identity and focuses the recovered section", async () => {
-  let attempts = 0;
-  const router = createMemoryRouter(
-    [
-      {
-        path: "/games/:slug",
-        element: (
-          <GameShell release={release}>
-            <Outlet />
-          </GameShell>
-        ),
-        children: [
-          {
-            path: "reviews",
-            loader: () => {
-              if (attempts++ === 0) {
-                // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router consumes thrown Responses as loader HTTP errors.
-                throw new Response(null, { status: 503 });
-              }
-              return null;
+it.each(["immediate", "delayed"])(
+  "retries a failed child (%s) without losing game identity and focuses the recovered section",
+  async (speed) => {
+    let attempts = 0;
+    let finish: () => void = () => {};
+    const pending = new Promise<null>((resolve) => {
+      finish = () => {
+        resolve(null);
+      };
+    });
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/games/:slug",
+          element: (
+            <GameShell release={release}>
+              <Outlet />
+            </GameShell>
+          ),
+          children: [
+            {
+              path: "reviews",
+              loader: () => {
+                if (attempts++ === 0) {
+                  // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router consumes thrown Responses as loader HTTP errors.
+                  throw new Response(null, { status: 503 });
+                }
+                return speed === "delayed" ? pending : null;
+              },
+              element: <h2>Game reviews</h2>,
+              errorElement: <GameContentError />,
             },
-            element: <h2>Game reviews</h2>,
-            errorElement: <GameContentError />,
-          },
-        ],
-      },
-    ],
-    { initialEntries: ["/games/example/reviews"] },
-  );
-  render(<RouterProvider router={router} />);
-  const retry = await screen.findByRole("button", {
-    name: "Retry this section",
-  });
-  const identity = screen.getByRole("heading", { level: 1 });
-  fireEvent.click(retry);
-  await waitFor(() => {
-    expect(screen.getByRole("heading", { name: "Game reviews" })).toHaveFocus();
-  });
-  expect(screen.getByRole("heading", { level: 1 })).toBe(identity);
-  expect(document.querySelector(".game-shell")).toHaveAttribute(
-    "data-motion",
-    "reduced",
-  );
-});
+          ],
+        },
+      ],
+      { initialEntries: ["/games/example/reviews"] },
+    );
+    render(<RouterProvider router={router} />);
+    const retry = await screen.findByRole("button", {
+      name: "Retry this section",
+    });
+    const identity = screen.getByRole("heading", { level: 1 });
+    retry.focus();
+    fireEvent.click(retry);
+    if (speed === "delayed") {
+      await waitFor(() => expect(retry).toBeDisabled());
+      expect(
+        screen.getByRole("heading", { name: "This section could not load" }),
+      ).not.toHaveFocus();
+      await act(async () => {
+        finish();
+        await pending;
+      });
+    }
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: "Game reviews" }),
+      ).toHaveFocus();
+    });
+    expect(screen.getByRole("heading", { level: 1 })).toBe(identity);
+    expect(document.querySelector(".game-shell")).toHaveAttribute(
+      "data-motion",
+      "reduced",
+    );
+  },
+);
 
 it("collapses an SSR image that already failed before hydration", () => {
   const complete = vi

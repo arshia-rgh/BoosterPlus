@@ -13,6 +13,8 @@ const (
 	Label = "supplier_connection"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldMerchantID holds the string denoting the merchant_id field in the database.
+	FieldMerchantID = "merchant_id"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldMarkupBps holds the string denoting the markup_bps field in the database.
@@ -32,6 +34,7 @@ const (
 // Columns holds all SQL columns for supplierconnection fields.
 var Columns = []string{
 	FieldID,
+	FieldMerchantID,
 	FieldVersion,
 	FieldMarkupBps,
 	FieldCurrentImport,
@@ -51,6 +54,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultMerchantID holds the default value on creation for the "merchant_id" field.
+	DefaultMerchantID string
+	// MerchantIDValidator is a validator for the "merchant_id" field. It is called by the builders before save.
+	MerchantIDValidator func(string) error
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion int
 	// DefaultMarkupBps holds the default value on creation for the "markup_bps" field.
@@ -77,6 +84,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByMerchantID orders the results by the merchant_id field.
+func ByMerchantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMerchantID, opts...).ToFunc()
 }
 
 // ByVersion orders the results by the version field.

@@ -62,6 +62,24 @@ func TestWebhookUnknownTypesAndInteractiveRequests(t *testing.T) {
 		t.Fatal("invalid prompt accepted")
 	}
 }
+
+func TestWebhookRotationRequiresCurrentFullToken(t *testing.T) {
+	const rotated = "10:synthetic-rotated-fixture-token"
+	const otherEnvironment = "10:synthetic-other-environment-token"
+	client, err := New(Config{Connection: VendoriaTest, Token: rotated})
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw := `{"type":"statusChange","order":{"id":42,"shopOrderId":"` + testReference + `"}}`
+	for _, token := range []string{testToken, otherEnvironment, strings.TrimPrefix(rotated, "10:")} {
+		if _, err = client.VerifyWebhook([]byte(raw), []string{sign(raw, token)}); !errors.Is(err, ErrSignature) {
+			t.Fatal("accepted retired, foreign or truncated signing token", err)
+		}
+	}
+	if signal, e := client.VerifyWebhook([]byte(raw), []string{sign(raw, rotated)}); e != nil || signal.OrderID != "42" || client.MerchantID() != "10" {
+		t.Fatal("same-shop rotation lost current signature or merchant binding", e)
+	}
+}
 func TestWebhookVerificationLinksCannotEscapeProvider(t *testing.T) {
 	client, err := New(Config{Connection: NexusSandbox, Token: testToken})
 	if err != nil {

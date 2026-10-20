@@ -28,6 +28,20 @@ func (_u *SupplierConnectionUpdate) Where(ps ...predicate.SupplierConnection) *S
 	return _u
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (_u *SupplierConnectionUpdate) SetMerchantID(v string) *SupplierConnectionUpdate {
+	_u.mutation.SetMerchantID(v)
+	return _u
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_u *SupplierConnectionUpdate) SetNillableMerchantID(v *string) *SupplierConnectionUpdate {
+	if v != nil {
+		_u.SetMerchantID(*v)
+	}
+	return _u
+}
+
 // SetVersion sets the "version" field.
 func (_u *SupplierConnectionUpdate) SetVersion(v int) *SupplierConnectionUpdate {
 	_u.mutation.ResetVersion()
@@ -160,6 +174,11 @@ func (_u *SupplierConnectionUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SupplierConnectionUpdate) check() error {
+	if v, ok := _u.mutation.MerchantID(); ok {
+		if err := supplierconnection.MerchantIDValidator(v); err != nil {
+			return &ValidationError{Name: "merchant_id", err: fmt.Errorf(`ent: validator failed for field "SupplierConnection.merchant_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CurrentImport(); ok {
 		if err := supplierconnection.CurrentImportValidator(v); err != nil {
 			return &ValidationError{Name: "current_import", err: fmt.Errorf(`ent: validator failed for field "SupplierConnection.current_import": %w`, err)}
@@ -184,6 +203,9 @@ func (_u *SupplierConnectionUpdate) sqlSave(ctx context.Context) (_node int, err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.MerchantID(); ok {
+		_spec.SetField(supplierconnection.FieldMerchantID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(supplierconnection.FieldVersion, field.TypeInt, value)
@@ -227,6 +249,20 @@ type SupplierConnectionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SupplierConnectionMutation
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (_u *SupplierConnectionUpdateOne) SetMerchantID(v string) *SupplierConnectionUpdateOne {
+	_u.mutation.SetMerchantID(v)
+	return _u
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_u *SupplierConnectionUpdateOne) SetNillableMerchantID(v *string) *SupplierConnectionUpdateOne {
+	if v != nil {
+		_u.SetMerchantID(*v)
+	}
+	return _u
 }
 
 // SetVersion sets the "version" field.
@@ -374,6 +410,11 @@ func (_u *SupplierConnectionUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SupplierConnectionUpdateOne) check() error {
+	if v, ok := _u.mutation.MerchantID(); ok {
+		if err := supplierconnection.MerchantIDValidator(v); err != nil {
+			return &ValidationError{Name: "merchant_id", err: fmt.Errorf(`ent: validator failed for field "SupplierConnection.merchant_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CurrentImport(); ok {
 		if err := supplierconnection.CurrentImportValidator(v); err != nil {
 			return &ValidationError{Name: "current_import", err: fmt.Errorf(`ent: validator failed for field "SupplierConnection.current_import": %w`, err)}
@@ -415,6 +456,9 @@ func (_u *SupplierConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Supp
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.MerchantID(); ok {
+		_spec.SetField(supplierconnection.FieldMerchantID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(supplierconnection.FieldVersion, field.TypeInt, value)

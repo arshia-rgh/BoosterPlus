@@ -27,6 +27,8 @@ type SupplierPurchase struct {
 	UserID string `json:"user_id,omitempty"`
 	// ConnectionID holds the value of the "connection_id" field.
 	ConnectionID string `json:"connection_id,omitempty"`
+	// MerchantID holds the value of the "merchant_id" field.
+	MerchantID string `json:"merchant_id,omitempty"`
 	// Product holds the value of the "product" field.
 	Product *suppliers.Product `json:"-"`
 	// OfferID holds the value of the "offer_id" field.
@@ -85,7 +87,7 @@ func (*SupplierPurchase) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case supplierpurchase.FieldVersion, supplierpurchase.FieldScanOffset:
 			values[i] = new(sql.NullInt64)
-		case supplierpurchase.FieldID, supplierpurchase.FieldOrderID, supplierpurchase.FieldContractID, supplierpurchase.FieldUserID, supplierpurchase.FieldConnectionID, supplierpurchase.FieldOfferID, supplierpurchase.FieldQuantity, supplierpurchase.FieldMaximumCost, supplierpurchase.FieldAmountMinor, supplierpurchase.FieldInputSecretID, supplierpurchase.FieldState, supplierpurchase.FieldProviderID, supplierpurchase.FieldCandidateProviderID, supplierpurchase.FieldLeaseOwner, supplierpurchase.FieldIssue, supplierpurchase.FieldProviderStatus, supplierpurchase.FieldActualCost, supplierpurchase.FieldDelivered, supplierpurchase.FieldDeliverySecretID:
+		case supplierpurchase.FieldID, supplierpurchase.FieldOrderID, supplierpurchase.FieldContractID, supplierpurchase.FieldUserID, supplierpurchase.FieldConnectionID, supplierpurchase.FieldMerchantID, supplierpurchase.FieldOfferID, supplierpurchase.FieldQuantity, supplierpurchase.FieldMaximumCost, supplierpurchase.FieldAmountMinor, supplierpurchase.FieldInputSecretID, supplierpurchase.FieldState, supplierpurchase.FieldProviderID, supplierpurchase.FieldCandidateProviderID, supplierpurchase.FieldLeaseOwner, supplierpurchase.FieldIssue, supplierpurchase.FieldProviderStatus, supplierpurchase.FieldActualCost, supplierpurchase.FieldDelivered, supplierpurchase.FieldDeliverySecretID:
 			values[i] = new(sql.NullString)
 		case supplierpurchase.FieldLeaseUntil, supplierpurchase.FieldNextCheck, supplierpurchase.FieldCreatedAt, supplierpurchase.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -133,6 +135,12 @@ func (_m *SupplierPurchase) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field connection_id", values[i])
 			} else if value.Valid {
 				_m.ConnectionID = value.String
+			}
+		case supplierpurchase.FieldMerchantID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_id", values[i])
+			} else if value.Valid {
+				_m.MerchantID = value.String
 			}
 		case supplierpurchase.FieldProduct:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -317,6 +325,9 @@ func (_m *SupplierPurchase) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("connection_id=")
 	builder.WriteString(_m.ConnectionID)
+	builder.WriteString(", ")
+	builder.WriteString("merchant_id=")
+	builder.WriteString(_m.MerchantID)
 	builder.WriteString(", ")
 	builder.WriteString("product=<sensitive>")
 	builder.WriteString(", ")
