@@ -20,6 +20,7 @@ var amountPattern = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
 
 // Definition is a public publication unit, never a place for recipient values.
 type Definition struct {
+	Supplier    *SupplierProduct `json:"supplier,omitempty"`
 	Title       string           `json:"title"`
 	Description string           `json:"description"`
 	Category    string           `json:"category"`
@@ -161,8 +162,16 @@ func Validate(value Definition, publish bool) []Issue {
 		if policy.ReservationMinutes < 15 {
 			add("policy.reservation_minutes", "Set a reservation duration between fifteen minutes and one day.")
 		}
-		if !policy.EvidenceRequired {
+		if !policy.EvidenceRequired && value.Supplier == nil {
 			add("policy.evidence_required", "Manual delivery requires reviewed evidence.")
+		}
+	}
+	if value.Supplier != nil {
+		if !slices.Contains([]string{"id", "account", "code"}, value.Supplier.Method) || len(value.Recipient) != 0 || len(value.Variants) != 1 {
+			add("supplier", "Keep the reviewed delivery method and supplier variant.")
+		}
+		if value.Supplier.Method == "account" && publish && (policy.DeliveryMinHours != 24 || policy.DeliveryMaxHours != 72) {
+			add("policy.delivery", "Account sign-in delivery is estimated at 24–72 hours.")
 		}
 	}
 	for _, field := range []struct{ key, value string }{{"delivery_terms", policy.DeliveryTerms}, {"cancellation_terms", policy.CancellationTerms}, {"refund_terms", policy.RefundTerms}, {"fees", policy.Fees}, {"review_terms", policy.ReviewTerms}} {

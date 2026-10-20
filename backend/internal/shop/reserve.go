@@ -51,7 +51,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, slug, id str
 			if old.RequestHash != digest || old.Kind != order.KindShop || old.ShopProductID != id {
 				return ErrConflict
 			}
-			out, e = deliveryView(ctx, tx, old, false)
+			out, e = s.deliveryView(ctx, tx, old, false)
 			return e
 		}
 		if !ent.IsNotFound(e) {
@@ -78,6 +78,9 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, slug, id str
 		}
 		if product.ReleaseID != input.ReleaseID {
 			return ErrConflict
+		}
+		if product.Definition.Supplier != nil {
+			return &Invalid{[]Issue{{Path: "supplier", Message: "Review a fresh price for this supplier product before ordering."}}}
 		}
 		var variant Variant
 		for _, value := range product.Definition.Variants {
@@ -168,7 +171,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, slug, id str
 		if e = s.deliveryAudit(ctx, tx, current, "reserved", record.ID, 1); e != nil {
 			return e
 		}
-		out, e = deliveryView(ctx, tx, record, false)
+		out, e = s.deliveryView(ctx, tx, record, false)
 		return e
 	})
 	if err != nil {

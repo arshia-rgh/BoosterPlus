@@ -849,6 +849,18 @@ func (f SubmissionEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubmissionEventMutation", m)
 }
 
+// The SupplierBindingFunc type is an adapter to allow the use of ordinary
+// function as SupplierBinding mutator.
+type SupplierBindingFunc func(context.Context, *ent.SupplierBindingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierBindingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierBindingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierBindingMutation", m)
+}
+
 // The SupplierConnectionFunc type is an adapter to allow the use of ordinary
 // function as SupplierConnection mutator.
 type SupplierConnectionFunc func(context.Context, *ent.SupplierConnectionMutation) (ent.Value, error)
@@ -907,6 +919,18 @@ func (f SupplierPurchaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPurchaseMutation", m)
+}
+
+// The SupplierQuoteFunc type is an adapter to allow the use of ordinary
+// function as SupplierQuote mutator.
+type SupplierQuoteFunc func(context.Context, *ent.SupplierQuoteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierQuoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierQuoteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierQuoteMutation", m)
 }
 
 // The SupplierSignalFunc type is an adapter to allow the use of ordinary

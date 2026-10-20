@@ -13,6 +13,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/supply"
 )
 
 // ErrConflict requires reviewing the current product or capacity revision.
@@ -25,9 +26,10 @@ func (e *Invalid) Error() string { return "shop validation failed" }
 
 // Store uses current portal authority and explicit SQL-owned persistence.
 type Store struct {
-	client *ent.Client
-	auth   *identity.Service
-	now    func() time.Time
+	client   *ent.Client
+	auth     *identity.Service
+	now      func() time.Time
+	supplier *supply.Purchaser
 }
 
 // New constructs a store without running migrations or seeding commercial terms.
@@ -35,7 +37,13 @@ func New(client *ent.Client, auth *identity.Service, now func() time.Time) *Stor
 	if now == nil {
 		now = time.Now
 	}
-	return &Store{client, auth, now}
+	return &Store{client: client, auth: auth, now: now}
+}
+
+// WithSupplier attaches a fixed-environment purchaser without enabling buying.
+func (s *Store) WithSupplier(purchaser *supply.Purchaser) *Store {
+	s.supplier = purchaser
+	return s
 }
 
 // Stock separates commitments from declared capacity.
@@ -149,7 +157,7 @@ func event(ctx context.Context, tx *ent.Tx, current *identity.Principal, row *en
 
 // Create begins an unpublished product with no purchasable stock.
 func (s *Store) Create(ctx context.Context, p *identity.Principal, gameID string, value Definition) (out Draft, err error) {
-	if !validID(gameID) {
+	if !validID(gameID) || value.Supplier != nil {
 		return out, ErrInvalid
 	}
 	if issues := Validate(value, false); len(issues) > 0 {
@@ -223,6 +231,13 @@ func (s *Store) Save(ctx context.Context, p *identity.Principal, id string, vers
 		}
 		if row.Version != version || row.State == "archived" {
 			return ErrConflict
+		}
+		previous, e := definition(row.Draft)
+		if e != nil {
+			return e
+		}
+		if !sameSupplier(previous.Supplier, value.Supplier) || previous.Supplier != nil && !slices.Equal(previous.Variants, value.Variants) {
+			return &Invalid{[]Issue{{Path: "supplier", Message: "Refresh supplier pricing and delivery requirements from the supplier library."}}}
 		}
 		now := s.now()
 		row, e = tx.ShopProduct.UpdateOne(row).AddVersion(1).SetDraft(data).SetTitle(value.Title).SetUpdatedAt(now).Save(ctx)

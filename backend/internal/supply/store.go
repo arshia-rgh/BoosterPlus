@@ -31,10 +31,11 @@ type CatalogReader interface {
 
 // Store coordinates explicit SQL persistence with current staff authority.
 type Store struct {
-	client  *ent.Client
-	auth    *identity.Service
-	readers map[suppliers.Connection]CatalogReader
-	now     func() time.Time
+	client        *ent.Client
+	auth          *identity.Service
+	readers       map[suppliers.Connection]CatalogReader
+	now           func() time.Time
+	testPurchases bool
 }
 
 // FromConfig constructs fixed-host readers; credentials stay inside the adapter.
@@ -47,7 +48,16 @@ func FromConfig(client *ent.Client, auth *identity.Service, configs []suppliers.
 		}
 		readers = append(readers, reader)
 	}
-	return New(client, auth, readers, nil)
+	store, err := New(client, auth, readers, nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, config := range configs {
+		if config.Connection == suppliers.NexusSandbox && config.TestOrdersEnabled {
+			store.testPurchases = true
+		}
+	}
+	return store, nil
 }
 
 // New installs configured connections without reading credentials or seeding data.
@@ -120,7 +130,7 @@ func connectionView(row *ent.SupplierConnection, configured bool) ConnectionView
 func (s *Store) Connections(ctx context.Context, p *identity.Principal) (out []ConnectionView, err error) {
 	out = []ConnectionView{}
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, _ *identity.Principal) error {
-		for _, id := range []suppliers.Connection{suppliers.NexusSandbox, suppliers.VendoriaTest, suppliers.NexusProduction, suppliers.VendoriaProduction} {
+		for _, id := range []suppliers.Connection{suppliers.NexusSandbox, suppliers.NexusProduction} {
 			row, e := tx.SupplierConnection.Get(ctx, string(id))
 			if ent.IsNotFound(e) {
 				row = &ent.SupplierConnection{ID: string(id), Version: 1, MarkupBps: suppliers.DefaultMarkupBPS}

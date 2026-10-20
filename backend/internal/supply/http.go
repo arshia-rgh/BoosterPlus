@@ -16,13 +16,14 @@ import (
 // Register attaches private supplier management with ordinary admin portal checks.
 func (s *Store) Register(mux *http.ServeMux) {
 	routes := map[string]func(http.ResponseWriter, *http.Request, *identity.Principal) error{
-		"GET /api/v1/admin/shop/suppliers":                       s.connectionsHTTP,
-		"GET /api/v1/admin/shop/suppliers/{connection}/library":  s.libraryHTTP,
-		"POST /api/v1/admin/shop/suppliers/{connection}/imports": s.importHTTP,
-		"POST /api/v1/admin/shop/suppliers/{connection}/markup":  s.markupHTTP,
-		"POST /api/v1/admin/shop/suppliers/{connection}/prices":  s.priceHTTP,
-		"GET /api/v1/admin/shop/supplier-imports/{id}":           s.importStateHTTP,
-		"POST /api/v1/admin/shop/supplier-imports/{id}/cancel":   s.cancelHTTP,
+		"GET /api/v1/admin/shop/suppliers":                          s.connectionsHTTP,
+		"GET /api/v1/admin/shop/suppliers/{connection}/library":     s.libraryHTTP,
+		"POST /api/v1/admin/shop/suppliers/{connection}/imports":    s.importHTTP,
+		"POST /api/v1/admin/shop/suppliers/{connection}/markup":     s.markupHTTP,
+		"POST /api/v1/admin/shop/suppliers/{connection}/prices":     s.priceHTTP,
+		"POST /api/v1/admin/shop/suppliers/{connection}/purchasing": s.purchasingHTTP,
+		"GET /api/v1/admin/shop/supplier-imports/{id}":              s.importStateHTTP,
+		"POST /api/v1/admin/shop/supplier-imports/{id}/cancel":      s.cancelHTTP,
 	}
 	for route, endpoint := range routes {
 		mux.HandleFunc(route, s.auth.Protect("admin", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
@@ -34,6 +35,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 				return write(w, http.StatusConflict, map[string]string{"code": "supplier_conflict"})
 			case errors.Is(err, ErrUnavailable):
 				return write(w, http.StatusServiceUnavailable, map[string]string{"code": "supplier_unavailable"})
+			case errors.Is(err, suppliers.ErrReadOnly):
+				return write(w, http.StatusConflict, map[string]string{"code": "supplier_purchasing_disabled"})
 			case ent.IsNotFound(err):
 				return write(w, http.StatusNotFound, map[string]string{"code": "supplier_not_found"})
 			default:
@@ -41,6 +44,24 @@ func (s *Store) Register(mux *http.ServeMux) {
 			}
 		}))
 	}
+}
+
+func (s *Store) purchasingHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+	var input struct {
+		Version int   `json:"version"`
+		Enabled *bool `json:"enabled"`
+	}
+	if err := read(r, &input); err != nil {
+		return err
+	}
+	if input.Enabled == nil {
+		return ErrInvalid
+	}
+	out, err := s.SetPurchases(r.Context(), p, suppliers.Connection(r.PathValue("connection")), input.Version, *input.Enabled)
+	if err != nil {
+		return err
+	}
+	return write(w, http.StatusOK, out)
 }
 
 func read(r *http.Request, value any) error {

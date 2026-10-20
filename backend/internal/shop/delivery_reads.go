@@ -8,25 +8,40 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shoprecipient"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopreservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
 // DeliveryView retains order identity and accepted terms without disclosing identifiers.
 type DeliveryView struct {
-	OrderState        string    `json:"order_state"`
-	OrderID           string    `json:"order_id"`
-	OrderVersion      int       `json:"order_version"`
-	Version           int       `json:"version"`
-	State             string    `json:"state"`
-	AssignedID        string    `json:"assigned_id,omitempty"`
-	Note              string    `json:"note"`
-	ProofMessageID    string    `json:"proof_message_id"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	RecipientProvided bool      `json:"recipient_provided"`
-	Purchase          Purchase  `json:"purchase"`
+	OrderState        string                `json:"order_state"`
+	OrderID           string                `json:"order_id"`
+	OrderVersion      int                   `json:"order_version"`
+	Version           int                   `json:"version"`
+	State             string                `json:"state"`
+	AssignedID        string                `json:"assigned_id,omitempty"`
+	Note              string                `json:"note"`
+	ProofMessageID    string                `json:"proof_message_id"`
+	UpdatedAt         time.Time             `json:"updated_at"`
+	RecipientProvided bool                  `json:"recipient_provided"`
+	Purchase          Purchase              `json:"purchase"`
+	Supplier          *SupplierDeliveryView `json:"supplier,omitempty"`
+}
+
+// SupplierDeliveryView is a safe status projection, without protected inputs,
+// keys, supplier cost or provider-specific diagnostics.
+type SupplierDeliveryView struct {
+	State          string `json:"state"`
+	Requested      string `json:"requested"`
+	Delivered      string `json:"delivered"`
+	NeedsReview    bool   `json:"needs_review"`
+	CodesAvailable bool   `json:"codes_available"`
+	Testing        bool   `json:"testing"`
 }
 
 func shopOrder(ctx context.Context, tx *ent.Tx, p *identity.Principal, id string, admin bool) (*ent.Order, error) {
@@ -76,12 +91,36 @@ func paidShop(ctx context.Context, tx *ent.Tx, row *ent.Order, purchase Purchase
 	}
 	return nil
 }
-func deliveryView(ctx context.Context, tx *ent.Tx, row *ent.Order, admin bool) (DeliveryView, error) {
+func (s *Store) deliveryView(ctx context.Context, tx *ent.Tx, row *ent.Order, admin bool) (DeliveryView, error) {
 	purchase, err := purchaseSnapshot(row)
 	if err != nil {
 		return DeliveryView{}, err
 	}
 	out := DeliveryView{OrderState: string(row.State), OrderID: row.ID, OrderVersion: row.Version, State: string(row.State), UpdatedAt: row.UpdatedAt, Purchase: purchase}
+	if purchase.Product.Supplier != nil {
+		delivery, e := tx.SupplierPurchase.Query().Where(supplierpurchase.OrderIDEQ(row.ID), supplierpurchase.UserIDEQ(row.UserID), supplierpurchase.ContractIDEQ(row.CurrentContract)).Only(ctx)
+		if e != nil {
+			return DeliveryView{}, e
+		}
+		out.Version, out.State, out.UpdatedAt = delivery.Version, delivery.State, delivery.UpdatedAt
+		out.RecipientProvided = delivery.InputSecretID != ""
+		out.Supplier = &SupplierDeliveryView{State: delivery.State, Requested: delivery.Quantity, Delivered: delivery.Delivered, NeedsReview: delivery.State == "held" || delivery.State == "cancelled" || delivery.State == "partial" || delivery.Issue == "duplicate_provider_orders" || delivery.Issue == "identity_mismatch" || delivery.Issue == "terminal_state_changed" || delivery.Issue == "search_limit_review", CodesAvailable: delivery.DeliverySecretID != "" && delivery.State == "completed", Testing: purchase.Product.Supplier.Testing}
+		blocked := row.State != order.StateAwaitingPayment && row.State != order.StateQueued && row.State != order.StateInProgress && row.State != order.StateCompleted
+		activeCase, e := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+		if e != nil {
+			return DeliveryView{}, e
+		}
+		blocked = blocked || activeCase
+		out.Supplier.NeedsReview = out.Supplier.NeedsReview || blocked
+		out.Supplier.CodesAvailable = out.Supplier.CodesAvailable && !blocked && delivery.Issue == ""
+		if out.Supplier.CodesAvailable {
+			out.Supplier.CodesAvailable, e = tx.SecretBundle.Query().Where(secretbundle.IDEQ(delivery.DeliverySecretID), secretbundle.OwnerIDEQ(row.UserID), secretbundle.ResourceIDEQ(delivery.ID), secretbundle.PurposeEQ(secretbundle.PurposeSupplierDelivery), secretbundle.StateEQ(secretbundle.StateActive), secretbundle.ExpiresAtGT(s.now())).Exist(ctx)
+			if e != nil {
+				return DeliveryView{}, e
+			}
+		}
+		return out, nil
+	}
 	values, err := recipient(ctx, tx, row)
 	if err != nil && !ent.IsNotFound(err) {
 		return DeliveryView{}, err
@@ -115,7 +154,7 @@ func (s *Store) Delivery(ctx context.Context, p *identity.Principal, id string, 
 		if e != nil {
 			return e
 		}
-		out, e = deliveryView(ctx, tx, row, admin)
+		out, e = s.deliveryView(ctx, tx, row, admin)
 		return e
 	})
 	if err != nil {

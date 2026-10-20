@@ -1,4 +1,8 @@
 import { z } from "../validation";
+import {
+  supplierProductSchema,
+  supplierStatusSchema,
+} from "../suppliers/contracts";
 
 export const variantSchema = z.object({
   key: z.string(),
@@ -32,6 +36,7 @@ export const policySchema = z.object({
   review_terms: z.string(),
 });
 export const definitionSchema = z.object({
+  supplier: supplierProductSchema.optional(),
   title: z.string(),
   description: z.string(),
   category: z.string(),
@@ -67,6 +72,7 @@ export const productsSchema = z.object({
   items: z.array(
     z.object({
       id: z.string(),
+      supplier: z.boolean().optional(),
       game_id: z.string(),
       game: z.string(),
       slug: z.string(),
@@ -134,6 +140,7 @@ export const productStates = [
 ] satisfies [string, string][];
 
 export const publicProductSchema = z.object({
+  supplier_available: z.boolean().default(false),
   id: z.string(),
   game_id: z.string(),
   game_slug: z.string(),
@@ -147,6 +154,7 @@ export const publicPageSchema = z.object({
   next: z.string(),
 });
 export const purchaseSchema = z.object({
+  supplier_quantity: z.string().optional(),
   product_id: z.string(),
   release_id: z.string(),
   product: definitionSchema,
@@ -155,6 +163,7 @@ export const purchaseSchema = z.object({
   amount_minor: z.string(),
 });
 export const deliverySchema = z.object({
+  supplier: supplierStatusSchema.optional(),
   order_id: z.string(),
   order_state: z.string(),
   order_version: z.number().int(),

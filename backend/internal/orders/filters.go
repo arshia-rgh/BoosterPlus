@@ -57,7 +57,8 @@ func applyFilters(q *ent.OrderQuery, admin bool, f Filters) error {
 			if f.Assigned == "unassigned" {
 				a.Where(sql.NEQ(boost.C("assigned_id"), ""))
 				b.Where(sql.NEQ(shop.C("assigned_id"), ""))
-				s.Where(sql.And(sql.NotIn(s.C(order.FieldID), a), sql.NotIn(s.C(order.FieldID), b)))
+				supplier := sql.Table("supplier_purchases")
+				s.Where(sql.And(sql.NotIn(s.C(order.FieldID), a), sql.NotIn(s.C(order.FieldID), b), sql.NotIn(s.C(order.FieldID), sql.Select(supplier.C("order_id")).From(supplier))))
 			} else {
 				a.Where(sql.EQ(boost.C("assigned_id"), f.Assigned))
 				b.Where(sql.EQ(shop.C("assigned_id"), f.Assigned))
@@ -67,13 +68,25 @@ func applyFilters(q *ent.OrderQuery, admin bool, f Filters) error {
 	}
 	if f.Delivery != "" {
 		switch f.Delivery {
-		case "processing", "held", "submitted", "completed", "cancelled":
+		case "processing", "held", "submitted", "completed", "cancelled", "supplier":
 		default:
 			return ErrConflict
 		}
 		q.Where(order.KindEQ(order.KindShop), func(s *sql.Selector) {
 			t := sql.Table("shop_deliveries")
-			s.Where(sql.In(s.C(order.FieldID), sql.Select(t.C("order_id")).From(t).Where(sql.EQ(t.C("state"), f.Delivery))))
+			manual := sql.In(s.C(order.FieldID), sql.Select(t.C("order_id")).From(t).Where(sql.EQ(t.C("state"), f.Delivery)))
+			provider := sql.Table("supplier_purchases")
+			q := sql.Select(provider.C("order_id")).From(provider)
+			switch f.Delivery {
+			case "processing":
+				q.Where(sql.In(provider.C("state"), "checking", "sending", "pending", "unresolved"))
+			case "held":
+				q.Where(sql.In(provider.C("state"), "held", "partial", "cancelled"))
+			case "supplier":
+			default:
+				q.Where(sql.EQ(provider.C("state"), f.Delivery))
+			}
+			s.Where(sql.Or(manual, sql.In(s.C(order.FieldID), q)))
 		})
 	}
 	var from, to time.Time

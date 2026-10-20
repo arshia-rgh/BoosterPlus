@@ -152,6 +152,9 @@ func (s *Store) allocate(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 	if err = s.event(ctx, tx, row, next, "payment_verified", message); err != nil {
 		return "", err
 	}
+	if err = shopevents.ScheduleSupplier(ctx, tx, row); err != nil {
+		return "", err
+	}
 	return "", s.audit(ctx, tx, nil, "allocated", receipt.ID)
 }
 func (s *Store) reverse(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAttempt, receipt *ent.PaymentReceipt) error {

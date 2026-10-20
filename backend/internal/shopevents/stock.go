@@ -50,6 +50,9 @@ func Allocate(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.Tim
 	if purchase.Kind != order.KindShop {
 		return nil
 	}
+	if supplier, err := supplierOrder(ctx, tx, purchase); err != nil || supplier {
+		return err
+	}
 	row, err := reservation(ctx, tx, purchase)
 	if err != nil {
 		return err
@@ -82,6 +85,9 @@ func ReleaseUnpaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now tim
 	if purchase.Kind != order.KindShop {
 		return nil
 	}
+	if supplier, err := supplierOrder(ctx, tx, purchase); err != nil || supplier {
+		return err
+	}
 	row, err := reservation(ctx, tx, purchase)
 	if err != nil {
 		return err
@@ -113,6 +119,9 @@ func Checkout(ctx context.Context, tx *ent.Tx, purchase *ent.Order, deadline, no
 	if purchase.Kind != order.KindShop {
 		return nil
 	}
+	if supplier, err := supplierOrder(ctx, tx, purchase); err != nil || supplier {
+		return err
+	}
 	row, err := reservation(ctx, tx, purchase)
 	if err != nil {
 		return err
@@ -131,6 +140,9 @@ func Checkout(ctx context.Context, tx *ent.Tx, purchase *ent.Order, deadline, no
 func CancelPaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.Time) error {
 	if purchase.Kind != order.KindShop {
 		return nil
+	}
+	if supplier, err := supplierOrder(ctx, tx, purchase); err != nil || supplier {
+		return err
 	}
 	row, err := reservation(ctx, tx, purchase)
 	if err != nil {

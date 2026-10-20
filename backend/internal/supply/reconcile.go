@@ -157,7 +157,7 @@ func (s *Purchaser) apply(ctx context.Context, id, lease string, result supplier
 		}
 		// A callback/late provider result may record real delivery, but cannot revive
 		// a cancelled/refunded/held customer order or override an open service case.
-		if e := paid(ctx, tx, row); e != nil {
+		if e := paymentEvidence(ctx, tx, row, true); e != nil {
 			issue = "payment_or_case_review"
 		}
 		if len(result.Keys) > 0 && row.DeliverySecretID == "" && (state == "completed" || state == "partial") {
@@ -175,6 +175,9 @@ func (s *Purchaser) apply(ctx context.Context, id, lease string, result supplier
 			update.SetDelivered(string(*result.Delivered))
 		}
 		if _, err = update.Save(ctx); err != nil {
+			return err
+		}
+		if err = s.projectDelivery(ctx, tx, row, state, issue); err != nil {
 			return err
 		}
 		return audit(ctx, tx, "", id, "purchase_observed", row.Version+1, s.now())

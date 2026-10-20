@@ -14,7 +14,8 @@ import (
 // RecordStatusSignal authenticates the raw bytes on the selected connection,
 // stores only a receipt and schedules GET reconciliation. It cannot settle a
 // customer payment, claim a POST, complete delivery or disclose recipient data.
-// Interactive signals have a separate workflow and are not acknowledged here.
+// Nexus interactive hints are reconciled through protected GET fallbacks.
+// Deferred Vendoria interactive flows remain unavailable.
 func (s *Purchaser) RecordStatusSignal(ctx context.Context, connection suppliers.Connection, raw []byte, signatures []string) error {
 	provider := s.providers[connection]
 	if provider == nil {
@@ -30,7 +31,7 @@ func (s *Purchaser) RecordStatusSignal(ctx context.Context, connection suppliers
 	if !signal.Recognized {
 		return nil
 	}
-	if signal.Type != "statusChange" {
+	if signal.Type != "statusChange" && (connection != suppliers.NexusSandbox && connection != suppliers.NexusProduction) {
 		return ErrUnavailable
 	}
 	return s.transaction(ctx, func(tx *ent.Tx) error {

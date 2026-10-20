@@ -94,6 +94,11 @@ func (s *Purchaser) PrepareInTransaction(ctx context.Context, tx *ent.Tx, purcha
 	if suppliers.ValidateQuantity(quote.Offer.Quantity, quote.Quantity) != nil || suppliers.ValidateFields(quote.Offer.Fields, values) != nil || !sameCommercial(contract, amount) {
 		return nil, ErrInvalid
 	}
+	for _, field := range quote.Offer.Fields {
+		if _, present := values[field.ID]; field.Transient && present {
+			return nil, ErrInvalid
+		}
+	}
 	total, err := quote.TotalCost.Rational()
 	if err != nil || total.Sign() <= 0 {
 		return nil, ErrInvalid
@@ -180,11 +185,16 @@ func (s *Purchaser) inputs(ctx context.Context, tx *ent.Tx, row *ent.SupplierPur
 // paid rechecks the current accepted contract and allocated confirmed evidence.
 // Supplier callbacks, queue messages and browser success never satisfy this.
 func paid(ctx context.Context, tx *ent.Tx, row *ent.SupplierPurchase) error {
+	return paymentEvidence(ctx, tx, row, false)
+}
+
+func paymentEvidence(ctx context.Context, tx *ent.Tx, row *ent.SupplierPurchase, observing bool) error {
 	purchase, err := tx.Order.Get(ctx, row.OrderID)
 	if err != nil {
 		return err
 	}
-	if purchase.Kind != order.KindShop || purchase.UserID != row.UserID || purchase.CurrentContract != row.ContractID || (purchase.State != order.StateQueued && purchase.State != order.StateInProgress) {
+	completed := observing && purchase.State == order.StateCompleted && row.PostClaimed && row.ProviderStatus == "completed"
+	if purchase.Kind != order.KindShop || purchase.UserID != row.UserID || purchase.CurrentContract != row.ContractID || (purchase.State != order.StateQueued && purchase.State != order.StateInProgress && !completed) {
 		return ErrConflict
 	}
 	customer, err := tx.User.Get(ctx, row.UserID)

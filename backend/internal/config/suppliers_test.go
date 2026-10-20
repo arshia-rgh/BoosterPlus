@@ -22,7 +22,7 @@ func TestDeferredVendoriaCannotEnableRuntimeConnections(t *testing.T) {
 	}
 }
 
-func TestSupplierConfigurationSeparatesTestAndLiveAndNeverEnablesBuying(t *testing.T) {
+func TestSupplierConfigurationSeparatesTestAndLiveWithBuyingDisabledByDefault(t *testing.T) {
 	for _, row := range []struct {
 		app, mode string
 		want      suppliers.Connection
@@ -35,7 +35,7 @@ func TestSupplierConfigurationSeparatesTestAndLiveAndNeverEnablesBuying(t *testi
 	}
 	for _, row := range []struct{ app, mode, enabled, token string }{
 		{"production", "test", "", "123:synthetic-test-token"}, {"test", "production", "", "123:synthetic-test-token"},
-		{"production", "", "", "123:synthetic-test-token"}, {"test", "test", "true", "123:synthetic-test-token"},
+		{"production", "", "", "123:synthetic-test-token"}, {"production", "production", "true", "123:synthetic-test-token"},
 		{"production", "disabled", "true", ""},
 		{"test", "unknown", "", "123:synthetic-test-token"}, {"test", "test", "", ""}, {"test", "test", "", "invalid"},
 	} {
@@ -46,5 +46,13 @@ func TestSupplierConfigurationSeparatesTestAndLiveAndNeverEnablesBuying(t *testi
 	}
 	if config, err := SupplierCatalogs(func(string) string { return "" }, "production"); err != nil || len(config) != 0 {
 		t.Fatal("disabled integration changed existing production", err)
+	}
+}
+
+func TestSupplierTestBuyingRequiresExplicitIsolatedSwitch(t *testing.T) {
+	values := map[string]string{"SUPPLIER_ENVIRONMENT": "test", "SUPPLIER_PURCHASES_ENABLED": "true", "NEXUS_SHOP_TOKEN": "123:synthetic-test-token"}
+	configurations, err := SupplierCatalogs(func(k string) string { return values[k] }, "test")
+	if err != nil || len(configurations) != 1 || !configurations[0].TestOrdersEnabled || configurations[0].Connection != suppliers.NexusSandbox {
+		t.Fatal("isolated opt-in failed", err)
 	}
 }

@@ -179,6 +179,18 @@
 .shop-delivery-queue td .button {
   min-width: 10rem;
 }
+.shop-delivery-queue .shop-queue-order-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  color: var(--accent, #79f1b4);
+  border-radius: 0.25rem;
+}
+.shop-delivery-queue .shop-queue-order-link:is(:hover, :focus-visible) {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
 .shop-delivery-queue time {
   display: block;
   min-width: 9rem;
@@ -211,4 +223,41 @@
 .shop-artwork[data-placement="content"] {
   aspect-ratio: auto;
   height: auto;
+}
+
+/* Supplier checkout shares the shop layout, without spilling private codes. */
+.supplier-purchase,
+.supplier-delivery {
+  min-width: 0;
+  max-width: 60rem;
+}
+.supplier-purchase fieldset {
+  min-width: 0;
+}
+.supplier-code {
+  padding: 1rem;
+  margin-block: 1rem;
+  border: 1px solid var(--line, #315247);
+  border-radius: 1rem;
+}
+.supplier-code code {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.supplier-delivery a,
+.supplier-purchase p {
+  overflow-wrap: anywhere;
+}
+
+.supplier-delivery .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-block: 1rem;
+}
+.supplier-delivery .button-row > * {
+  margin: 0;
 }

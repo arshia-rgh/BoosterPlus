@@ -77,6 +77,12 @@ export function actionLabel(path: string, body?: unknown) {
   if (path.includes("/articles") || path.includes("/news"))
     return "Update this game article";
   if (path.includes("/catalog")) return "Update this game catalog";
+  if (/^\/orders\/[^/]+\/shop\/codes$/.test(path))
+    return "Reveal your purchased codes";
+  if (/^\/orders\/[^/]+\/shop\/action$/.test(path))
+    return "Open your protected delivery action";
+  if (/^\/admin\/shop\/suppliers\/[^/]+\/purchasing$/.test(path))
+    return "Change Sandbox purchasing";
   if (path.includes("/shop")) return "Update this shop record";
   if (path.includes("/quote")) return "Update this order’s quote";
   if (path.includes("/reports")) return "Download the reviewed report";

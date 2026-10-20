@@ -2265,6 +2265,32 @@ var (
 			},
 		},
 	}
+	// SupplierBindingsColumns holds the columns for the "supplier_bindings" table.
+	SupplierBindingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "shop_product_id", Type: field.TypeString, Size: 36},
+		{Name: "release_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SupplierBindingsTable holds the schema information for the "supplier_bindings" table.
+	SupplierBindingsTable = &schema.Table{
+		Name:       "supplier_bindings",
+		Columns:    SupplierBindingsColumns,
+		PrimaryKey: []*schema.Column{SupplierBindingsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_binding_release",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierBindingsColumns[2]},
+			},
+			{
+				Name:    "supplier_binding_product",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierBindingsColumns[1], SupplierBindingsColumns[0]},
+			},
+		},
+	}
 	// SupplierConnectionsColumns holds the columns for the "supplier_connections" table.
 	SupplierConnectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 32},
@@ -2437,6 +2463,36 @@ var (
 				Name:    "supplier_purchase_due",
 				Unique:  false,
 				Columns: []*schema.Column{SupplierPurchasesColumns[19], SupplierPurchasesColumns[0]},
+			},
+		},
+	}
+	// SupplierQuotesColumns holds the columns for the "supplier_quotes" table.
+	SupplierQuotesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "shop_product_id", Type: field.TypeString, Size: 36},
+		{Name: "release_id", Type: field.TypeString, Size: 36},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "amount_minor", Type: field.TypeString, Size: 12},
+		{Name: "order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SupplierQuotesTable holds the schema information for the "supplier_quotes" table.
+	SupplierQuotesTable = &schema.Table{
+		Name:       "supplier_quotes",
+		Columns:    SupplierQuotesColumns,
+		PrimaryKey: []*schema.Column{SupplierQuotesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_quote_order",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierQuotesColumns[6]},
+			},
+			{
+				Name:    "supplier_quote_customer",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierQuotesColumns[1], SupplierQuotesColumns[7]},
 			},
 		},
 	}
@@ -2697,11 +2753,13 @@ var (
 		SiteSettingsTable,
 		StaffProfilesTable,
 		SubmissionEventsTable,
+		SupplierBindingsTable,
 		SupplierConnectionsTable,
 		SupplierImportsTable,
 		SupplierItemsTable,
 		SupplierPricesTable,
 		SupplierPurchasesTable,
+		SupplierQuotesTable,
 		SupplierSignalsTable,
 		TransferAttemptsTable,
 		TransferEventsTable,

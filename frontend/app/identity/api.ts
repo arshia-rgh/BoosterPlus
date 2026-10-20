@@ -87,6 +87,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "supplier_purchasing_disabled",
+    "Purchasing is disabled by this environment’s configuration. Only the isolated Nexus Sandbox can be enabled during qualification.",
+  ],
+  [
+    "shop_unavailable",
+    "Delivery information is temporarily unavailable. Retry in a moment or contact support. Do not place a replacement order.",
+  ],
+  [
     "supplier_invalid",
     "Review the highlighted supplier settings and try again.",
   ],

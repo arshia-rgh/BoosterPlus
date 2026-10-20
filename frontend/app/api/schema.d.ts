@@ -5852,6 +5852,125 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/shop/supplier-listings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Prepare or refresh a private listing, preserving authored terms; never publishes */
+    post: operations["prepareSupplierListing"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/suppliers/{connection}/purchasing": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Owner recent verification; only explicitly configured isolated Sandbox can be enabled */
+    post: operations["setSupplierPurchasing"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/shop/{id}/quote": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Read current exact price and create a short-lived customer-bound quote; no provider order */
+    post: operations["quoteSupplierShopProduct"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/shop/{id}/supplier-reserve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Consume quote once; persist unpaid order and encrypted inputs; never buys */
+    post: operations["reserveSupplierShopProduct"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/shop/codes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reveal protected codes only to current paid owning customer */
+    post: operations["revealSupplierCodes"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/shop/action": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Read a protected pending delivery action after current payment and ownership checks */
+    post: operations["readSupplierDeliveryAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/shop/filters": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published region and product-type choices for this game and runtime environment */
+    get: operations["getShopPublicFilters"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7901,6 +8020,7 @@ export interface components {
       delivery_state: string;
       /** Format: date-time */
       last_sent_at: string | null;
+      supplier_delivery?: boolean;
     };
     StaffAvailabilityPage: {
       subscriptions: components["schemas"]["StaffAvailability"][];
@@ -8356,6 +8476,7 @@ export interface components {
       variants: components["schemas"]["ShopVariant"][];
       recipient: components["schemas"]["ShopRecipientField"][];
       policy: components["schemas"]["ShopPolicy"];
+      supplier?: components["schemas"]["ShopSupplierProduct"];
     };
     ShopStock: {
       variant_key: string;
@@ -8393,6 +8514,7 @@ export interface components {
       state: string;
       /** Format: date-time */
       updated_at: string;
+      supplier?: boolean;
     };
     ShopProducts: {
       items: components["schemas"]["ShopProductSummary"][];
@@ -8453,6 +8575,7 @@ export interface components {
       available: {
         [key: string]: number;
       };
+      supplier_available: boolean;
     };
     ShopPublicPage: {
       items: components["schemas"]["ShopPublicProduct"][];
@@ -8465,6 +8588,7 @@ export interface components {
       variant: components["schemas"]["ShopVariant"];
       quantity: number;
       amount_minor: string;
+      supplier_quantity?: string;
     };
     ShopDelivery: {
       order_state: string;
@@ -8479,6 +8603,7 @@ export interface components {
       updated_at: string;
       recipient_provided: boolean;
       purchase: components["schemas"]["ShopPurchase"];
+      supplier?: components["schemas"]["ShopSupplierDelivery"];
     };
     ShopRecipient: {
       order_id: string;
@@ -9044,6 +9169,108 @@ export interface components {
       product_id: string;
       offer_id: string;
       settings: components["schemas"]["SupplierPriceInput"];
+    };
+    ShopSupplierProduct: {
+      /** @enum {string} */
+      method: "id" | "account" | "code";
+      quantity: {
+        kind: string;
+        min: string;
+        max: string;
+        step: string;
+      };
+      fields: {
+        id: string;
+        label: string;
+        kind: string;
+        required: boolean;
+        secret: boolean;
+        transient: boolean;
+        min?: string | null;
+        max?: string | null;
+        step?: string | null;
+        options?:
+          | {
+              id: string;
+              label: string;
+            }[]
+          | null;
+      }[];
+      eligibility: {
+        global: boolean;
+        regions: string[] | null;
+        countries: string[] | null;
+        excluded_countries: string[] | null;
+        policy_kind: string;
+        policy_countries: string[] | null;
+      };
+      testing: boolean;
+    };
+    ShopSupplierDelivery: {
+      state: string;
+      requested: string;
+      delivered: string;
+      needs_review: boolean;
+      codes_available: boolean;
+      testing: boolean;
+    };
+    ShopSupplierQuote: {
+      id: string;
+      product_id: string;
+      release_id: string;
+      quantity: string;
+      amount_minor: string;
+      /** @constant */
+      currency: "USD";
+      /** Format: date-time */
+      expires_at: string;
+      testing: boolean;
+    };
+    ShopSupplierQuoteInput: {
+      release_id: string;
+      quantity: string;
+    };
+    ShopSupplierAcceptance: {
+      request_key: string;
+      quote_id: string;
+      expected_amount: string;
+      terms_version: string;
+      accept_terms: boolean;
+      recipient: {
+        [key: string]: string;
+      };
+    };
+    ShopSupplierPreparation: {
+      /** @enum {string} */
+      connection: "nexus-sandbox" | "nexus-production";
+      import_id: string;
+      product_id: string;
+      offer_id: string;
+      price_version: number;
+      connection_version: number;
+      shop_version: number;
+    };
+    SupplierPurchasingInput: {
+      version: number;
+      enabled: boolean;
+    };
+    ShopSupplierCodes: {
+      keys: {
+        code: string;
+        cardNo?: string;
+        url?: string;
+        expireAt?: string;
+      }[];
+    };
+    ShopSupplierAction: {
+      kind: string;
+      url: string;
+      employee: string;
+      profile_url: string;
+    };
+    ShopPublicFilters: {
+      regions: string[];
+      categories: string[];
     };
   };
   responses: never;
@@ -11567,7 +11794,12 @@ export interface operations {
         from?: string;
         to?: string;
         delivery?:
-          "processing" | "held" | "submitted" | "completed" | "cancelled";
+          | "processing"
+          | "held"
+          | "submitted"
+          | "completed"
+          | "cancelled"
+          | "supplier";
       };
       header?: never;
       path?: never;
@@ -23508,6 +23740,7 @@ export interface operations {
         q?: string;
         region?: string;
         category?: string;
+        method?: "" | "manual" | "id" | "account" | "code";
       };
       header?: never;
       path: {
@@ -25265,11 +25498,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        connection:
-          | "nexus-sandbox"
-          | "nexus-production"
-          | "vendoria-test"
-          | "vendoria-production";
+        connection: "nexus-sandbox" | "nexus-production";
       };
       cookie?: never;
     };
@@ -25302,11 +25531,7 @@ export interface operations {
         "X-CSRF-Token": string;
       };
       path: {
-        connection:
-          | "nexus-sandbox"
-          | "nexus-production"
-          | "vendoria-test"
-          | "vendoria-production";
+        connection: "nexus-sandbox" | "nexus-production";
       };
       cookie?: never;
     };
@@ -25343,11 +25568,7 @@ export interface operations {
         "X-CSRF-Token": string;
       };
       path: {
-        connection:
-          | "nexus-sandbox"
-          | "nexus-production"
-          | "vendoria-test"
-          | "vendoria-production";
+        connection: "nexus-sandbox" | "nexus-production";
       };
       cookie?: never;
     };
@@ -25384,11 +25605,7 @@ export interface operations {
         "X-CSRF-Token": string;
       };
       path: {
-        connection:
-          | "nexus-sandbox"
-          | "nexus-production"
-          | "vendoria-test"
-          | "vendoria-production";
+        connection: "nexus-sandbox" | "nexus-production";
       };
       cookie?: never;
     };
@@ -25755,6 +25972,259 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  prepareSupplierListing: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopSupplierPreparation"];
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  setSupplierPurchasing: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        connection: "nexus-sandbox" | "nexus-production";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SupplierPurchasingInput"];
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierConnection"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  quoteSupplierShopProduct: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopSupplierQuoteInput"];
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopSupplierQuote"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  reserveSupplierShopProduct: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopSupplierAcceptance"];
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopDelivery"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  revealSupplierCodes: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": Record<string, never>;
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopSupplierCodes"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  readSupplierDeliveryAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": Record<string, never>;
+      };
+    };
+    responses: {
+      /** @description Authenticated result; protected values are never cached */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopSupplierAction"];
+        };
+      };
+      /** @description Authorization, validation, stale state or supplier rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SupplierProblem"];
+        };
+      };
+    };
+  };
+  getShopPublicFilters: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Public released filter choices */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPublicFilters"];
+        };
+      };
+      /** @description Unavailable game or catalog */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
       };
     };
   };

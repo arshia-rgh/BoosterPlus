@@ -73,7 +73,7 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 		}
 		if row.Kind == order.KindShop {
 			// Shop delivery keeps its own staff review record; never mutate booster work.
-			held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant())
+			held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant(), record.Outcome)
 			if holdErr != nil {
 				return holdErr
 			}
@@ -104,7 +104,7 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 		return ErrInvalid
 	}
 	if row.Kind == order.KindShop && record.Outcome == "retain" && next == order.StateQueued {
-		held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant())
+		held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant(), record.Outcome)
 		if holdErr != nil {
 			return holdErr
 		}

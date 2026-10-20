@@ -42,6 +42,9 @@ func (s *Store) ChangeDelivery(ctx context.Context, p *identity.Principal, id, a
 		if e != nil {
 			return e
 		}
+		if purchase.Product.Supplier != nil {
+			return ErrConflict
+		}
 		if e = paidShop(ctx, tx, row, purchase); e != nil {
 			return e
 		}
@@ -156,7 +159,7 @@ func (s *Store) ChangeDelivery(ctx context.Context, p *identity.Principal, id, a
 		if e = s.deliveryAudit(ctx, tx, current, action, id, work.Version); e != nil {
 			return e
 		}
-		out, e = deliveryView(ctx, tx, row, true)
+		out, e = s.deliveryView(ctx, tx, row, true)
 		return e
 	})
 	if err != nil {

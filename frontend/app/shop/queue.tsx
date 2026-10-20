@@ -24,7 +24,11 @@ export default function ShopQueue() {
     after: params.get("after") ?? "",
   });
   const applied = params.get("queue") ?? "";
-  if (["processing", "held", "submitted", "completed"].includes(applied))
+  if (
+    ["processing", "held", "submitted", "completed", "supplier"].includes(
+      applied,
+    )
+  )
     query.set("delivery", applied);
   if (applied === "ready") {
     query.set("state", "queued");
@@ -38,10 +42,10 @@ export default function ShopQueue() {
   );
   return (
     <section className="admin-order-list shop-delivery-queue">
-      <p className="eyebrow">Manual fulfillment</p>
+      <p className="eyebrow">Shop delivery</p>
       <p>
-        Unpaid orders are visible for support. Delivery starts only after
-        verified payment and an explicit staff claim.
+        Delivery starts after verified payment. Staff claim manual products;
+        supplier products update automatically.
       </p>
       <Link to="/admin/shop">Product catalog</Link>
       <form
@@ -62,7 +66,8 @@ export default function ShopQueue() {
           options={[
             ["", "All shop orders"],
             ["ready", "Ready to claim"],
-            ["processing", "Claimed / processing"],
+            ["processing", "Processing"],
+            ["supplier", "Supplier deliveries"],
             ["held", "Held"],
             ["submitted", "Awaiting delivery review"],
             ["completed", "Completed"],
@@ -106,9 +111,18 @@ export default function ShopQueue() {
                         <th scope="row">
                           {row.game_name}
                           <br />
-                          <small title={row.id}>
+                          <Link
+                            className="shop-queue-order-link"
+                            to={`/admin/orders/${row.id}?section=${row.state === "awaiting_payment" ? "payment" : "fulfillment"}`}
+                            state={{
+                              orderListSearch: query.toString(),
+                              shopQueueSearch: params.toString(),
+                            }}
+                            title={row.id}
+                          >
                             Order {row.id.slice(0, 8)}
-                          </small>
+                            <span aria-hidden="true">→</span>
+                          </Link>
                         </th>
                         <td>{stateLabel(row.state)}</td>
                         <td>
@@ -130,9 +144,11 @@ export default function ShopQueue() {
                           )}
                         </td>
                         <td>
-                          {row.staff?.assigned_id
-                            ? `Staff ${row.staff.assigned_id.slice(0, 8)}`
-                            : "Unclaimed"}
+                          {row.staff?.supplier_delivery
+                            ? "Supplier delivery"
+                            : row.staff?.assigned_id
+                              ? `Staff ${row.staff.assigned_id.slice(0, 8)}`
+                              : "Unclaimed"}
                         </td>
                         <td>
                           <Link

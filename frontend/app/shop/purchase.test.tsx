@@ -29,6 +29,7 @@ beforeEach(() => {
     game_slug: "fixture",
     release_id: "release",
     version: 1,
+    supplier_available: false,
     available: { fixture: 4 },
     definition: {
       ...emptyDefinition(),

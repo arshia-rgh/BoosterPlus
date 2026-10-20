@@ -1,3 +1,4 @@
+import { SupplierDelivery } from "./supplier-delivery";
 import { ActionFields, requireText } from "../ui/action-fields";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, type Location } from "../portal-router";
@@ -448,6 +449,18 @@ export default function ShopDeliveryPanel({
       }
     }
   }
+  if (data?.supplier && visible && !unavailable && session.data?.user)
+    return (
+      <SupplierDelivery
+        key={`${id}:${session.data.user.id}`}
+        data={data}
+        admin={admin}
+        refresh={() => {
+          resource.reload();
+          changed();
+        }}
+      />
+    );
   const params = new URLSearchParams(location.search);
   params.set("section", "messages");
   params.set("channel", "support");
@@ -466,7 +479,7 @@ export default function ShopDeliveryPanel({
         Refresh delivery
       </Action>
       {resource.loading && <p role="status">Loading delivery…</p>}
-      {data && (
+      {data && !data.supplier && (
         <>
           <h4>{data.purchase.product.title}</h4>
           <p>

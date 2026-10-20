@@ -86,7 +86,12 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id string, ve
 				return releaseErr
 			}
 			update.SetCurrentRelease(release.ID)
-			if e = publishStock(ctx, tx, id, release.ID, value, now); e != nil {
+			if value.Supplier != nil {
+				e = s.supplierPublication(ctx, tx, row, value, release.ID)
+			} else {
+				e = publishStock(ctx, tx, id, release.ID, value, now)
+			}
+			if e != nil {
 				return e
 			}
 
@@ -136,6 +141,9 @@ func (s *Store) SetStock(ctx context.Context, p *identity.Principal, id string, 
 		value, e := definition(release.Data)
 		if e != nil {
 			return e
+		}
+		if value.Supplier != nil {
+			return ErrConflict
 		}
 		if !slices.ContainsFunc(value.Variants, func(v Variant) bool { return v.Key == input.VariantKey }) {
 			return ErrConflict

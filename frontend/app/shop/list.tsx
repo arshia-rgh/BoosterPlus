@@ -55,8 +55,8 @@ export function ShopProducts() {
   return (
     <div className="shop-editor">
       <p>
-        Manage game items delivered manually by PLAYORA staff. A draft is
-        private; publication and stock are separate reviewed steps.
+        Manage supplier deliveries and your own staff-delivered products. Drafts
+        stay private until reviewed and published.
       </p>
       <CreateProduct search={query.toString()} />
       <section aria-label="Find shop products">
@@ -111,9 +111,9 @@ export function ShopProducts() {
           }}
         />
         <p className="quiet">
-          Availability checks the published product and variant, remaining stock
-          for its minimum quantity, and the game’s current Shop service. Paused,
-          unpublished or exhausted products are unavailable for new orders.
+          Availability checks publication, the game’s Shop service and either
+          manual stock or the configured supplier purchasing switch. Supplier
+          prices and stock are checked again before checkout.
         </p>
         {params.get("game") && (
           <Action
@@ -143,7 +143,9 @@ export function ShopProducts() {
             <li key={row.id}>
               <h3>{row.title || "Untitled product"}</h3>
               <p>
-                {row.game} · {row.state} · Revision {row.version}
+                {row.game} ·{" "}
+                {row.supplier ? "Supplier delivery" : "Manual delivery"} ·{" "}
+                {row.state} · Revision {row.version}
               </p>
               <Link
                 className="button compact"

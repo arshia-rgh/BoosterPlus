@@ -122,7 +122,10 @@ func (s *Purchaser) beforeSendFailure(ctx context.Context, id, lease, issue stri
 			return ErrConflict
 		}
 		_, err = tx.SupplierPurchase.UpdateOne(row).SetState("held").SetIssue(issue).SetLeaseOwner("").ClearLeaseUntil().AddVersion(1).SetUpdatedAt(s.now()).Save(ctx)
-		return err
+		if err != nil {
+			return err
+		}
+		return s.projectDelivery(ctx, tx, row, "held", issue)
 	})
 }
 
@@ -167,5 +170,5 @@ func (s *Purchaser) Maintain(ctx context.Context) error {
 			result = errors.Join(result, e)
 		}
 	}
-	return result
+	return errors.Join(result, s.WakePaid(ctx))
 }

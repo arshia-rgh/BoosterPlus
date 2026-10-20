@@ -16,7 +16,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 	s.registerPurchase(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request, *identity.Principal) error{
 		"GET /api/v1/admin/shop/products": s.listHTTP, "POST /api/v1/admin/shop/products": s.createHTTP,
-		"GET /api/v1/admin/shop/products/{id}": s.draftHTTP, "POST /api/v1/admin/shop/products/{id}/draft": s.saveHTTP,
+		"POST /api/v1/admin/shop/supplier-listings": s.supplierPrepareHTTP,
+		"GET /api/v1/admin/shop/products/{id}":      s.draftHTTP, "POST /api/v1/admin/shop/products/{id}/draft": s.saveHTTP,
 		"GET /api/v1/admin/shop/products/{id}/preview": s.previewHTTP, "GET /api/v1/admin/shop/products/{id}/releases": s.releasesHTTP,
 		"POST /api/v1/admin/shop/products/{id}/stock": s.stockHTTP, "POST /api/v1/admin/shop/products/{id}/{action}": s.changeHTTP,
 	}
@@ -36,6 +37,18 @@ func (s *Store) Register(mux *http.ServeMux) {
 			}
 		}))
 	}
+}
+
+func (s *Store) supplierPrepareHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+	var input SupplierPreparation
+	if err := read(r, &input); err != nil {
+		return err
+	}
+	out, err := s.PrepareSupplier(r.Context(), p, input)
+	if err != nil {
+		return err
+	}
+	return write(w, http.StatusOK, out)
 }
 func read(r *http.Request, value any) error {
 	content := r.Header.Get("Content-Type")

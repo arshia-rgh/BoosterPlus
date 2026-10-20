@@ -1,3 +1,4 @@
+import { supplierMethodNames } from "../suppliers/contracts";
 import ShopArtwork from "./artwork";
 import { price } from "../catalog/model";
 import type { Definition } from "./model";
@@ -17,8 +18,28 @@ export function ProductPreview({ value }: { value: Definition }) {
               currency: variant.currency,
               amount_minor: variant.unit_amount_minor,
             })}{" "}
-            per item · {variant.region} / {variant.platform} / {variant.server}{" "}
-            · Quantity {variant.min_quantity}–{variant.max_quantity}
+            {value.supplier ? (
+              <>
+                {" "}
+                indicative total for {value.supplier.quantity.min} ·{" "}
+                {variant.region} · {supplierMethodNames[value.supplier.method]}{" "}
+                · Quantity {value.supplier.quantity.min}–
+                {value.supplier.quantity.max === "0"
+                  ? "no maximum"
+                  : value.supplier.quantity.max}{" "}
+                (
+                {value.supplier.quantity.step === "0"
+                  ? "continuous quantity"
+                  : `step ${value.supplier.quantity.step}`}
+                ). A fresh price is confirmed before payment.
+              </>
+            ) : (
+              <>
+                per item · {variant.region} / {variant.platform} /{" "}
+                {variant.server} · Quantity {variant.min_quantity}–
+                {variant.max_quantity}
+              </>
+            )}
             {!variant.enabled && " · Not offered"}
           </li>
         ))}
@@ -40,8 +61,8 @@ export function ProductPreview({ value }: { value: Definition }) {
       </dl>
       <p>
         Delivery information:{" "}
-        {value.recipient.length
-          ? value.recipient
+        {(value.supplier?.fields.length ?? value.recipient.length)
+          ? (value.supplier?.fields ?? value.recipient)
               .map(
                 (field) =>
                   field.label +

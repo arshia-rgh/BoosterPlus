@@ -49,6 +49,7 @@ export function supplierProduct(): Product {
             required: true,
             secret: false,
             transient: false,
+            options: [],
           },
         ],
         quantity: { kind: "one", min: "1", max: "1", step: "1" },
@@ -98,6 +99,7 @@ export function supplierLibrary(id = "nexus-sandbox"): Library {
     required: true,
     secret: true,
     transient: false,
+    options: [],
   });
   second.region = {
     global: false,

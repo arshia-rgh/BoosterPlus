@@ -8,11 +8,14 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierbinding"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierconnection"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/suppliers"
 )
 
 // purchasableProduct applies release-backed availability before list pagination.
 // A private draft, paused game or obsolete stock projection never counts as an offer.
-func purchasableProduct(product *sql.Selector) *sql.Predicate {
+func (s *Store) purchasableProduct(product *sql.Selector) *sql.Predicate {
 	stock := sql.Table(shopstock.Table).As("available_stock")
 	inventory := sql.Select(stock.C(shopstock.FieldProductID)).From(stock).Where(sql.And(
 		sql.EQ(stock.C(shopstock.FieldEnabled), true),
@@ -25,5 +28,18 @@ func purchasableProduct(product *sql.Selector) *sql.Predicate {
 		sql.EQ(games.C(game.FieldPublished), true), sql.EQ(games.C(game.FieldPaused), false), sql.EQ(games.C(game.FieldArchived), false),
 		sqljson.ValueContains(released.C(catalogrelease.FieldConfiguration), map[string]string{"service": "shop", "state": "active"}, sqljson.Path("discovery", "capabilities")),
 	))
-	return sql.And(sql.EQ(product.C(shopproduct.FieldState), "published"), sql.In(product.C(shopproduct.FieldID), inventory), sql.In(product.C(shopproduct.FieldGameID), enabled))
+	availability := sql.In(product.C(shopproduct.FieldID), inventory)
+	if s.supplier != nil {
+		merchant := s.supplier.ConfiguredMerchant(suppliers.NexusSandbox)
+		if s.supplier.CanPurchase(suppliers.NexusSandbox, merchant) {
+			binding := sql.Table(supplierbinding.Table).As("available_binding")
+			connection := sql.Table(supplierconnection.Table).As("available_connection")
+			releases := sql.Select(binding.C(supplierbinding.FieldID)).From(binding).Where(sql.And(
+				sqljson.ValueEQ(binding.C(supplierbinding.FieldData), string(suppliers.NexusSandbox), sqljson.Path("connection")),
+				sql.Exists(sql.Select(connection.C(supplierconnection.FieldID)).From(connection).Where(sql.And(sql.EQ(connection.C(supplierconnection.FieldID), string(suppliers.NexusSandbox)), sql.EQ(connection.C(supplierconnection.FieldMerchantID), merchant), sql.EQ(connection.C(supplierconnection.FieldPurchasesEnabled), true)))),
+				sqljson.ValueEQ(binding.C(supplierbinding.FieldData), merchant, sqljson.Path("merchant_id")), sql.ColumnsEQ(binding.C(supplierbinding.FieldShopProductID), product.C(shopproduct.FieldID))))
+			availability = sql.Or(availability, sql.In(product.C(shopproduct.FieldCurrentRelease), releases))
+		}
+	}
+	return sql.And(sql.EQ(product.C(shopproduct.FieldState), "published"), availability, sql.In(product.C(shopproduct.FieldGameID), enabled))
 }

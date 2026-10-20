@@ -26,6 +26,7 @@ export const summarySchema = z.object({
       assigned_id: z.string(),
       payment_state: z.string(),
       delivery_state: z.string().optional(),
+      supplier_delivery: z.boolean().optional(),
     })
     .optional(),
   accepted_price: z

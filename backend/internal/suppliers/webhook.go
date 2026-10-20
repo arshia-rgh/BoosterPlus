@@ -108,5 +108,5 @@ func (c *Client) verificationURL(raw string) bool {
 		return false
 	}
 	value, err := url.Parse(raw)
-	return err == nil && value.Scheme == "https" && value.User == nil && value.Host == strings.TrimPrefix(c.origin, "https://") && value.Fragment == "" && value.Opaque == ""
+	return err == nil && value.Scheme == "https" && value.User == nil && value.Host == strings.TrimPrefix(c.connection.origin(), "https://") && value.Fragment == "" && value.Opaque == ""
 }

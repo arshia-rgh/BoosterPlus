@@ -68,7 +68,7 @@ it("separates environments, private imports and manual products without a purcha
     "href",
     "/admin/shop",
   );
-  expect(screen.getByText("Purchasing disabled")).toBeVisible();
+  expect(screen.getByText("New purchases paused")).toBeVisible();
   expect(screen.getByText("2 imported products · 2 offers")).toBeVisible();
   expect(
     screen.getByRole("button", { name: "Import private catalog" }),

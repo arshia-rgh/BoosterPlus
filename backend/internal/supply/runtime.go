@@ -11,8 +11,8 @@ import (
 )
 
 // PurchaserFromConfig binds fixed-host adapters to the same vault as the API.
-// Runtime configuration still refuses buying until the checkout integration
-// is complete. This permits read-only reconciliation of recorded obligations.
+// Only an explicit isolated Sandbox configuration may enable new purchases.
+// Production remains read-only during qualification.
 func PurchaserFromConfig(client *ent.Client, keys *vault.Keyring, configs []suppliers.Config) (*Purchaser, error) {
 	providers := make([]PurchaseProvider, 0, len(configs))
 	enabled := false
@@ -30,7 +30,8 @@ func PurchaserFromConfig(client *ent.Client, keys *vault.Keyring, configs []supp
 	return NewPurchaser(client, keys, providers, enabled, nil)
 }
 
-// RunMaintenance uses bounded GET reconciliation only. Pausing new purchases
+// RunMaintenance reconciles with GETs and wakes eligible unclaimed paid jobs.
+// It never issues a create POST itself. Pausing new purchases
 // must not suppress delivery updates for an already accepted supplier order.
 func (s *Purchaser) RunMaintenance(ctx context.Context, logger *slog.Logger) {
 	ticker := time.NewTicker(time.Minute)

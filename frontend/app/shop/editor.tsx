@@ -324,7 +324,17 @@ function Editor({
             </>
           }
           back={{ to: back, label: "Shop products" }}
-          sections={sections}
+          sections={
+            value.supplier
+              ? sections
+                  .filter((section) => section.id !== "stock")
+                  .map((section) =>
+                    section.id === "variants"
+                      ? { ...section, label: "Supplier offer" }
+                      : section,
+                  )
+              : sections
+          }
           keepMounted={[
             "basics",
             "variants",
@@ -524,7 +534,7 @@ function Editor({
                   </Link>
                 </section>
               )}
-              {section === "stock" && (
+              {section === "stock" && !value.supplier && (
                 <>
                   <h3>Stock capacity</h3>
                   <p>

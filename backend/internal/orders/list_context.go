@@ -11,6 +11,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopdelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
@@ -30,6 +31,7 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 	}
 	assignments := map[string]string{}
 	deliveryStates := map[string]string{}
+	supplierOrders := map[string]bool{}
 	if admin {
 		work, err := s.client.Fulfillment.Query().Where(fulfillment.OrderIDIn(ids...)).Select(fulfillment.FieldOrderID, fulfillment.FieldAssignedID).Limit(50).All(ctx)
 		if err != nil {
@@ -47,6 +49,15 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 			deliveryStates[delivery.OrderID] = delivery.State
 		}
 
+		supplierRows, err := s.client.SupplierPurchase.Query().Where(supplierpurchase.OrderIDIn(ids...)).Select(supplierpurchase.FieldOrderID, supplierpurchase.FieldState).Limit(50).All(ctx)
+		if err != nil {
+			return err
+		}
+		for _, delivery := range supplierRows {
+			supplierOrders[delivery.OrderID] = true
+			deliveryStates[delivery.OrderID] = delivery.State
+			delete(assignments, delivery.OrderID)
+		}
 	}
 	prices := map[string]*ent.OrderContract{}
 	if len(contracts) > 0 {
@@ -77,7 +88,7 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 	for _, row := range rows {
 		item := summary(row)
 		if admin {
-			item.Staff = &StaffSummary{DeliveryState: deliveryStates[row.ID], CustomerID: row.UserID, AssignedID: assignments[row.ID], PaymentState: "no_agreement"}
+			item.Staff = &StaffSummary{SupplierDelivery: supplierOrders[row.ID], DeliveryState: deliveryStates[row.ID], CustomerID: row.UserID, AssignedID: assignments[row.ID], PaymentState: "no_agreement"}
 		}
 		flag := flags[row.ID]
 		item.Unread = &flag

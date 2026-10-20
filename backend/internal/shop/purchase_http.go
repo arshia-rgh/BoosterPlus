@@ -6,9 +6,19 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/suppliers"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/supply"
 )
 
 func (s *Store) registerPurchase(mux *http.ServeMux) {
+	s.registerSupplierCheckout(mux)
+	mux.HandleFunc("GET /api/v1/games/{slug}/shop/filters", s.auth.Protect("", shopProblem(func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
+		out, err := s.PublicFilters(r.Context(), r.PathValue("slug"))
+		if err != nil {
+			return err
+		}
+		return write(w, http.StatusOK, out)
+	})))
 	for _, admin := range []bool{false, true} {
 		base, capability := "/api/v1/orders/", "account"
 		if admin {
@@ -46,7 +56,7 @@ func (s *Store) registerPurchase(mux *http.ServeMux) {
 	})))
 	mux.HandleFunc("GET /api/v1/games/{slug}/shop", s.auth.Protect("", shopProblem(func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		q := r.URL.Query()
-		out, err := s.Browse(r.Context(), BrowseInput{Slug: r.PathValue("slug"), After: q.Get("after"), Search: q.Get("q"), Region: q.Get("region"), Category: q.Get("category")})
+		out, err := s.Browse(r.Context(), BrowseInput{Slug: r.PathValue("slug"), After: q.Get("after"), Search: q.Get("q"), Region: q.Get("region"), Category: q.Get("category"), Method: q.Get("method")})
 		if err != nil {
 			return err
 		}
@@ -75,11 +85,16 @@ func shopProblem(next func(http.ResponseWriter, *http.Request, *identity.Princip
 	return func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		w.Header().Set("Cache-Control", "no-store")
 		err := next(w, r, p)
+		var invalid *Invalid
 		switch {
-		case errors.Is(err, ErrInvalid):
+		case errors.As(err, &invalid):
+			return write(w, http.StatusUnprocessableEntity, map[string]any{"code": "shop_invalid", "issues": invalid.Issues[:min(len(invalid.Issues), 200)]})
+		case errors.Is(err, ErrInvalid), errors.Is(err, supply.ErrInvalid), errors.Is(err, suppliers.ErrInvalid):
 			return write(w, http.StatusUnprocessableEntity, map[string]string{"code": "shop_invalid"})
-		case errors.Is(err, ErrConflict):
+		case errors.Is(err, ErrConflict), errors.Is(err, supply.ErrConflict), errors.Is(err, suppliers.ErrReadOnly), errors.Is(err, suppliers.ErrChanged):
 			return write(w, http.StatusConflict, map[string]string{"code": "shop_conflict"})
+		case errors.Is(err, supply.ErrUnavailable), errors.Is(err, suppliers.ErrUnavailable), errors.Is(err, suppliers.ErrEvidence):
+			return write(w, http.StatusServiceUnavailable, map[string]string{"code": "shop_unavailable"})
 		default:
 			return err
 		}

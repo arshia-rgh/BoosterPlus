@@ -21,6 +21,7 @@ type Filters struct{ After, Search, GameID, State, Availability string }
 
 // Summary identifies an editor without private actor metadata.
 type Summary struct {
+	Supplier  bool      `json:"supplier,omitempty"`
 	ID        string    `json:"id"`
 	GameID    string    `json:"game_id"`
 	Game      string    `json:"game"`
@@ -59,7 +60,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, filter Filters)
 		}
 		if filter.Availability != "" {
 			q.Where(func(selector *sql.Selector) {
-				available := purchasableProduct(selector)
+				available := s.purchasableProduct(selector)
 				if filter.Availability == "available" {
 					selector.Where(available)
 				} else {
@@ -76,7 +77,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, filter Filters)
 			rows = rows[:50]
 		}
 		for _, row := range rows {
-			out.Items = append(out.Items, Summary{row.ID, row.GameID, row.GameName, row.Slug, row.Title, row.Version, row.State, row.UpdatedAt})
+			out.Items = append(out.Items, Summary{row.Draft["supplier"] != nil, row.ID, row.GameID, row.GameName, row.Slug, row.Title, row.Version, row.State, row.UpdatedAt})
 		}
 		return nil
 	})
@@ -153,6 +154,12 @@ func (s *Store) Preview(ctx context.Context, p *identity.Principal, id string) (
 			return e
 		}
 		out.Issues = Validate(out.Draft.Definition, true)
+		if out.Draft.Definition.Supplier != nil {
+			if e = s.supplierPublication(ctx, tx, row, out.Draft.Definition, ""); e != nil {
+				out.Issues = append(out.Issues, Issue{Path: "supplier", Message: "Refresh the supplier binding from the current configured merchant before publishing."})
+			}
+			return nil
+		}
 		for i, variant := range out.Draft.Definition.Variants {
 			current, e := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(id), shopstock.VariantKeyEQ(variant.Key)).Only(ctx)
 			if ent.IsNotFound(e) {

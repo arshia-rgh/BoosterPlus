@@ -1,10 +1,9 @@
+import { supplierFieldSchema } from "./contracts";
 import { z } from "../validation";
 
 export const connections = [
   ["nexus-sandbox", "Nexus · Sandbox"],
-  ["vendoria-test", "Vendoria · Test"],
   ["nexus-production", "Nexus · Production"],
-  ["vendoria-production", "Vendoria · Production"],
 ] satisfies [string, string][];
 export const connectionSchema = z.object({
   id: z.string(),
@@ -45,16 +44,7 @@ const offerSchema = z.object({
   name: z.string(),
   available: z.boolean(),
   suggested_delivery: z.string(),
-  fields: z.array(
-    z.object({
-      id: z.string(),
-      label: z.string(),
-      kind: z.string(),
-      required: z.boolean(),
-      secret: z.boolean(),
-      transient: z.boolean(),
-    }),
-  ),
+  fields: z.array(supplierFieldSchema),
   quantity: z.object({
     kind: z.string(),
     min: z.string(),

@@ -76,11 +76,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierbinding"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierconnection"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierimport"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/suppliersignal"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
@@ -3039,6 +3041,24 @@ func init() {
 	submissionevent.DefaultID = submissioneventDescID.Default.(func() string)
 	// submissionevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	submissionevent.IDValidator = submissioneventDescID.Validators[0].(func(string) error)
+	supplierbindingFields := schema.SupplierBinding{}.Fields()
+	_ = supplierbindingFields
+	// supplierbindingDescShopProductID is the schema descriptor for shop_product_id field.
+	supplierbindingDescShopProductID := supplierbindingFields[1].Descriptor()
+	// supplierbinding.ShopProductIDValidator is a validator for the "shop_product_id" field. It is called by the builders before save.
+	supplierbinding.ShopProductIDValidator = supplierbindingDescShopProductID.Validators[0].(func(string) error)
+	// supplierbindingDescReleaseID is the schema descriptor for release_id field.
+	supplierbindingDescReleaseID := supplierbindingFields[2].Descriptor()
+	// supplierbinding.ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	supplierbinding.ReleaseIDValidator = supplierbindingDescReleaseID.Validators[0].(func(string) error)
+	// supplierbindingDescCreatedAt is the schema descriptor for created_at field.
+	supplierbindingDescCreatedAt := supplierbindingFields[4].Descriptor()
+	// supplierbinding.DefaultCreatedAt holds the default value on creation for the created_at field.
+	supplierbinding.DefaultCreatedAt = supplierbindingDescCreatedAt.Default.(func() time.Time)
+	// supplierbindingDescID is the schema descriptor for id field.
+	supplierbindingDescID := supplierbindingFields[0].Descriptor()
+	// supplierbinding.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierbinding.IDValidator = supplierbindingDescID.Validators[0].(func(string) error)
 	supplierconnectionFields := schema.SupplierConnection{}.Fields()
 	_ = supplierconnectionFields
 	// supplierconnectionDescMerchantID is the schema descriptor for merchant_id field.
@@ -3355,6 +3375,38 @@ func init() {
 	supplierpurchase.DefaultID = supplierpurchaseDescID.Default.(func() string)
 	// supplierpurchase.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	supplierpurchase.IDValidator = supplierpurchaseDescID.Validators[0].(func(string) error)
+	supplierquoteFields := schema.SupplierQuote{}.Fields()
+	_ = supplierquoteFields
+	// supplierquoteDescUserID is the schema descriptor for user_id field.
+	supplierquoteDescUserID := supplierquoteFields[1].Descriptor()
+	// supplierquote.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	supplierquote.UserIDValidator = supplierquoteDescUserID.Validators[0].(func(string) error)
+	// supplierquoteDescShopProductID is the schema descriptor for shop_product_id field.
+	supplierquoteDescShopProductID := supplierquoteFields[2].Descriptor()
+	// supplierquote.ShopProductIDValidator is a validator for the "shop_product_id" field. It is called by the builders before save.
+	supplierquote.ShopProductIDValidator = supplierquoteDescShopProductID.Validators[0].(func(string) error)
+	// supplierquoteDescReleaseID is the schema descriptor for release_id field.
+	supplierquoteDescReleaseID := supplierquoteFields[3].Descriptor()
+	// supplierquote.ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	supplierquote.ReleaseIDValidator = supplierquoteDescReleaseID.Validators[0].(func(string) error)
+	// supplierquoteDescAmountMinor is the schema descriptor for amount_minor field.
+	supplierquoteDescAmountMinor := supplierquoteFields[5].Descriptor()
+	// supplierquote.AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
+	supplierquote.AmountMinorValidator = supplierquoteDescAmountMinor.Validators[0].(func(string) error)
+	// supplierquoteDescOrderID is the schema descriptor for order_id field.
+	supplierquoteDescOrderID := supplierquoteFields[6].Descriptor()
+	// supplierquote.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	supplierquote.OrderIDValidator = supplierquoteDescOrderID.Validators[0].(func(string) error)
+	// supplierquoteDescCreatedAt is the schema descriptor for created_at field.
+	supplierquoteDescCreatedAt := supplierquoteFields[8].Descriptor()
+	// supplierquote.DefaultCreatedAt holds the default value on creation for the created_at field.
+	supplierquote.DefaultCreatedAt = supplierquoteDescCreatedAt.Default.(func() time.Time)
+	// supplierquoteDescID is the schema descriptor for id field.
+	supplierquoteDescID := supplierquoteFields[0].Descriptor()
+	// supplierquote.DefaultID holds the default value on creation for the id field.
+	supplierquote.DefaultID = supplierquoteDescID.Default.(func() string)
+	// supplierquote.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierquote.IDValidator = supplierquoteDescID.Validators[0].(func(string) error)
 	suppliersignalFields := schema.SupplierSignal{}.Fields()
 	_ = suppliersignalFields
 	// suppliersignalDescConnectionID is the schema descriptor for connection_id field.

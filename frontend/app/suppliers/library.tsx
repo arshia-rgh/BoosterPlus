@@ -1,3 +1,5 @@
+import { PurchasingControl } from "./purchasing";
+import { PrepareListing } from "./prepare";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "../portal-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -227,7 +229,10 @@ function ConnectionLibrary({
               )}
             </div>
             <div>
-              <strong>Purchasing disabled</strong>
+              <PurchasingControl
+                connection={data.connection}
+                changed={latestSaved}
+              />
               <p className="quiet">Imports and price edits stay private.</p>
               <Action
                 disabled={ruleOpen || resource.loading}
@@ -428,6 +433,13 @@ function ConnectionLibrary({
                         >
                           Review {offer.name}
                         </Action>
+                        <PrepareListing
+                          connection={data.connection}
+                          importID={data.import?.id ?? ""}
+                          product={product}
+                          offer={offer}
+                          disabled={ruleOpen || resource.loading}
+                        />
                       </div>
                     </li>
                   ))}

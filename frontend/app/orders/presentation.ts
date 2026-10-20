@@ -21,7 +21,7 @@ export function nextAction(order: Pick<OrderSummary, "state" | "kind">) {
     case "awaiting_payment":
       return "Check payment instructions";
     case "queued":
-      if (order.kind === "shop") return "Follow staff delivery";
+      if (order.kind === "shop") return "Follow delivery";
       return order.kind === "account"
         ? "Follow account handoff"
         : "Follow assignment and setup";
@@ -33,6 +33,7 @@ export function nextAction(order: Pick<OrderSummary, "state" | "kind">) {
     case "on_hold":
       return "Review the hold and contact support";
     case "completed":
+      if (order.kind === "shop") return "Review delivery and purchase feedback";
       return order.kind === "account"
         ? "View delivered account"
         : "View proof and purchase feedback";

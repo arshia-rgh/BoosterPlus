@@ -1,3 +1,5 @@
+import { Link } from "../portal-router";
+import { supplierMethodNames } from "../suppliers/contracts";
 import { AgreementTemplate } from "../resale/agreement-template";
 import ArtworkUpload from "../artwork/upload";
 import {
@@ -31,7 +33,7 @@ export function ProductFields({
         <>
           <h3>Product details</h3>
           <p>
-            Describe exactly what staff will deliver. These details become
+            Describe exactly what the customer receives. These details become
             public only when you publish a reviewed revision.
           </p>
           <Text
@@ -86,7 +88,45 @@ export function ProductFields({
           />
         </>
       )}
-      {section === "variants" && (
+      {value.supplier &&
+        (section === "variants" || section === "recipient") && (
+          <section>
+            <h3>
+              {section === "variants"
+                ? "Reviewed supplier offer"
+                : "Required delivery details"}
+            </h3>
+            <p>{supplierMethodNames[value.supplier.method]}</p>
+            <p>
+              Quantity:{" "}
+              {value.supplier.quantity.kind === "one"
+                ? "One item"
+                : `${value.supplier.quantity.min} minimum · ${value.supplier.quantity.step} steps`}
+            </p>
+            <ul>
+              {value.supplier.fields.map((field) => (
+                <li key={field.id}>
+                  {field.label}
+                  {field.required ? " (required)" : " (optional)"}
+                  {field.secret ? " · protected" : ""}
+                </li>
+              ))}
+            </ul>
+            <p>
+              Supplier requirements are locked to the reviewed offer. Customer
+              prices refresh before acceptance. Changes in the supplier library
+              require a refreshed draft and publication.
+            </p>
+            <Link
+              className="ui-button"
+              data-variant="secondary"
+              to="/admin/shop/suppliers"
+            >
+              Open supplier library
+            </Link>
+          </section>
+        )}
+      {section === "variants" && !value.supplier && (
         <>
           <h3>Variants and prices</h3>
           <p>
@@ -139,7 +179,7 @@ export function ProductFields({
           </Action>
         </>
       )}
-      {section === "recipient" && (
+      {section === "recipient" && !value.supplier && (
         <>
           <h3>Delivery information</h3>
           <p>
@@ -324,7 +364,9 @@ export function ProductFields({
             }}
           />
           <p>
-            Staff must submit delivery evidence for review before completion.
+            {value.supplier
+              ? "Delivery follows verified supplier status. Partial or uncertain delivery requires support review."
+              : "Staff must submit delivery evidence for review before completion."}
           </p>
           <Check
             label="Allow verified customer reviews for this product"

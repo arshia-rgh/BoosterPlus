@@ -19,6 +19,7 @@ export function fieldIssues(issues: readonly FieldIssue[]) {
   }));
 }
 function section(path: string) {
+  if (path.startsWith("supplier")) return ["variants", "Supplier offer"];
   if (path.startsWith("variants")) return ["variants", "Variants and prices"];
   if (path.startsWith("recipient"))
     return ["recipient", "Delivery information"];

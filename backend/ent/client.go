@@ -84,11 +84,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierbinding"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierconnection"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierimport"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/suppliersignal"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
@@ -244,6 +246,8 @@ type Client struct {
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
 	SubmissionEvent *SubmissionEventClient
+	// SupplierBinding is the client for interacting with the SupplierBinding builders.
+	SupplierBinding *SupplierBindingClient
 	// SupplierConnection is the client for interacting with the SupplierConnection builders.
 	SupplierConnection *SupplierConnectionClient
 	// SupplierImport is the client for interacting with the SupplierImport builders.
@@ -254,6 +258,8 @@ type Client struct {
 	SupplierPrice *SupplierPriceClient
 	// SupplierPurchase is the client for interacting with the SupplierPurchase builders.
 	SupplierPurchase *SupplierPurchaseClient
+	// SupplierQuote is the client for interacting with the SupplierQuote builders.
+	SupplierQuote *SupplierQuoteClient
 	// SupplierSignal is the client for interacting with the SupplierSignal builders.
 	SupplierSignal *SupplierSignalClient
 	// TransferAttempt is the client for interacting with the TransferAttempt builders.
@@ -347,11 +353,13 @@ func (c *Client) init() {
 	c.SiteSetting = NewSiteSettingClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.SubmissionEvent = NewSubmissionEventClient(c.config)
+	c.SupplierBinding = NewSupplierBindingClient(c.config)
 	c.SupplierConnection = NewSupplierConnectionClient(c.config)
 	c.SupplierImport = NewSupplierImportClient(c.config)
 	c.SupplierItem = NewSupplierItemClient(c.config)
 	c.SupplierPrice = NewSupplierPriceClient(c.config)
 	c.SupplierPurchase = NewSupplierPurchaseClient(c.config)
+	c.SupplierQuote = NewSupplierQuoteClient(c.config)
 	c.SupplierSignal = NewSupplierSignalClient(c.config)
 	c.TransferAttempt = NewTransferAttemptClient(c.config)
 	c.TransferEvent = NewTransferEventClient(c.config)
@@ -520,11 +528,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		SupplierBinding:          NewSupplierBindingClient(cfg),
 		SupplierConnection:       NewSupplierConnectionClient(cfg),
 		SupplierImport:           NewSupplierImportClient(cfg),
 		SupplierItem:             NewSupplierItemClient(cfg),
 		SupplierPrice:            NewSupplierPriceClient(cfg),
 		SupplierPurchase:         NewSupplierPurchaseClient(cfg),
+		SupplierQuote:            NewSupplierQuoteClient(cfg),
 		SupplierSignal:           NewSupplierSignalClient(cfg),
 		TransferAttempt:          NewTransferAttemptClient(cfg),
 		TransferEvent:            NewTransferEventClient(cfg),
@@ -620,11 +630,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		SupplierBinding:          NewSupplierBindingClient(cfg),
 		SupplierConnection:       NewSupplierConnectionClient(cfg),
 		SupplierImport:           NewSupplierImportClient(cfg),
 		SupplierItem:             NewSupplierItemClient(cfg),
 		SupplierPrice:            NewSupplierPriceClient(cfg),
 		SupplierPurchase:         NewSupplierPurchaseClient(cfg),
+		SupplierQuote:            NewSupplierQuoteClient(cfg),
 		SupplierSignal:           NewSupplierSignalClient(cfg),
 		TransferAttempt:          NewTransferAttemptClient(cfg),
 		TransferEvent:            NewTransferEventClient(cfg),
@@ -677,9 +689,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
-		c.SupplierConnection, c.SupplierImport, c.SupplierItem, c.SupplierPrice,
-		c.SupplierPurchase, c.SupplierSignal, c.TransferAttempt, c.TransferEvent,
-		c.TransferObservation, c.TransferRecord, c.User,
+		c.SupplierBinding, c.SupplierConnection, c.SupplierImport, c.SupplierItem,
+		c.SupplierPrice, c.SupplierPurchase, c.SupplierQuote, c.SupplierSignal,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -706,9 +719,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
-		c.SupplierConnection, c.SupplierImport, c.SupplierItem, c.SupplierPrice,
-		c.SupplierPurchase, c.SupplierSignal, c.TransferAttempt, c.TransferEvent,
-		c.TransferObservation, c.TransferRecord, c.User,
+		c.SupplierBinding, c.SupplierConnection, c.SupplierImport, c.SupplierItem,
+		c.SupplierPrice, c.SupplierPurchase, c.SupplierQuote, c.SupplierSignal,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -857,6 +871,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.StaffProfile.mutate(ctx, m)
 	case *SubmissionEventMutation:
 		return c.SubmissionEvent.mutate(ctx, m)
+	case *SupplierBindingMutation:
+		return c.SupplierBinding.mutate(ctx, m)
 	case *SupplierConnectionMutation:
 		return c.SupplierConnection.mutate(ctx, m)
 	case *SupplierImportMutation:
@@ -867,6 +883,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SupplierPrice.mutate(ctx, m)
 	case *SupplierPurchaseMutation:
 		return c.SupplierPurchase.mutate(ctx, m)
+	case *SupplierQuoteMutation:
+		return c.SupplierQuote.mutate(ctx, m)
 	case *SupplierSignalMutation:
 		return c.SupplierSignal.mutate(ctx, m)
 	case *TransferAttemptMutation:
@@ -10194,6 +10212,139 @@ func (c *SubmissionEventClient) mutate(ctx context.Context, m *SubmissionEventMu
 	}
 }
 
+// SupplierBindingClient is a client for the SupplierBinding schema.
+type SupplierBindingClient struct {
+	config
+}
+
+// NewSupplierBindingClient returns a client for the SupplierBinding from the given config.
+func NewSupplierBindingClient(c config) *SupplierBindingClient {
+	return &SupplierBindingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `supplierbinding.Hooks(f(g(h())))`.
+func (c *SupplierBindingClient) Use(hooks ...Hook) {
+	c.hooks.SupplierBinding = append(c.hooks.SupplierBinding, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `supplierbinding.Intercept(f(g(h())))`.
+func (c *SupplierBindingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SupplierBinding = append(c.inters.SupplierBinding, interceptors...)
+}
+
+// Create returns a builder for creating a SupplierBinding entity.
+func (c *SupplierBindingClient) Create() *SupplierBindingCreate {
+	mutation := newSupplierBindingMutation(c.config, OpCreate)
+	return &SupplierBindingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SupplierBinding entities.
+func (c *SupplierBindingClient) CreateBulk(builders ...*SupplierBindingCreate) *SupplierBindingCreateBulk {
+	return &SupplierBindingCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SupplierBindingClient) MapCreateBulk(slice any, setFunc func(*SupplierBindingCreate, int)) *SupplierBindingCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SupplierBindingCreateBulk{err: fmt.Errorf("calling to SupplierBindingClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SupplierBindingCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SupplierBindingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SupplierBinding.
+func (c *SupplierBindingClient) Update() *SupplierBindingUpdate {
+	mutation := newSupplierBindingMutation(c.config, OpUpdate)
+	return &SupplierBindingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SupplierBindingClient) UpdateOne(_m *SupplierBinding) *SupplierBindingUpdateOne {
+	mutation := newSupplierBindingMutation(c.config, OpUpdateOne, withSupplierBinding(_m))
+	return &SupplierBindingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SupplierBindingClient) UpdateOneID(id string) *SupplierBindingUpdateOne {
+	mutation := newSupplierBindingMutation(c.config, OpUpdateOne, withSupplierBindingID(id))
+	return &SupplierBindingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SupplierBinding.
+func (c *SupplierBindingClient) Delete() *SupplierBindingDelete {
+	mutation := newSupplierBindingMutation(c.config, OpDelete)
+	return &SupplierBindingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SupplierBindingClient) DeleteOne(_m *SupplierBinding) *SupplierBindingDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SupplierBindingClient) DeleteOneID(id string) *SupplierBindingDeleteOne {
+	builder := c.Delete().Where(supplierbinding.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SupplierBindingDeleteOne{builder}
+}
+
+// Query returns a query builder for SupplierBinding.
+func (c *SupplierBindingClient) Query() *SupplierBindingQuery {
+	return &SupplierBindingQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSupplierBinding},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SupplierBinding entity by its id.
+func (c *SupplierBindingClient) Get(ctx context.Context, id string) (*SupplierBinding, error) {
+	return c.Query().Where(supplierbinding.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SupplierBindingClient) GetX(ctx context.Context, id string) *SupplierBinding {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SupplierBindingClient) Hooks() []Hook {
+	return c.hooks.SupplierBinding
+}
+
+// Interceptors returns the client interceptors.
+func (c *SupplierBindingClient) Interceptors() []Interceptor {
+	return c.inters.SupplierBinding
+}
+
+func (c *SupplierBindingClient) mutate(ctx context.Context, m *SupplierBindingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SupplierBindingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SupplierBindingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SupplierBindingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SupplierBindingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SupplierBinding mutation op: %q", m.Op())
+	}
+}
+
 // SupplierConnectionClient is a client for the SupplierConnection schema.
 type SupplierConnectionClient struct {
 	config
@@ -10856,6 +11007,139 @@ func (c *SupplierPurchaseClient) mutate(ctx context.Context, m *SupplierPurchase
 		return (&SupplierPurchaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown SupplierPurchase mutation op: %q", m.Op())
+	}
+}
+
+// SupplierQuoteClient is a client for the SupplierQuote schema.
+type SupplierQuoteClient struct {
+	config
+}
+
+// NewSupplierQuoteClient returns a client for the SupplierQuote from the given config.
+func NewSupplierQuoteClient(c config) *SupplierQuoteClient {
+	return &SupplierQuoteClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `supplierquote.Hooks(f(g(h())))`.
+func (c *SupplierQuoteClient) Use(hooks ...Hook) {
+	c.hooks.SupplierQuote = append(c.hooks.SupplierQuote, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `supplierquote.Intercept(f(g(h())))`.
+func (c *SupplierQuoteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SupplierQuote = append(c.inters.SupplierQuote, interceptors...)
+}
+
+// Create returns a builder for creating a SupplierQuote entity.
+func (c *SupplierQuoteClient) Create() *SupplierQuoteCreate {
+	mutation := newSupplierQuoteMutation(c.config, OpCreate)
+	return &SupplierQuoteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SupplierQuote entities.
+func (c *SupplierQuoteClient) CreateBulk(builders ...*SupplierQuoteCreate) *SupplierQuoteCreateBulk {
+	return &SupplierQuoteCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SupplierQuoteClient) MapCreateBulk(slice any, setFunc func(*SupplierQuoteCreate, int)) *SupplierQuoteCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SupplierQuoteCreateBulk{err: fmt.Errorf("calling to SupplierQuoteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SupplierQuoteCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SupplierQuoteCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SupplierQuote.
+func (c *SupplierQuoteClient) Update() *SupplierQuoteUpdate {
+	mutation := newSupplierQuoteMutation(c.config, OpUpdate)
+	return &SupplierQuoteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SupplierQuoteClient) UpdateOne(_m *SupplierQuote) *SupplierQuoteUpdateOne {
+	mutation := newSupplierQuoteMutation(c.config, OpUpdateOne, withSupplierQuote(_m))
+	return &SupplierQuoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SupplierQuoteClient) UpdateOneID(id string) *SupplierQuoteUpdateOne {
+	mutation := newSupplierQuoteMutation(c.config, OpUpdateOne, withSupplierQuoteID(id))
+	return &SupplierQuoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SupplierQuote.
+func (c *SupplierQuoteClient) Delete() *SupplierQuoteDelete {
+	mutation := newSupplierQuoteMutation(c.config, OpDelete)
+	return &SupplierQuoteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SupplierQuoteClient) DeleteOne(_m *SupplierQuote) *SupplierQuoteDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SupplierQuoteClient) DeleteOneID(id string) *SupplierQuoteDeleteOne {
+	builder := c.Delete().Where(supplierquote.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SupplierQuoteDeleteOne{builder}
+}
+
+// Query returns a query builder for SupplierQuote.
+func (c *SupplierQuoteClient) Query() *SupplierQuoteQuery {
+	return &SupplierQuoteQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSupplierQuote},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SupplierQuote entity by its id.
+func (c *SupplierQuoteClient) Get(ctx context.Context, id string) (*SupplierQuote, error) {
+	return c.Query().Where(supplierquote.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SupplierQuoteClient) GetX(ctx context.Context, id string) *SupplierQuote {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SupplierQuoteClient) Hooks() []Hook {
+	return c.hooks.SupplierQuote
+}
+
+// Interceptors returns the client interceptors.
+func (c *SupplierQuoteClient) Interceptors() []Interceptor {
+	return c.inters.SupplierQuote
+}
+
+func (c *SupplierQuoteClient) mutate(ctx context.Context, m *SupplierQuoteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SupplierQuoteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SupplierQuoteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SupplierQuoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SupplierQuoteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SupplierQuote mutation op: %q", m.Op())
 	}
 }
 
@@ -11674,9 +11958,10 @@ type (
 		ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase,
 		ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
-		SubmissionEvent, SupplierConnection, SupplierImport, SupplierItem,
-		SupplierPrice, SupplierPurchase, SupplierSignal, TransferAttempt,
-		TransferEvent, TransferObservation, TransferRecord, User []ent.Hook
+		SubmissionEvent, SupplierBinding, SupplierConnection, SupplierImport,
+		SupplierItem, SupplierPrice, SupplierPurchase, SupplierQuote, SupplierSignal,
+		TransferAttempt, TransferEvent, TransferObservation, TransferRecord,
+		User []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
@@ -11693,9 +11978,10 @@ type (
 		ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase,
 		ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
-		SubmissionEvent, SupplierConnection, SupplierImport, SupplierItem,
-		SupplierPrice, SupplierPurchase, SupplierSignal, TransferAttempt,
-		TransferEvent, TransferObservation, TransferRecord, User []ent.Interceptor
+		SubmissionEvent, SupplierBinding, SupplierConnection, SupplierImport,
+		SupplierItem, SupplierPrice, SupplierPurchase, SupplierQuote, SupplierSignal,
+		TransferAttempt, TransferEvent, TransferObservation, TransferRecord,
+		User []ent.Interceptor
 	}
 )
 

@@ -20,7 +20,11 @@ func (c *Client) Catalog(ctx context.Context) (Catalog, error) {
 		if err != nil {
 			return Catalog{}, err
 		}
-		return normalizeNexus(c.connection, raw)
+		catalog, err := normalizeNexus(c.connection, raw)
+		if err != nil {
+			return Catalog{}, err
+		}
+		return c.nexusDynamic(ctx, catalog)
 	}
 	paths := []string{"/api/services", "/api/categories", "/api/forms", "/api/products?prices=true"}
 	var values [4][]byte

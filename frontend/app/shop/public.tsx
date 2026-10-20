@@ -1,3 +1,5 @@
+import { SupplierPurchase } from "./supplier-purchase";
+import { supplierMethodNames } from "../suppliers/contracts";
 import { Loading } from "../ui/loading";
 import "../catalog/service-tiles.css";
 import ShopArtwork from "./artwork";
@@ -14,7 +16,7 @@ import {
 } from "../portal-router";
 import type { Release } from "../catalog/model";
 import { serviceAvailable } from "../catalog/public-discovery";
-import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
+import { Action, Check, ErrorNotice, Text, Select } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { APIError, post, sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -53,8 +55,14 @@ export function GameShop({ detail = false }: { detail?: boolean }) {
     </section>
   );
 }
+const shopFiltersSchema = z.object({
+  regions: z.array(z.string()),
+  categories: z.array(z.string()),
+});
+
 function ShopBrowse({ slug }: { slug: string }) {
   const [params, setParams] = useSearchParams();
+  const facets = useResource(`/games/${slug}/shop/filters`, shopFiltersSchema);
   const resource = useResource(
     `/games/${slug}/shop?${params.toString()}`,
     publicPageSchema,
@@ -62,6 +70,7 @@ function ShopBrowse({ slug }: { slug: string }) {
   const [query, setQuery] = useState(params.get("q") ?? "");
   const [region, setRegion] = useState(params.get("region") ?? "");
   const [category, setCategory] = useState(params.get("category") ?? "");
+  const [method, setMethod] = useState(params.get("method") ?? "");
   const filters = params.toString();
   const [lastFilters, setLastFilters] = useState(filters);
   if (filters !== lastFilters) {
@@ -70,6 +79,7 @@ function ShopBrowse({ slug }: { slug: string }) {
     setQuery(current.get("q") ?? "");
     setRegion(current.get("region") ?? "");
     setCategory(current.get("category") ?? "");
+    setMethod(current.get("method") ?? "");
   }
   return (
     <>
@@ -83,17 +93,59 @@ function ShopBrowse({ slug }: { slug: string }) {
         className="shop-filters"
         onSubmit={(e) => {
           e.preventDefault();
-          setParams({ q: query, region, category });
+          setParams({ q: query, region, category, method });
         }}
       >
         <Text label="Search shop" value={query} change={setQuery} />
-        <Text label="Region" value={region} change={setRegion} />
-        <Text label="Product type" value={category} change={setCategory} />
+        <Select
+          label="Region"
+          value={region}
+          change={setRegion}
+          options={[
+            ["", "All regions"],
+            ...Array.from(
+              new Set([
+                ...(facets.data?.regions ?? []),
+                ...(region ? [region] : []),
+              ]),
+            ).map((v): [string, string] => [v, v]),
+          ]}
+        />
+        <Select
+          label="Product type"
+          value={category}
+          change={setCategory}
+          options={[
+            ["", "All product types"],
+            ...Array.from(
+              new Set([
+                ...(facets.data?.categories ?? []),
+                ...(category ? [category] : []),
+              ]),
+            ).map((v): [string, string] => [v, v]),
+          ]}
+        />
+        <Select
+          label="Delivery method"
+          value={method}
+          change={setMethod}
+          options={[
+            ["", "All delivery methods"],
+            ["id", supplierMethodNames.id],
+            ["account", supplierMethodNames.account],
+            ["code", supplierMethodNames.code],
+            ["manual", "PLAYORA staff delivery"],
+          ]}
+        />
         <button type="submit" className="button">
           Apply filters
         </button>
         <Link to={`/games/${slug}/shop`}>Clear filters</Link>
       </form>
+      <ErrorNotice error={facets.error} />
+      {!!facets.error && (
+        <Action onClick={facets.reload}>Retry filter options</Action>
+      )}
       <ErrorNotice error={resource.error} />
       {resource.error && <Action onClick={resource.reload}>Retry shop</Action>}
       {resource.loading ? (
@@ -104,12 +156,12 @@ function ShopBrowse({ slug }: { slug: string }) {
             {!resource.data.items.length ? (
               <div className="empty-state">
                 <h3>
-                  {query || region || category
+                  {query || region || category || method
                     ? "No matching products"
                     : "No products available yet"}
                 </h3>
                 <p>
-                  {query || region || category
+                  {query || region || category || method
                     ? "Try a different filter or clear your search."
                     : "Check back when staff publish products for this game."}
                 </p>
@@ -129,6 +181,11 @@ function ShopBrowse({ slug }: { slug: string }) {
                       <h3>{p.definition.title}</h3>
                       <p>{p.definition.description}</p>
                       <ProductPrice product={p} />
+                      {p.definition.supplier && (
+                        <p className="supplier-badge">
+                          {supplierMethodNames[p.definition.supplier.method]}
+                        </p>
+                      )}
                       <p>
                         {[
                           ...new Set(
@@ -139,9 +196,13 @@ function ShopBrowse({ slug }: { slug: string }) {
                         ].join(" · ")}
                       </p>
                       <p>
-                        {Object.values(p.available).some((v) => v > 0)
-                          ? "Available variants"
-                          : "Currently sold out"}
+                        {p.definition.supplier
+                          ? p.supplier_available
+                            ? "Ready for price review"
+                            : "Ordering temporarily unavailable"
+                          : Object.values(p.available).some((v) => v > 0)
+                            ? "Available variants"
+                            : "Currently sold out"}
                       </p>
                       <Link
                         className="button"
@@ -201,13 +262,21 @@ function ShopProduct({ slug }: { slug: string }) {
         <Action onClick={resource.reload}>Retry product</Action>
       )}
       {resource.loading && <p role="status">Loading current product…</p>}
-      {product && (
-        <ProductFlow
+      {product?.definition.supplier ? (
+        <SupplierPurchase
           key={product.id}
           product={product}
-          reload={resource.reload}
           unavailable={resource.loading || !!resource.error}
         />
+      ) : (
+        product && (
+          <ProductFlow
+            key={product.id}
+            product={product}
+            reload={resource.reload}
+            unavailable={resource.loading || !!resource.error}
+          />
+        )
       )}
     </>
   );

@@ -3793,7 +3793,8 @@
                 "held",
                 "submitted",
                 "completed",
-                "cancelled"
+                "cancelled",
+                "supplier"
               ]
             }
           }
@@ -22109,6 +22110,14 @@
               "type": "string",
               "maxLength": 120
             }
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["", "manual", "id", "account", "code"]
+            }
           }
         ],
         "responses": {
@@ -24927,12 +24936,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "nexus-sandbox",
-                "nexus-production",
-                "vendoria-test",
-                "vendoria-production"
-              ]
+              "enum": ["nexus-sandbox", "nexus-production"]
             }
           },
           {
@@ -25016,12 +25020,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "nexus-sandbox",
-                "nexus-production",
-                "vendoria-test",
-                "vendoria-production"
-              ]
+              "enum": ["nexus-sandbox", "nexus-production"]
             }
           },
           {
@@ -25084,12 +25083,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "nexus-sandbox",
-                "nexus-production",
-                "vendoria-test",
-                "vendoria-production"
-              ]
+              "enum": ["nexus-sandbox", "nexus-production"]
             }
           },
           {
@@ -25152,12 +25146,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "nexus-sandbox",
-                "nexus-production",
-                "vendoria-test",
-                "vendoria-production"
-              ]
+              "enum": ["nexus-sandbox", "nexus-production"]
             }
           },
           {
@@ -25522,6 +25511,438 @@
           },
           "503": {
             "description": "Signal cannot be recorded or requires an unfinished interactive workflow; retry later"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/supplier-listings": {
+      "post": {
+        "operationId": "prepareSupplierListing",
+        "summary": "Prepare or refresh a private listing, preserving authored terms; never publishes",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopSupplierPreparation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/suppliers/{connection}/purchasing": {
+      "post": {
+        "operationId": "setSupplierPurchasing",
+        "summary": "Owner recent verification; only explicitly configured isolated Sandbox can be enabled",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "connection",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["nexus-sandbox", "nexus-production"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierPurchasingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierConnection"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/shop/{id}/quote": {
+      "post": {
+        "operationId": "quoteSupplierShopProduct",
+        "summary": "Read current exact price and create a short-lived customer-bound quote; no provider order",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopSupplierQuoteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopSupplierQuote"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/shop/{id}/supplier-reserve": {
+      "post": {
+        "operationId": "reserveSupplierShopProduct",
+        "summary": "Consume quote once; persist unpaid order and encrypted inputs; never buys",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopSupplierAcceptance"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/shop/codes": {
+      "post": {
+        "operationId": "revealSupplierCodes",
+        "summary": "Reveal protected codes only to current paid owning customer",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopSupplierCodes"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/shop/action": {
+      "post": {
+        "operationId": "readSupplierDeliveryAction",
+        "summary": "Read a protected pending delivery action after current payment and ownership checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated result; protected values are never cached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopSupplierAction"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, stale state or supplier rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/shop/filters": {
+      "get": {
+        "operationId": "getShopPublicFilters",
+        "summary": "Published region and product-type choices for this game and runtime environment",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public released filter choices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPublicFilters"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unavailable game or catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
           }
         }
       }
@@ -32758,6 +33179,9 @@
           "last_sent_at": {
             "type": ["string", "null"],
             "format": "date-time"
+          },
+          "supplier_delivery": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -34468,6 +34892,9 @@
           },
           "policy": {
             "$ref": "#/components/schemas/ShopPolicy"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/ShopSupplierProduct"
           }
         },
         "required": [
@@ -34630,6 +35057,9 @@
             "type": "string",
             "maxLength": 40,
             "format": "date-time"
+          },
+          "supplier": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -34873,6 +35303,9 @@
               "minimum": 0,
               "maximum": 2147483645
             }
+          },
+          "supplier_available": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -34882,7 +35315,8 @@
           "release_id",
           "version",
           "definition",
-          "available"
+          "available",
+          "supplier_available"
         ],
         "additionalProperties": false
       },
@@ -34929,6 +35363,10 @@
           "amount_minor": {
             "type": "string",
             "maxLength": 12
+          },
+          "supplier_quantity": {
+            "type": "string",
+            "maxLength": 64
           }
         },
         "required": [
@@ -34987,6 +35425,9 @@
           },
           "purchase": {
             "$ref": "#/components/schemas/ShopPurchase"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/ShopSupplierDelivery"
           }
         },
         "required": [
@@ -37264,6 +37705,445 @@
           },
           "settings": {
             "$ref": "#/components/schemas/SupplierPriceInput"
+          }
+        }
+      },
+      "ShopSupplierProduct": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["id", "account", "code"]
+          },
+          "quantity": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "min": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "max": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "step": {
+                "type": "string",
+                "maxLength": 64
+              }
+            },
+            "required": ["kind", "min", "max", "step"],
+            "additionalProperties": false
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "kind": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "secret": {
+                  "type": "boolean"
+                },
+                "transient": {
+                  "type": "boolean"
+                },
+                "min": {
+                  "type": ["string", "null"],
+                  "maxLength": 64
+                },
+                "max": {
+                  "type": ["string", "null"],
+                  "maxLength": 64
+                },
+                "step": {
+                  "type": ["string", "null"],
+                  "maxLength": 64
+                },
+                "options": {
+                  "type": ["array", "null"],
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 500
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 500
+                      }
+                    },
+                    "required": ["id", "label"],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 2000
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "kind",
+                "required",
+                "secret",
+                "transient"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 64
+          },
+          "eligibility": {
+            "type": "object",
+            "properties": {
+              "global": {
+                "type": "boolean"
+              },
+              "regions": {
+                "type": ["array", "null"],
+                "items": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "maxItems": 1000
+              },
+              "countries": {
+                "type": ["array", "null"],
+                "items": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "maxItems": 1000
+              },
+              "excluded_countries": {
+                "type": ["array", "null"],
+                "items": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "maxItems": 1000
+              },
+              "policy_kind": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "policy_countries": {
+                "type": ["array", "null"],
+                "items": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "maxItems": 1000
+              }
+            },
+            "required": [
+              "global",
+              "regions",
+              "countries",
+              "excluded_countries",
+              "policy_kind",
+              "policy_countries"
+            ],
+            "additionalProperties": false
+          },
+          "testing": {
+            "type": "boolean"
+          }
+        },
+        "required": ["method", "quantity", "fields", "eligibility", "testing"],
+        "additionalProperties": false
+      },
+      "ShopSupplierDelivery": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "requested": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "delivered": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "needs_review": {
+            "type": "boolean"
+          },
+          "codes_available": {
+            "type": "boolean"
+          },
+          "testing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state",
+          "requested",
+          "delivered",
+          "needs_review",
+          "codes_available",
+          "testing"
+        ],
+        "additionalProperties": false
+      },
+      "ShopSupplierQuote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "product_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "quantity": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "amount_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "currency": {
+            "type": "string",
+            "const": "USD"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "testing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "product_id",
+          "release_id",
+          "quantity",
+          "amount_minor",
+          "currency",
+          "expires_at",
+          "testing"
+        ],
+        "additionalProperties": false
+      },
+      "ShopSupplierQuoteInput": {
+        "type": "object",
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "quantity": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": ["release_id", "quantity"],
+        "additionalProperties": false
+      },
+      "ShopSupplierAcceptance": {
+        "type": "object",
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "quote_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "expected_amount": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "terms_version": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "accept_terms": {
+            "type": "boolean"
+          },
+          "recipient": {
+            "type": "object",
+            "maxProperties": 64,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 8192
+            }
+          }
+        },
+        "required": [
+          "request_key",
+          "quote_id",
+          "expected_amount",
+          "terms_version",
+          "accept_terms",
+          "recipient"
+        ],
+        "additionalProperties": false
+      },
+      "ShopSupplierPreparation": {
+        "type": "object",
+        "properties": {
+          "connection": {
+            "type": "string",
+            "enum": ["nexus-sandbox", "nexus-production"]
+          },
+          "import_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "product_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "offer_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "price_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "connection_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "shop_version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483644
+          }
+        },
+        "required": [
+          "connection",
+          "import_id",
+          "product_id",
+          "offer_id",
+          "price_version",
+          "connection_version",
+          "shop_version"
+        ],
+        "additionalProperties": false
+      },
+      "SupplierPurchasingInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "enabled"],
+        "additionalProperties": false
+      },
+      "ShopSupplierCodes": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "maxLength": 8192
+                },
+                "cardNo": {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "expireAt": {
+                  "type": "string",
+                  "maxLength": 80
+                }
+              },
+              "required": ["code"],
+              "additionalProperties": false
+            },
+            "maxItems": 1000
+          }
+        },
+        "required": ["keys"],
+        "additionalProperties": false
+      },
+      "ShopSupplierAction": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "employee": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "profile_url": {
+            "type": "string",
+            "maxLength": 2048
+          }
+        },
+        "required": ["kind", "url", "employee", "profile_url"],
+        "additionalProperties": false
+      },
+      "ShopPublicFilters": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["regions", "categories"],
+        "properties": {
+          "regions": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "categories": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "type": "string",
+              "maxLength": 80
+            }
           }
         }
       }
