@@ -25,13 +25,49 @@
 .catalog-label,
 .catalog-input {
   min-width: 0;
+  row-gap: 0.55rem;
+  align-content: start;
 }
-.catalog-label > label {
+.catalog-label > label,
+.catalog-input > label,
+.catalog-input > legend {
+  font-size: 0.925rem;
+  font-weight: 600;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.catalog-label > .quiet,
+.catalog-input > .quiet {
+  max-width: 65ch;
+  color: #bdd0c5;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.catalog-check {
+  min-height: 2.75rem;
+  align-items: flex-start;
+  padding-block: 0.5rem;
+}
+.catalog-check input {
+  margin-top: 0.3rem;
+}
+.catalog-label :is(input, select, textarea),
+.catalog-input :is(input, select, textarea) {
+  scroll-margin-block: 8rem 3rem;
+}
+.catalog-label :is(input, select, textarea):focus-visible,
+.catalog-input :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent, #a3d88f);
+  outline-offset: 3px;
 }
 .field-error {
   max-width: 70ch;
   line-height: 1.5;
+}
+.experience :is(.catalog-label, .catalog-input, .ui-field) > .field-error {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.875rem;
 }
 fieldset {
   min-inline-size: 0;
@@ -58,6 +94,13 @@ fieldset {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+.form-actions > .button,
+.catalog-actions > .button {
+  margin-inline: 0;
+}
+.directory-filter-actions {
+  grid-column: 1 / -1;
 }
 /* Adjacent legacy actions keep a click gap until their group can be simplified. */
 .button + .button,

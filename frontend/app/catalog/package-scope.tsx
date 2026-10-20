@@ -28,10 +28,6 @@ export function PackageContents({
   return (
     <section className="package-contents" aria-label="Included in this package">
       <h3>Included in this package</h3>
-      <p>
-        These contents are fixed. Only the delivery information below comes from
-        you.
-      </p>
       {fields.length > 0 && (
         <dl className="package-specifications">
           {fields.map((field) => (
@@ -51,9 +47,8 @@ export function PackageContents({
           ))}
         </dl>
       )}
-      <p className="quiet">
-        Any custom preferences outside this offer require a separate custom
-        request.
+      <p className="package-scope-note">
+        Fixed contents. Need something different? Choose a custom boost.
       </p>
     </section>
   );

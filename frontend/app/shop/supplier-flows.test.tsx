@@ -103,9 +103,11 @@ it("validates required inputs, retires corrected errors, and keeps private value
     release_id: product.release_id,
     quantity: "0.5",
   });
-  expect(
-    screen.getByRole("heading", { name: "Review your order" }),
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", { name: "Review your order" }),
+    ).toHaveFocus(),
+  );
   expect(screen.queryByText("private-password")).not.toBeInTheDocument();
 });
 it("recovers uncertain reservation using its exact original request after quote expiry", async () => {

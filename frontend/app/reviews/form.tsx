@@ -29,6 +29,7 @@ import {
   stateLabel,
   type OrderReview,
 } from "./model";
+import "./form.css";
 function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
   const [body, setBody] = useState(value.review?.body ?? ""),
     [rating, setRating] = useState(String(value.review?.review.rating ?? "")),
@@ -133,7 +134,7 @@ function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
     );
   return (
     <FieldValidation value={validation}>
-      <section className="catalog-section">
+      <section className="purchase-review-editor">
         <h3 ref={editorRef} tabIndex={-1}>
           {value.review ? "Edit purchase feedback" : "Write purchase feedback"}
         </h3>
@@ -151,8 +152,8 @@ function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
           <ErrorNotice error={error} hideIssues />
         </div>
         <Issues issues={issues} />
-        <fieldset disabled={busy}>
-          <legend>Your review</legend>
+        <fieldset className="purchase-review-fields" disabled={busy}>
+          <legend className="ui-visually-hidden">Your review</legend>
           <Select
             name="rating"
             label="Purchase rating"
@@ -173,7 +174,7 @@ function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
             multiline
             value={body}
             change={setBody}
-            help="1–4,000 characters. Your rating and wording remain yours; staff may moderate publication and add a labeled response."
+            help="1–4,000 characters. Your rating and wording remain yours; staff may add a labeled response."
           />
           {service.fields
             .filter((field) =>
@@ -318,7 +319,7 @@ export default function PurchaseReview({
   return (
     <section
       id="purchase-review"
-      className="catalog-section"
+      className="catalog-section purchase-review-panel"
       aria-label="Purchase review"
     >
       <h2 ref={resultRef} tabIndex={-1}>
@@ -335,8 +336,10 @@ export default function PurchaseReview({
       </div>
       {resource.loading && <p role="status">Loading review…</p>}
       {value && (
-        <fieldset disabled={resource.loading}>
-          <legend>Verified-buyer feedback</legend>
+        <fieldset className="purchase-review-body" disabled={resource.loading}>
+          <legend className="ui-visually-hidden">
+            Verified-buyer feedback
+          </legend>
           {value.review && (
             <>
               <p>

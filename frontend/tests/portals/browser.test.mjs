@@ -110,6 +110,11 @@ async function healthySignInScene(page) {
   assert.ok(
     modalBounds.x >= 0 && modalBounds.x + modalBounds.width <= viewport.width,
   );
+  const portal = await page.locator("body").getAttribute("data-portal");
+  await page.screenshot({
+    path: `${evidenceDirectory}/${viewport.width}-${portal}-recovery.png`,
+    fullPage: true,
+  });
   assert.deepEqual(
     await documentBounds(),
     beforeRecovery,
@@ -498,9 +503,19 @@ test(
             ]);
             await page.goto(origins[portal] + "/");
             await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-              portal === "admin" ? "Administration" : "Your next session",
+              portal === "admin" ? "Administration" : "Your work overview",
             );
             await healthyPage(page, portal);
+            const orderLink =
+              portal === "admin"
+                ? page.getByRole("link", {
+                    name: `Synthetic game Order ${orderID}`,
+                    exact: true,
+                  })
+                : page.getByRole("link", {
+                    name: `View assignment ${orderID} · Synthetic game`,
+                    exact: true,
+                  });
             if (portal === "admin") {
               await expect(page.getByRole("search")).toHaveAttribute(
                 "action",
@@ -524,6 +539,7 @@ test(
             await expect(page.getByRole("heading", { level: 1 })).toHaveText(
               portal === "admin" ? "Order queue" : "Assigned work",
             );
+            await expect(orderLink).toBeVisible();
             await healthyPage(page, portal);
             // Let fixture reads finish before deliberately replacing the document.
             await page.waitForLoadState("networkidle");
@@ -543,16 +559,6 @@ test(
             await healthyPage(page, portal);
             await page.waitForLoadState("networkidle");
             await page.goto(origins[portal] + "/orders");
-            const orderLink =
-              portal === "admin"
-                ? page.getByRole("link", {
-                    name: `Synthetic game Order ${orderID}`,
-                    exact: true,
-                  })
-                : page.getByRole("link", {
-                    name: `View assignment ${orderID} · Synthetic game`,
-                    exact: true,
-                  });
             await expect(orderLink).toHaveAttribute(
               "href",
               `/orders/${orderID}`,
@@ -652,6 +658,10 @@ test(
             await expect(page.getByRole("heading", { level: 1 })).toHaveText(
               portal === "admin" ? "Order queue" : "Assigned work",
             );
+            // Complete the redirected queue's read before switching hosts on
+            // the next iteration; a heading can render before its rows load.
+            await expect(orderLink).toBeVisible();
+            await page.waitForLoadState("networkidle");
           }
           await page.waitForLoadState("networkidle");
           await page

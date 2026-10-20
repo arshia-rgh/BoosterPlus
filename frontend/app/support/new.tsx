@@ -129,7 +129,7 @@ export default function NewSupport() {
         onSubmit={(event) => void submit(event)}
       >
         <fieldset disabled={busy || unknown}>
-          <legend>Start a private pre-sales conversation</legend>
+          <legend>Start a conversation</legend>
           <p>
             Ask about services before placing an order. Keep passwords and
             recovery codes out of support messages.
@@ -143,7 +143,7 @@ export default function NewSupport() {
               setKey(crypto.randomUUID());
               setError(null);
             }}
-            help="Use a clear subject of 1–160 characters. For an existing order, open its Messages section instead."
+            help="1–160 characters. For an existing order, use its Messages section."
           />
         </fieldset>
         {unknown && (

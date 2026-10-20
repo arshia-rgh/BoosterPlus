@@ -97,10 +97,29 @@
   margin: 0;
 }
 .game-local-content {
+  position: relative;
   min-width: 0;
   max-width: 1440px;
   margin: auto;
-  padding: clamp(2rem, 5vw, 5rem) var(--game-gutter);
+  padding: clamp(2.5rem, 5vw, 5rem) var(--game-gutter);
+}
+.game-local-content::before,
+.game-faq::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--game-gutter);
+  right: var(--game-gutter);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #58705b 18%,
+    #d9c8a8 50%,
+    #58705b 82%,
+    transparent
+  );
+  pointer-events: none;
 }
 .game-content-error {
   padding: 1.5rem;
@@ -172,7 +191,7 @@
     padding-top: 2rem;
   }
   .game-local-content {
-    padding: 1.5rem var(--game-gutter) 3rem;
+    padding: 2.5rem var(--game-gutter) 3rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -187,19 +206,63 @@
   padding: 0 var(--game-gutter);
 }
 .game-faq {
-  padding-bottom: 5rem;
+  position: relative;
+  padding-block: clamp(2.5rem, 5vw, 4rem) 5rem;
 }
-.game-faq details {
-  border-bottom: 1px solid var(--line);
-  padding: 1.25rem 0;
+.game-faq > h2 {
+  margin: 0 0 1.5rem;
+  max-width: 28ch;
 }
-.game-faq summary {
+.game-shell .game-faq details {
+  border: 1px solid #3e584a;
+  border-radius: 0.85rem;
+  padding: 0;
+  margin: 0.75rem 0;
+  background: #10271ed9;
+  overflow-wrap: anywhere;
+}
+.game-shell .game-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem clamp(1.1rem, 3vw, 1.75rem);
+  margin: 0;
+  list-style: none;
   cursor: pointer;
   font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
 }
-.game-faq p {
+.game-faq summary::-webkit-details-marker {
+  display: none;
+}
+.game-faq summary::after {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 0.45rem;
+  border-right: 2px solid #d9c8a8;
+  border-bottom: 2px solid #d9c8a8;
+  transform: rotate(45deg);
+}
+.game-faq details[open] > summary::after {
+  transform: rotate(225deg);
+}
+.game-faq summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 0.85rem;
+}
+.game-faq-answer {
+  padding: 0 clamp(1.1rem, 3vw, 1.75rem) 1.5rem;
+}
+.game-faq-answer p {
   max-width: 70ch;
-  color: var(--muted);
+  margin: 0;
+  color: #bdd0c5;
+  line-height: 1.75;
+  white-space: pre-line;
 }
 .featured-offers {
   margin-top: 3rem;

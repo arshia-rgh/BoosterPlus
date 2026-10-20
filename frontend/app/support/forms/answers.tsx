@@ -66,7 +66,9 @@ export function AnswerInput({
     autoComplete: "off",
     spellCheck: !field.secure,
     "aria-invalid": error ? true : undefined,
-    "aria-describedby": error ? id + "-error" : id + "-help",
+    "aria-describedby": [id + "-help", error ? id + "-error" : ""]
+      .filter(Boolean)
+      .join(" "),
     onChange: (
       e: React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -80,7 +82,7 @@ export function AnswerInput({
     <div className="catalog-label">
       <label htmlFor={id}>
         {field.label}
-        {field.required ? " *" : " (optional)"}
+        {field.required ? " (required)" : " (optional)"}
         {field.secure && <span className="form-secure-badge">Protected</span>}
       </label>
       {field.kind === "select" ? (

@@ -1,0 +1,25 @@
+.purchase-review-panel .purchase-review-body,
+.purchase-review-editor .purchase-review-fields {
+  border: 0;
+  padding: 0;
+  margin: 1.25rem 0 0;
+  min-width: 0;
+}
+.purchase-review-editor {
+  margin-block: 1.5rem 0;
+}
+.purchase-review-editor > h3 {
+  margin: 0 0 0.75rem;
+}
+.purchase-review-editor > p {
+  max-width: 65ch;
+  line-height: 1.65;
+}
+.purchase-review-editor .catalog-label {
+  margin-block: 1.25rem;
+}
+.purchase-review-fields > section {
+  margin-block: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line, #355044);
+}

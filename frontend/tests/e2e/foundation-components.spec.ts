@@ -126,11 +126,11 @@ test("foundation variants, field-linked errors and keyboard table scrolling", as
   await expect(page.getByLabel("Safe note", { exact: true })).toHaveValue(
     "Preserve my safe input",
   );
-  await expect(
-    page.getByText("Changes entered. Submit again to check them.", {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(name).toHaveAccessibleDescription(
+    "This name appears in your own workspace.",
+  );
+  await expect(name).toBeFocused();
   const action = page.getByRole("button", { name: "Save fixture profile" });
   const before = await action.evaluate(
     (el) => el.getBoundingClientRect().width,

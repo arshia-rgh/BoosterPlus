@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Action } from "../catalog/controls";
 export function directorySearch(raw: string): string {
@@ -52,6 +52,7 @@ export function DirectoryFilters({
   states: readonly string[];
   customerLabel?: string;
 }) {
+  const id = useId();
   const initial = new URLSearchParams(query),
     [customer, setCustomer] = useState(initial.get("customer") ?? ""),
     [state, setState] = useState(initial.get("state") ?? "");
@@ -63,22 +64,22 @@ export function DirectoryFilters({
         apply(customer.trim(), state);
       }}
     >
-      <label className="catalog-label">
-        {customerLabel}
+      <div className="catalog-label">
+        <label htmlFor={id}>{customerLabel}</label>
         <input
+          id={id}
           value={customer}
           onChange={(e) => {
             setCustomer(e.target.value);
           }}
           maxLength={36}
           pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-          aria-describedby="directory-customer-help"
+          aria-describedby={`${id}-help`}
         />
-      </label>
-      <p id="directory-customer-help">
-        Use a complete account UUID, or leave empty for all accounts. Filters
-        apply when submitted.
-      </p>
+        <p className="quiet" id={`${id}-help`}>
+          Complete account ID, or leave blank for all accounts.
+        </p>
+      </div>
       <label className="catalog-label">
         Status
         <select
@@ -95,18 +96,20 @@ export function DirectoryFilters({
           ))}
         </select>
       </label>
-      <button type="submit" className="button">
-        Apply filters
-      </button>
-      <Action
-        onClick={() => {
-          setCustomer("");
-          setState("");
-          apply("", "");
-        }}
-      >
-        Clear filters
-      </Action>
+      <div className="catalog-actions directory-filter-actions">
+        <button type="submit" className="button">
+          Apply filters
+        </button>
+        <Action
+          onClick={() => {
+            setCustomer("");
+            setState("");
+            apply("", "");
+          }}
+        >
+          Clear filters
+        </Action>
+      </div>
     </form>
   );
 }

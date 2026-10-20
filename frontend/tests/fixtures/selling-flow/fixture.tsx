@@ -386,18 +386,20 @@ window.fetch = async (input, init) => {
 function Frame() {
   return (
     <AuthorizedIdentity.Provider value={{ session, refresh: async () => {} }}>
-      <main
-        className={
-          admin
-            ? "admin-body catalog-page"
-            : "workspace-experience catalog-page"
-        }
-        style={{ maxWidth: 1080, margin: "auto", padding: "1rem" }}
-      >
-        <h1>{admin ? "Admin · Account sales" : "Your account sales"}</h1>
-        <p className="quiet">Isolated design review · synthetic data only</p>
-        <Outlet />
-      </main>
+      <div className={admin ? undefined : "experience workspace-experience"}>
+        <main
+          className={
+            admin
+              ? "admin-body catalog-page"
+              : "workspace-experience catalog-page"
+          }
+          style={{ maxWidth: 1080, margin: "auto", padding: "1rem" }}
+        >
+          <h1>{admin ? "Admin · Account sales" : "Your account sales"}</h1>
+          <p className="quiet">Isolated design review · synthetic data only</p>
+          <Outlet />
+        </main>
+      </div>
     </AuthorizedIdentity.Provider>
   );
 }

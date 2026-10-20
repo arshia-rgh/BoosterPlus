@@ -396,10 +396,6 @@ function ServiceDetails({
         service={service.key}
       />
       <p>{service.description}</p>
-      <p>
-        Custom pricing requires an administrator’s final quote. Select your
-        options to check availability and request a provisional estimate.
-      </p>
       <ol className="configuration-steps" aria-label="Configure your boost">
         <li aria-current={stage === "estimate" ? "step" : undefined}>
           1. Your goal & estimate
@@ -510,11 +506,18 @@ function PackageDetails({
           <div className="package-overview">
             <span className="status">{variant.name}</span>
             <p className="package-price">{price(variant)}</p>
-            <p>
-              Delivery commitment: {variant.delivery_min_hours}–
-              {variant.delivery_max_hours} elapsed calendar hours after payment
-              is verified and the required delivery information and access are
-              ready.
+            <dl className="package-delivery">
+              <div>
+                <dt>Delivery</dt>
+                <dd>
+                  {variant.delivery_min_hours}–{variant.delivery_max_hours}{" "}
+                  hours
+                </dd>
+              </div>
+            </dl>
+            <p className="package-delivery-note">
+              Elapsed calendar hours from verified payment and ready delivery
+              information and access.
             </p>
             <p>
               {variant.preset_answers === undefined
@@ -525,11 +528,6 @@ function PackageDetails({
                     ? "Currently unavailable."
                     : "Availability is checked when you order."}{" "}
               Availability is not a reservation.
-            </p>
-            <p>
-              Fixed packages use the price above and do not require individual
-              quote approval. Payment is made directly after your agreement is
-              saved.
             </p>
           </div>
           {variant.capacity !== undefined && (

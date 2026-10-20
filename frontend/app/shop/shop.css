@@ -99,7 +99,19 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 2rem;
-  align-items: center;
+  align-items: start;
+}
+.shop-product-intro h2 {
+  margin-top: 0;
+  line-height: 1.2;
+}
+.shop-product-intro p {
+  max-width: 60ch;
+  line-height: 1.7;
+}
+.shop-product-intro img {
+  border: 1px solid #355044;
+  border-radius: 1rem;
 }
 .shop-purchase {
   max-width: 65rem;
@@ -116,6 +128,7 @@
 }
 .shop-steps {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1rem 0;
   list-style: none;
@@ -144,6 +157,15 @@
 }
 .shop-purchase .catalog-label {
   max-width: 36rem;
+}
+.shop-purchase > details,
+.shop-purchase fieldset > details {
+  padding: 1.25rem;
+  line-height: 1.7;
+}
+.shop-purchase > details > :last-child,
+.shop-purchase fieldset > details > :last-child {
+  margin-bottom: 0;
 }
 .shop-card p,
 .shop-purchase p,

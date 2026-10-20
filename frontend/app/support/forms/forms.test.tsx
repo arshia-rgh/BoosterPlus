@@ -80,6 +80,11 @@ it("keeps multiline protected answers intact and focuses a missing required fiel
     ).toHaveFocus(),
   );
   expect(post).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole("button", { name: "Edit Access notes" }),
+  ).toHaveAccessibleDescription(
+    "Encrypted; never shown in message previews. Complete this field using at most 2,000 characters.",
+  );
   fireEvent.click(screen.getByRole("button", { name: "Edit Access notes" }));
   fireEvent.change(screen.getByRole("textbox", { name: /Access notes/ }), {
     target: { value: "line-one\nline-two" },
@@ -337,7 +342,9 @@ it("keeps focus while correcting one of multiple rejected response fields", asyn
   vi.mocked(post).mockRejectedValueOnce(error);
   fireEvent.click(screen.getByRole("button", { name: "Send response" }));
   await waitFor(() =>
-    expect(first).toHaveAccessibleDescription("Use the registered value."),
+    expect(first).toHaveAccessibleDescription(
+      "Visible to the people listed above. Use the registered value.",
+    ),
   );
   expect(first).toHaveFocus();
   expect(first).toBeEnabled();
@@ -386,7 +393,9 @@ it("reopens authoring and focuses a server-rejected share answer without losing 
   const field = await screen.findByRole("textbox", { name: /^Note/ });
   await waitFor(() => expect(field).toHaveFocus());
   expect(field).toHaveValue("Retained note");
-  expect(field).toHaveAccessibleDescription("Complete the note.");
+  expect(field).toHaveAccessibleDescription(
+    "Visible to the people listed above. Complete the note.",
+  );
 });
 
 it("recalculates corrected expiry after a definitive rejection", async () => {

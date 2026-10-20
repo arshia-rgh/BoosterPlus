@@ -21,6 +21,7 @@ import { supplierLibrary } from "../suppliers/data";
 import { fixtureSession } from "../seller-offer/data";
 import { customerSession, supplierProduct, supplierDelivery } from "./data";
 import "../../../app/styles.css";
+import "../../../app/experience/experience.css";
 import "../../../app/ui/design-system.css";
 import "../../../app/ui/champagne.css";
 import "../../../app/admin/admin.css";
@@ -39,6 +40,10 @@ const method =
       ? "id"
       : "account";
 const product = supplierProduct(method);
+if (params.get("timing") === "instant" && method !== "account") {
+  product.definition.policy.delivery_min_hours = 0;
+  product.definition.policy.delivery_max_hours = 0;
+}
 const manual = supplierProduct("id");
 delete manual.definition.supplier;
 manual.id = "manual-product";
@@ -435,60 +440,66 @@ function AdminPage({
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing fixture root");
 createRoot(root).render(
-  <RouterProvider
-    router={createBrowserRouter([
-      {
-        element: (
-          <GameShell release={release}>
-            <Outlet />
-          </GameShell>
-        ),
-        children: [
-          {
-            path: "/games/:slug/shop",
-            loader: () => release,
-            element: <GameShop />,
-          },
-          {
-            path: "/games/:slug/shop/:id",
-            loader: () => release,
-            element: <GameShopProduct />,
-          },
-        ],
-      },
-      { path: "/delivery", element: <DeliveryPage /> },
-      {
-        path: "/admin/manual-delivery",
-        element: (
-          <main className="page">
-            <PageHeader title="Manual delivery" />
-            <ShopDeliveryPanel id="manual-order" admin changed={() => {}} />
-          </main>
-        ),
-      },
-      {
-        path: "/admin/orders/:id",
-        element: (
-          <main className="page">
-            <PageHeader title="Existing staff order destination" />
-          </main>
-        ),
-      },
-      {
-        path: "/orders/:id",
-        element: (
-          <main className="page">
-            <h1>Existing payment destination</h1>
-          </main>
-        ),
-      },
-      { path: "/admin/shop/suppliers", element: <AdminPage /> },
-      { path: "/admin/shop/orders", element: <AdminPage view="queue" /> },
-      { path: "/admin/shop/:id", element: <AdminPage editor /> },
-      {
-        path: "/admin/shop",
-        element: <AdminPage view="products" />,
-      },
-    ])}
-  />,
+  <div
+    className={
+      document.body.dataset.portal === "customer" ? "experience" : undefined
+    }
+  >
+    <RouterProvider
+      router={createBrowserRouter([
+        {
+          element: (
+            <GameShell release={release}>
+              <Outlet />
+            </GameShell>
+          ),
+          children: [
+            {
+              path: "/games/:slug/shop",
+              loader: () => release,
+              element: <GameShop />,
+            },
+            {
+              path: "/games/:slug/shop/:id",
+              loader: () => release,
+              element: <GameShopProduct />,
+            },
+          ],
+        },
+        { path: "/delivery", element: <DeliveryPage /> },
+        {
+          path: "/admin/manual-delivery",
+          element: (
+            <main className="page">
+              <PageHeader title="Manual delivery" />
+              <ShopDeliveryPanel id="manual-order" admin changed={() => {}} />
+            </main>
+          ),
+        },
+        {
+          path: "/admin/orders/:id",
+          element: (
+            <main className="page">
+              <PageHeader title="Existing staff order destination" />
+            </main>
+          ),
+        },
+        {
+          path: "/orders/:id",
+          element: (
+            <main className="page">
+              <h1>Existing payment destination</h1>
+            </main>
+          ),
+        },
+        { path: "/admin/shop/suppliers", element: <AdminPage /> },
+        { path: "/admin/shop/orders", element: <AdminPage view="queue" /> },
+        { path: "/admin/shop/:id", element: <AdminPage editor /> },
+        {
+          path: "/admin/shop",
+          element: <AdminPage view="products" />,
+        },
+      ])}
+    />
+  </div>,
 );

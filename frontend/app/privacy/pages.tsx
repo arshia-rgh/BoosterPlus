@@ -96,9 +96,6 @@ function Export() {
         Exports contain your personal information; store them privately.
         Internal staff notes and authentication secrets are excluded.
       </p>
-      <p>
-        If this action needs fresh verification, confirm it in the dialog here.
-      </p>
       <label>
         Data category
         <select
@@ -184,10 +181,7 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
             </Confirmation>
           </Form>
         ) : (
-          <p>
-            Deletion requests are disabled until the owner publishes and enables
-            a retention policy.
-          </p>
+          <p>Account deletion requests are currently unavailable.</p>
         ))}
       <h3>
         {admin ? "Requests awaiting action and history" : "Your requests"}

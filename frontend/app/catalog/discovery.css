@@ -506,15 +506,66 @@ body:has(.selection-details-dialog[open]) {
   object-fit: contain;
   border-radius: 1rem;
 }
+.package-contents {
+  margin-block: 2rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #466751;
+  border-radius: 1rem;
+  background: #10271e;
+}
+.package-contents h3 {
+  margin: 0 0 1.25rem;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
 .package-specifications {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+  margin: 0;
+}
+.package-specifications > div {
+  min-width: 0;
+  padding-block: 1rem;
+  border-top: 1px solid #355044;
 }
 .package-specifications dt {
-  font-weight: 650;
+  color: #aec7b9;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 .package-specifications dd {
-  margin: 0.25rem 0 0;
+  margin: 0.4rem 0 0;
+  color: #f1f4ee;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.55;
   overflow-wrap: anywhere;
+}
+.package-scope-note,
+.package-delivery-note {
+  max-width: 60ch;
+  color: #bdd0c5;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.package-scope-note {
+  margin: 0.75rem 0 0;
+}
+.package-delivery {
+  margin: 1.25rem 0 0;
+}
+.package-delivery dt {
+  color: #bdd0c5;
+  font-size: 0.85rem;
+}
+.package-delivery dd {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+@media (max-width: 580px) {
+  .package-specifications {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

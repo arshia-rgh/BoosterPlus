@@ -200,7 +200,9 @@ export function GameShell({
             {release.configuration.faqs.map((faq, i) => (
               <details key={i}>
                 <summary>{faq.question}</summary>
-                <p>{faq.answer}</p>
+                <div className="game-faq-answer">
+                  <p>{faq.answer}</p>
+                </div>
               </details>
             ))}
           </section>

@@ -121,8 +121,14 @@
 }
 .ui-field {
   display: grid;
-  gap: 0.4rem;
+  gap: 0.55rem;
   min-width: 0;
+}
+.ui-field > label {
+  font-size: 0.925rem;
+  line-height: 1.5;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 .identity-card .ui-field label {
   display: block;
