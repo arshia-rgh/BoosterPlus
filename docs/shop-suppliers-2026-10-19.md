@@ -241,3 +241,32 @@ The previously supplied Sandbox webhook URL is no longer active after this reque
 ### Final focused hook formatting correction
 
 The first server-only final focused hook passed backend formatting, generated-code, vet, golangci, standalone gosec, vulnerability/dependency checks, race-enabled unit tests, all47 migration-file validation and backend builds, then stopped at Prettier for `frontend/server.mjs`. Preserve `focused-release-final1/commit.log`, the candidate archive and pre-format file. Applying the pinned formatter changes presentation only; the next normal focused hook reuses the server build cache and does not run the full gate. No production activation occurred.
+
+## Production release —20October2026
+
+Signed `b700de1ee6d182a758452ba2687dd2348cfc8610` is deployed and verified at schema47. The owner explicitly approved “Deploy b700de1 Nexus update with this recovery risk” after the final preflight. That exact no-off-host recovery exception is now consumed.
+
+The corrected normal focused server hook passed backend static/security/race/build checks, all47 migration-file validation,207tracked frontend component files/971cases, portal builds and83deployment-configuration cases. The clean checkout excludes the owner's untracked cameo/prototype work; its lower test count does not represent deleted coverage. Exact CI39423855072 and image release39427411506 passed. The local status watcher lost its GitHub connection after dispatch; the already-completed successful image run was retrieved and verified without rerunning CI or the image workflow. Preserve that network failure.
+
+The first live preflight stopped before downtime or migration because TiDB rejects the inspector's READ ONLY transaction option with SQL1235. A separate diagnostic emitted only fixed stage/error-type/numeric-code metadata. The corrected, independently reviewed helper uses an explicit RepeatableRead snapshot containing fixed SELECT statements only. Original helper, binary, binding, logs and candidate configuration were retained before rebuilding/rebinding and rerunning preflight. Temporary registry credentials were removed after image downloads; the corrected attempt reused exact immutable local images and transferred no further registry credentials.
+
+Activation used the existing signed release procedure, preserving the installed stable99f60bd deployment configuration/tooling. The application was quiesced before comparing encrypted records; after migrations43→47, protected-record counts/hashes matched, the migration journal was complete and all eight supplier tables were empty. Only then did the new application start. Runtime verification passed for API, worker, storefront, admin, gateway, scanner, mailserver and private webmail, together with HTTPS/public portal checks and unchanged public legal/retention data.
+
+The production receiver is now available:
+
+`https://playoragames.com/api/v1/webhooks/suppliers/nexus-production`
+
+Set this only in **Nexus production → My Shops**. The former Sandbox URL is inactive after the requested environment removal. Do not configure Vendoria callbacks. Eleven live rejection checks passed: missing/invalid/duplicate signatures, method, content encoding, body size, staff-host isolation and inactive Sandbox/Vendoria routes. These probes used no valid signature, created no order and do not establish actual production-provider callback delivery.
+
+Seven server-side Chromium checks also passed using the already-installed browser: customer/admin/pro login and recovery-modal presentation at390/1280px, plus the public MLBB shop at390px. All mutating browser requests were blocked. These verify guest entry/rendering, loaded artwork, overflow and modal dismissal; they do not represent authenticated administration, publication or purchases. No extra test environment or browser installation was created.
+
+### Current operational state
+
+- API and worker load only the Nexus production Shop token; dashboard passwords and Vendoria credentials are not in runtime.
+- `SUPPLIER_PURCHASES_ENABLED=false` remains enforced. No live supplier purchase or funding was performed.
+- Admin → Shop → Supplier catalog can import the full accessible catalog privately, review game/region/category/delivery requirements, apply the configurable15% default markup or per-offer override, and prepare listing drafts. Existing manual products remain separate. Activation did not import or publish any offer.
+- Customer checkout stays enabled for existing eligible services; automatic outgoing payouts and customer deletion stay disabled. Existing owner catalogs, policies, accepted orders, identities/MFA and private webmail remain unchanged.
+- Current deployment manifest: `/srv/playora/releases/b700de1/deployment.env`. Private evidence: `/srv/playora-qualification/supplier168/production-release/` and `.cache/suppliers/production-release/`.
+- The isolated Sandbox containers, volumes, networks, source/cache/secrets/certificates have been removed. Compact private evidence remains available locally. The original gateway routing was restored before this normal production release.
+- The full suite was not run. No live invoice, funds, email, customer-data mutation or product-publication test occurred.
+- There is no off-host recovery point. The prior signed schema43 application is retained as historical evidence, but must not restart against schema47. Recovery after this migration requires a forward fix.
