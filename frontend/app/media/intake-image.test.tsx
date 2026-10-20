@@ -290,7 +290,7 @@ it("keeps a reserved image after storage failure and retries without creating an
     screen.queryByText(/private provider detail|session ended/),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByText("Local preview · upload not yet confirmed"),
+    await screen.findByText("Local preview · upload not yet confirmed"),
   ).toBeVisible();
   expect(post).toHaveBeenCalledTimes(1);
   fireEvent.click(

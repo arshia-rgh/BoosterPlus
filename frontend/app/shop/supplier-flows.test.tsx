@@ -122,7 +122,7 @@ it("recovers uncertain reservation using its exact original request after quote 
     screen.getByRole("button", { name: /Continue to payment|Go to payment/ }),
   );
   await screen.findByRole("button", { name: "Check this order" });
-  expect(screen.getByRole("alert")).toHaveFocus();
+  await waitFor(() => expect(screen.getByRole("alert")).toHaveFocus());
   const original = vi.mocked(post).mock.calls[1]?.[1];
   expect(screen.getByLabelText("Player ID")).toBeDisabled();
   vi.useFakeTimers();
