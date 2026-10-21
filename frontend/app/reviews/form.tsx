@@ -139,9 +139,8 @@ function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
           {value.review ? "Edit purchase feedback" : "Write purchase feedback"}
         </h3>
         <p>
-          Share your actual experience. Do not include account credentials,
-          contact details or private conversations. Changes require moderation
-          before publication.
+          Share your experience. No logins, contact details or private chats.
+          Reviews are moderated before they appear.
         </p>
         <div
           ref={errorRef}
@@ -174,7 +173,7 @@ function Editor({ value, reload }: { value: OrderReview; reload: () => void }) {
             multiline
             value={body}
             change={setBody}
-            help="1–4,000 characters. Your rating and wording remain yours; staff may add a labeled response."
+            help="Up to 4,000 characters. Staff may add a labeled reply."
           />
           {service.fields
             .filter((field) =>
@@ -325,7 +324,11 @@ export default function PurchaseReview({
       <h2 ref={resultRef} tabIndex={-1}>
         Your purchase review
       </h2>
-      <Action onClick={resource.reload}>Refresh purchase review</Action>
+      {!!resource.error && (
+        <Action variant="secondary" onClick={resource.reload}>
+          Refresh purchase review
+        </Action>
+      )}
       <div
         ref={resourceErrorRef}
         tabIndex={-1}

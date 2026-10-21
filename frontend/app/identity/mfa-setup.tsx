@@ -43,8 +43,7 @@ export function MFASetup({ enrollment }: { enrollment: MFAEnrollment }) {
             <span>{enrollment.account}</span>
           </p>
           <p>
-            Keep this QR code private. Complete setup within 10 minutes, then
-            enter the six-digit code below to confirm it works.
+            Keep this private. Enter the 6-digit code below within 10 minutes.
           </p>
           <button
             className="mfa-setup-fallback"

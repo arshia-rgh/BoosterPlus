@@ -228,6 +228,7 @@ function CaseConversation({
                   multiline
                   value={note}
                   change={setNote}
+                  help={admin ? "" : "Add photos in the order’s messages."}
                 />
                 {admin && (
                   <Text
@@ -239,13 +240,11 @@ function CaseConversation({
                     help="Visible only to authorized staff. Keep the customer explanation separate; never enter credentials or authentication codes here."
                   />
                 )}
-                <p>
-                  Describe the issue and evidence to review. Photos can be
-                  uploaded in the private order conversation.
-                </p>
-                <Action onClick={() => void act("reply")}>
-                  Send case reply
-                </Action>
+                <div className="form-actions">
+                  <Action onClick={() => void act("reply")}>
+                    Send case reply
+                  </Action>
+                </div>
                 {admin && ["open", "appealed"].includes(record.state) && (
                   <>
                     <Select
@@ -392,10 +391,7 @@ export default function Cases({
                 <summary>Request a service review</summary>
                 <fieldset disabled={busy || resource.loading}>
                   <legend>Tell us what happened</legend>
-                  <p>
-                    Active work is held while your case is reviewed. A request
-                    does not automatically issue a refund.
-                  </p>
+                  <p>Work pauses during review. Refunds aren’t automatic.</p>
                   <Select
                     name="kind"
                     label="Review reason"
@@ -422,9 +418,11 @@ export default function Cases({
                       setKey(crypto.randomUUID());
                     }}
                   />
-                  <Action onClick={() => void open()}>
-                    {busy ? "Opening case…" : "Open service case"}
-                  </Action>
+                  <div className="form-actions">
+                    <Action onClick={() => void open()}>
+                      {busy ? "Opening case…" : "Open service case"}
+                    </Action>
+                  </div>
                 </fieldset>
               </details>
             )}

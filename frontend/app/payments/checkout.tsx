@@ -278,40 +278,6 @@ export default function Checkout({
                   {minorDisplay(detail.contract.data.amount_minor)}
                 </p>
               )}
-              <p>
-                You’ll continue to NOWPayments to pay securely. Return to this
-                order to see your verified receipt.
-              </p>
-              <h3>{policy.data.label}</h3>
-              <p className="payment-policy">{policy.data.text}</p>
-              {policy.data.remedies && (
-                <details>
-                  <summary>Cancellation, disputes and refunds</summary>
-                  {remedyLabels.map(([key, label]) => (
-                    <div key={key}>
-                      <h4>{label}</h4>
-                      <p>
-                        {policy.data.remedies &&
-                          remedyText(policy.data.remedies, key)}
-                      </p>
-                    </div>
-                  ))}
-                  <p>
-                    Dispute window: {policy.data.remedies.dispute_hours} hours.
-                    Appeal window: {policy.data.remedies.appeal_hours} hours; up
-                    to {policy.data.remedies.max_appeals} appeals.
-                  </p>
-                </details>
-              )}
-              <p>
-                Processing fees:{" "}
-                {policy.data.fee_mode === "customer"
-                  ? "paid by you"
-                  : "paid by PLAYORA"}
-                . Exchange rate: {policy.data.rate_mode}. Local checkout window:{" "}
-                {policy.data.window_minutes} minutes. The provider may impose a
-                shorter deposit window; follow its instructions.
-              </p>
               <Select
                 name="route"
                 label="Payment asset and network"
@@ -334,6 +300,48 @@ export default function Checkout({
                   before you send.
                 </p>
               )}
+              <dl className="payment-facts">
+                <div>
+                  <dt>Processing fees</dt>
+                  <dd>
+                    {policy.data.fee_mode === "customer"
+                      ? "Paid by you"
+                      : "Paid by PLAYORA"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Exchange rate</dt>
+                  <dd>{policy.data.rate_mode}</dd>
+                </div>
+                <div>
+                  <dt>Checkout window</dt>
+                  <dd>
+                    {policy.data.window_minutes} minutes (the provider’s may be
+                    shorter)
+                  </dd>
+                </div>
+              </dl>
+              <h3>{policy.data.label}</h3>
+              <p className="payment-policy">{policy.data.text}</p>
+              {policy.data.remedies && (
+                <details>
+                  <summary>Cancellation, disputes and refunds</summary>
+                  {remedyLabels.map(([key, label]) => (
+                    <div key={key}>
+                      <h4>{label}</h4>
+                      <p>
+                        {policy.data.remedies &&
+                          remedyText(policy.data.remedies, key)}
+                      </p>
+                    </div>
+                  ))}
+                  <p>
+                    Dispute window: {policy.data.remedies.dispute_hours} hours.
+                    Appeal window: {policy.data.remedies.appeal_hours} hours; up
+                    to {policy.data.remedies.max_appeals} appeals.
+                  </p>
+                </details>
+              )}
               <Check
                 name="accept_policy"
                 label="I accept this payment policy and the agreed order price"
@@ -342,12 +350,17 @@ export default function Checkout({
                   setAcceptedPolicy(value ? consentKey : "");
                 }}
               />
-              <Action
-                disabled={!accepted || !selectedRoute}
-                onClick={() => void start()}
-              >
-                {busy ? "Preparing checkout…" : "Create secure checkout"}
-              </Action>
+              <div className="form-actions">
+                <Action
+                  disabled={!accepted || !selectedRoute}
+                  onClick={() => void start()}
+                >
+                  {busy ? "Preparing checkout…" : "Go to payment"}
+                </Action>
+              </div>
+              <p className="quiet">
+                You’ll pay on NOWPayments, then return here for your receipt.
+              </p>
             </fieldset>
           )}
         {data?.enabled && !latest && !policy && (

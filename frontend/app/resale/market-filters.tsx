@@ -128,8 +128,7 @@ export default function MarketFilters({
               }}
             />
             <span className="quiet" id={`${id}-currency-help`}>
-              Optional unless filtering or sorting by price. Use the currency
-              shown on listings; no currency conversion.
+              e.g. USD — needed for price filters.
             </span>
             {errors.currency && (
               <p
@@ -152,15 +151,14 @@ export default function MarketFilters({
               maxLength={13}
               value={price}
               aria-invalid={!!errors.price || undefined}
-              aria-describedby={`${id}-maximum-help${errors.price ? ` ${id}-maximum-error` : ""}`}
+              aria-describedby={
+                errors.price ? `${id}-maximum-error` : undefined
+              }
               onChange={(event) => {
                 setErrors({ price: "", currency: "" });
                 setPrice(event.target.value);
               }}
             />
-            <span className="quiet" id={`${id}-maximum-help`}>
-              Optional · up to two decimal places.
-            </span>
             {errors.price && (
               <p
                 className="field-error"
@@ -184,7 +182,7 @@ export default function MarketFilters({
               ["price_desc", "Price: high to low"],
             ]}
           />
-          <div className="catalog-actions market-filter-actions">
+          <div className="form-actions market-filter-actions">
             <button className="button compact" type="submit">
               Apply account filters
             </button>

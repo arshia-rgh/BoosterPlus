@@ -153,10 +153,6 @@ export default function SubmissionEditor({
   return (
     <FieldValidation value={validation}>
       <section className="catalog-section seller-intake">
-        <p>
-          Add the account details, attach photos if helpful, then send it for
-          review.
-        </p>
         {form.description && (
           <details>
             <summary>Game-specific selling help</summary>
@@ -181,13 +177,13 @@ export default function SubmissionEditor({
           </section>
         )}
         <fieldset disabled={busy || stale}>
-          <legend>Private submission details</legend>
+          <legend className="sr-only">Private submission details</legend>
           <h4>1. Describe the account</h4>
           {choiceNotice && <p role="status">{choiceNotice}</p>}
-          <div className="seller-intake-fields">
+          <div className="seller-intake-fields form-grid">
             <Text
               name="title"
-              label="Private account title"
+              label="Account title (required)"
               value={title}
               change={(v) => {
                 setTitle(v);
@@ -238,7 +234,7 @@ export default function SubmissionEditor({
             conversation={value.conversation_id}
             onPendingChange={setPhotosPending}
           />
-          <h4>3. Permission to sell</h4>
+          <h4>3. Notes and permission</h4>
           <Text
             name="ownership_notes"
             label="Account notes (optional)"
@@ -248,7 +244,7 @@ export default function SubmissionEditor({
               setNotes(v);
               setDirty(true);
             }}
-            help="Mention restrictions or anything the buyer should know. Keep login and recovery details out of this form."
+            help="Restrictions or anything a buyer should know. No login details."
           />
           <Check
             name="ownership_declared"
@@ -260,14 +256,7 @@ export default function SubmissionEditor({
             }}
           />
 
-          <div className="seller-save-actions">
-            <Action
-              onClick={() => {
-                void save(false);
-              }}
-            >
-              Save account draft
-            </Action>
+          <div className="form-actions seller-save-actions">
             <Action
               disabled={photosPending}
               onClick={() => {
@@ -276,17 +265,19 @@ export default function SubmissionEditor({
             >
               Save and submit for review
             </Action>
+            <Action
+              variant="secondary"
+              onClick={() => {
+                void save(false);
+              }}
+            >
+              Save account draft
+            </Action>
           </div>
           {photosPending && (
             <p role="status">
               Send or remove the selected screenshots before submitting. Your
               account draft can still be saved.
-            </p>
-          )}
-          {dirty && (
-            <p role="status">
-              Your changes will be saved when you submit. You can also save a
-              draft and finish later.
             </p>
           )}
         </fieldset>

@@ -54,10 +54,7 @@ export function Subscribe({
     <ActionFields error={error} busy={busy}>
       <aside aria-label="Package availability emails" className="panel">
         <h2>Follow availability</h2>
-        <p>
-          Sign in to send future opening alerts to your verified account email.
-          This is separate from order update emails.
-        </p>
+        <p>Get an email when this package reopens.</p>
         {saved ? (
           <p role="status">Availability alerts enabled.</p>
         ) : (
@@ -122,7 +119,13 @@ function SubscriptionCard({
             ? "Capacity is currently available; check the offer before ordering."
             : "Currently unavailable."}
         </p>
-        <p>Emails: {item.state}</p>
+        <p>
+          {item.state === "active"
+            ? "Email alerts on"
+            : item.state === "suppressed"
+              ? "Email alerts paused"
+              : "Email alerts off"}
+        </p>
         {item.state === "active" ? (
           <Action disabled={busy} onClick={() => void change(false)}>
             Stop emails for {item.label}
@@ -157,12 +160,12 @@ export function Subscriptions() {
   return (
     <section>
       <h2>Your availability alerts</h2>
-      <p>
-        Up to 50 active subscriptions. Availability emails do not reserve a
-        package or guarantee its price, eligibility or delivery time. Changing
-        your account email requires fresh consent for future alerts.
-      </p>
-      <Action disabled={resource.loading} onClick={resource.reload}>
+      <p>Alerts don’t reserve a package or price. Up to 50 active.</p>
+      <Action
+        variant="secondary"
+        disabled={resource.loading}
+        onClick={resource.reload}
+      >
         Refresh alerts
       </Action>
       <ErrorNotice error={resource.error} />

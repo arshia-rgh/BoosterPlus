@@ -85,12 +85,8 @@ function ShopBrowse({ slug }: { slug: string }) {
     <>
       <p className="eyebrow">Game shop</p>
       <h2>Choose your next upgrade.</h2>
-      <p>
-        Review compatibility, delivery requirements and the exact price before
-        ordering.
-      </p>
       <form
-        className="shop-filters"
+        className="shop-filters filter-grid"
         onSubmit={(e) => {
           e.preventDefault();
           setParams({ q: query, region, category, method });
@@ -137,10 +133,14 @@ function ShopBrowse({ slug }: { slug: string }) {
             ["manual", "PLAYORA staff delivery"],
           ]}
         />
-        <button type="submit" className="button">
-          Apply filters
-        </button>
-        <Link to={`/games/${slug}/shop`}>Clear filters</Link>
+        <div className="form-actions">
+          <button type="submit" className="button">
+            Apply filters
+          </button>
+          <Link className="button secondary" to={`/games/${slug}/shop`}>
+            Clear filters
+          </Link>
+        </div>
       </form>
       <ErrorNotice error={facets.error} />
       {!!facets.error && (
@@ -642,9 +642,13 @@ function ProductFlow({
               <h3 ref={stepHeading} tabIndex={-1}>
                 Choose your options
               </h3>
-              <label className="catalog-label">
-                Variant
+              <div className="catalog-label">
+                <label htmlFor="shop-variant">Variant</label>
                 <select
+                  id="shop-variant"
+                  aria-describedby={
+                    variant ? "shop-variant-meta" : "shop-quantity-guidance"
+                  }
                   value={variantKey}
                   onChange={(e) => {
                     const next = variants.find((v) => v.key === e.target.value);
@@ -658,39 +662,39 @@ function ProductFlow({
                     </option>
                   ))}
                 </select>
-              </label>
-              {variant && (
-                <>
-                  <p>
+                {variant ? (
+                  <p className="quiet" id="shop-variant-meta">
                     {variant.region} · {variant.platform} · {variant.server}
                   </p>
-                  <label className="catalog-label">
-                    Quantity
-                    <input
-                      type="number"
-                      min={variant.min_quantity}
-                      max={Math.min(variant.max_quantity, stock)}
-                      step="1"
-                      aria-invalid={!valid}
-                      aria-describedby="shop-quantity-guidance"
-                      value={quantity}
-                      onChange={(e) => {
-                        options(variantKey, Number(e.target.value));
-                      }}
-                    />
-                  </label>
-                  <p>
+                ) : (
+                  <p id="shop-quantity-guidance" className="quiet">
+                    Choose an available variant.
+                  </p>
+                )}
+              </div>
+              {variant && (
+                <div className="catalog-label">
+                  <label htmlFor="shop-quantity">Quantity</label>
+                  <input
+                    id="shop-quantity"
+                    type="number"
+                    min={variant.min_quantity}
+                    max={Math.min(variant.max_quantity, stock)}
+                    step="1"
+                    aria-invalid={!valid}
+                    aria-describedby="shop-quantity-guidance"
+                    value={quantity}
+                    onChange={(e) => {
+                      options(variantKey, Number(e.target.value));
+                    }}
+                  />
+                  <p id="shop-quantity-guidance" className="quiet">
                     {stock > 0
-                      ? `${String(stock)} available; confirmed again when you reserve.`
+                      ? `${String(variant.min_quantity)}–${String(variant.max_quantity)} units · ${String(stock)} in stock`
                       : "This variant is sold out."}
                   </p>
-                </>
+                </div>
               )}
-              <p id="shop-quantity-guidance">
-                {variant
-                  ? `Choose ${String(variant.min_quantity)}–${String(variant.max_quantity)} whole units, within available stock.`
-                  : "Choose an available variant."}
-              </p>
               {signedIn ? (
                 <Action
                   disabled={!valid}
@@ -705,8 +709,7 @@ function ProductFlow({
               ) : (
                 <>
                   <p>
-                    Sign in before entering private recipient details. Your
-                    selected options stay in this URL.
+                    Sign in to add recipient details. Your options are kept.
                   </p>
                   <Link
                     className="button"
@@ -723,10 +726,7 @@ function ProductFlow({
               <h3 ref={stepHeading} tabIndex={-1}>
                 Where should we deliver?
               </h3>
-              <p>
-                Use only the requested game identifiers. Never enter a password
-                or recovery code.
-              </p>
+              <p>Enter only the requested game IDs — never a password.</p>
               {product.definition.recipient.map((field) => (
                 <Text
                   key={field.key}
@@ -840,7 +840,7 @@ function ProductFlow({
           <strong>
             {variant?.currency} {minorDisplay(amount)}
           </strong>
-          <p>Direct crypto payment. No wallet balance.</p>
+          <p>Paid in crypto at checkout.</p>
         </aside>
       </div>
     </FieldValidation>

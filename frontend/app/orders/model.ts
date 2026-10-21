@@ -128,3 +128,8 @@ export type Commercial = z.infer<typeof commercialSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
 export type Reorder = z.infer<typeof reorderSchema>;
 export const stateLabel = (state: string) => state.replaceAll("_", " ");
+/** Sentence-case status for option lists, where a label starts the line. */
+export const stateOption = (state: string) => {
+  const text = stateLabel(state);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

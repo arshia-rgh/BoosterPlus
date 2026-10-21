@@ -221,7 +221,7 @@ it.each(["admin", "booster"] as const)(
   async (portal) => {
     open(portal, "recovery");
     await screen.findByRole("button", { name: "Replace recovery codes" });
-    expect(screen.getByText(/If fresh verification is needed/)).toBeVisible();
+    expect(screen.getByText(/Each recovery code replaces one/)).toBeVisible();
     expect(
       screen.getByRole("complementary", {
         name: portal === "admin" ? "Staff modules" : "Booster workspace",

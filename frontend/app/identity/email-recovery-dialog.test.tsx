@@ -101,8 +101,8 @@ it.each(["customer", "admin", "booster"])(
     expect(
       recovery.getByText(
         portal === "customer"
-          ? /If you set up an authenticator, it will still be required\./
-          : /Your authenticator remains required\./,
+          ? /Your authenticator stays required if you set one up\./
+          : /Your authenticator stays required\./,
       ),
     ).toBeVisible();
     expect(recovery.getByLabelText("Current account email")).toHaveFocus();

@@ -404,7 +404,7 @@ function Purchase({
           Review this account purchase
         </Action>
         <p className="account-purchase-note">
-          Review the terms next. No reservation or payment yet.
+          Nothing is reserved or charged yet.
         </p>
       </section>
     );
@@ -417,7 +417,7 @@ function Purchase({
     >
       <button
         type="button"
-        className="button compact account-secondary-action"
+        className="button compact secondary account-secondary-action"
         disabled={busy}
         onClick={() => {
           step("");
@@ -453,13 +453,12 @@ function Purchase({
       ) : (
         <fieldset disabled={busy || session.loading}>
           <legend>Reserve this exact account</legend>
+          <p>You’ll pay from your order before its checkout deadline.</p>
           <p>
-            Next: your order opens in My account with a checkout deadline. Pay
-            before delivery can begin.
+            <Anchor href="/terms" target="_blank" rel="noopener noreferrer">
+              Site terms (opens in a new tab)
+            </Anchor>
           </p>
-          <Anchor href="/terms" target="_blank" rel="noopener noreferrer">
-            Read site terms in a new tab
-          </Anchor>
           <Check
             label="I accept this account's price, sale, transfer, dispute and acknowledgement terms and the site terms"
             value={accept}

@@ -189,7 +189,7 @@ it("requires validation before review and preserves private in-memory details th
 });
 it("a direct review URL requires current validation and a late response cannot reopen a departed form", async () => {
   const router = await setup("/games/game/services/boost?step=review");
-  expect(screen.getByText(/Check your restored selections/)).toBeVisible();
+  expect(screen.getByText(/Check your restored choices/)).toBeVisible();
   expect(screen.queryByLabelText("Instructions")).toBeNull();
   let finish: ((value: unknown) => void) | undefined;
   vi.mocked(post).mockImplementationOnce(

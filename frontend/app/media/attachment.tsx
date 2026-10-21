@@ -35,6 +35,7 @@ export function UploadImage({
   describedBy,
   invalid,
   operationPending,
+  guidance: showGuidance = true,
 }: {
   conversation: string;
   admin: boolean;
@@ -46,6 +47,7 @@ export function UploadImage({
   describedBy?: string | undefined;
   invalid?: boolean | undefined;
   operationPending?: (pending: boolean) => void;
+  guidance?: boolean;
 }) {
   const guidance = useId();
   const base = (admin ? "/admin" : "") + "/media";
@@ -266,9 +268,11 @@ export function UploadImage({
       className={compact ? "chat-attachment" : undefined}
     >
       {!compact && label === "Image attachment" && <h3>Attach an image</h3>}
-      <p id={guidance}>
-        JPEG, PNG or WebP · up to 4 MB. Remove private details first.
-      </p>
+      {showGuidance && (
+        <p id={guidance} className="quiet">
+          JPEG, PNG or WebP, up to 4 MB. Hide passwords and private details.
+        </p>
+      )}
       {
         <label>
           {label === "Image attachment"
@@ -276,7 +280,11 @@ export function UploadImage({
             : `Choose ${label.toLowerCase()}`}
           <input
             ref={inputRef}
-            aria-describedby={[guidance, describedBy].filter(Boolean).join(" ")}
+            aria-describedby={
+              [showGuidance ? guidance : "", describedBy]
+                .filter(Boolean)
+                .join(" ") || undefined
+            }
             aria-invalid={invalid || undefined}
             type="file"
             accept="image/png,image/jpeg,image/webp"
@@ -293,13 +301,15 @@ export function UploadImage({
         </label>
       }
       {file && <p className="attachment-filename">{file.name}</p>}
-      <details className="attachment-limits">
-        <summary>Image limits</summary>
-        <p>
-          Maximum 4,194,304 bytes and 4 million pixels. Never upload passwords
-          or recovery codes.
-        </p>
-      </details>
+      {admin && (
+        <details className="attachment-limits">
+          <summary>Image limits</summary>
+          <p>
+            Maximum 4,194,304 bytes and 4 million pixels. Never upload passwords
+            or recovery codes.
+          </p>
+        </details>
+      )}
       {preview?.file === file && (
         <figure className="attachment-preview">
           <img src={preview.url} alt="Selected attachment preview" />

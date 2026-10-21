@@ -85,7 +85,7 @@ it("fences unsubscribe with the observed version and retains current state on co
     expect.anything(),
   );
   expect(reload).not.toHaveBeenCalled();
-  expect(screen.getByText("Emails: active")).toBeVisible();
+  expect(screen.getByText("Email alerts on")).toBeVisible();
 });
 it("rejects malformed unsubscribe capabilities and never accepts query-string tokens", () => {
   expect(parseLink("?id=x&token=y")).toBeNull();

@@ -130,10 +130,7 @@ export default function NewSupport() {
       >
         <fieldset disabled={busy || unknown}>
           <legend>Start a conversation</legend>
-          <p>
-            Ask about services before placing an order. Keep passwords and
-            recovery codes out of support messages.
-          </p>
+          <p>Questions before you order. Don’t share passwords or codes.</p>
           <Text
             name="subject"
             label="Conversation subject"
@@ -143,7 +140,7 @@ export default function NewSupport() {
               setKey(crypto.randomUUID());
               setError(null);
             }}
-            help="1–160 characters. For an existing order, use its Messages section."
+            help="For an existing order, use its Messages tab."
           />
         </fieldset>
         {unknown && (
@@ -152,13 +149,15 @@ export default function NewSupport() {
             open the same conversation.
           </p>
         )}
-        <button className="button" type="submit" disabled={busy}>
-          {busy
-            ? "Opening…"
-            : unknown
-              ? "Retry same conversation"
-              : "Start conversation"}
-        </button>
+        <div className="form-actions">
+          <button className="button" type="submit" disabled={busy}>
+            {busy
+              ? "Opening…"
+              : unknown
+                ? "Retry same conversation"
+                : "Start conversation"}
+          </button>
+        </div>
         <ErrorNotice error={error} hideIssues />
         <Issues issues={issues} />
       </form>

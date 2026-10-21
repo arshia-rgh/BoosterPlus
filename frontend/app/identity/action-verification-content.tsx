@@ -166,10 +166,7 @@ export default function VerificationDialog({
         </span>
       </div>
       <h2 id="action-verification-title">{prompt.action}</h2>
-      <p id="action-verification-description">
-        Confirm it’s you before we continue. Verify once here, and we’ll carry
-        out the action you just requested.
-      </p>
+      <p id="action-verification-description">Confirm it’s you to continue.</p>
       {prompt.authenticator && (
         <div
           className="action-verification-methods"

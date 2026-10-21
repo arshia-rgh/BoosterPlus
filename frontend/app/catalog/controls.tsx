@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   FieldValidation,
+  FlaggedLabel,
   fieldError,
   ValidationSummary,
 } from "../ui/form-validation";
@@ -59,7 +60,9 @@ export function Text({
       .join(" ") || undefined;
   return (
     <div className="catalog-label">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>
+        <FlaggedLabel text={label} />
+      </label>
       {multiline ? (
         <textarea
           ref={fieldRef}
@@ -220,7 +223,9 @@ export function Select({
   const error = fieldError(validation, name);
   return (
     <div className="catalog-label">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>
+        <FlaggedLabel text={label} />
+      </label>
       <select
         ref={fieldRef}
         name={name}
@@ -253,11 +258,13 @@ export function Action({
   children,
   onClick,
   disabled = false,
+  variant,
 }: {
   name?: string;
   children: ReactNode;
   onClick: () => void;
   disabled?: boolean;
+  variant?: "secondary" | "destructive";
 }) {
   const id = useId();
   const validation = useContext(FieldValidation);
@@ -276,7 +283,8 @@ export function Action({
         id={id}
         ref={fieldRef}
         type="button"
-        className="button compact"
+        className={`button compact${variant === "secondary" ? " secondary" : ""}`}
+        data-variant={variant === "destructive" ? "destructive" : undefined}
         onClick={onClick}
         disabled={disabled}
         aria-describedby={error ? id + "-error" : undefined}

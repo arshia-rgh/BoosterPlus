@@ -343,13 +343,6 @@
   font-weight: 600;
   padding: 0 0.5rem;
 }
-.experience .catalog-input {
-  padding: 1rem 0;
-  border-bottom: 1px solid #314a38;
-}
-.experience .catalog-input:last-of-type {
-  margin-bottom: 1.5rem;
-}
 .experience .catalog-choices {
   border: 0;
   padding: 0;

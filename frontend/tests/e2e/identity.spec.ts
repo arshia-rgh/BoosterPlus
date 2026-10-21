@@ -52,7 +52,7 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
     .click();
   await page.getByRole("button", { name: "Refresh sessions" }).click();
   await expect(
-    page.getByRole("heading", { name: "This session" }),
+    page.getByRole("heading", { name: "This device" }),
   ).toBeVisible();
   await enroll(page);
   await page
@@ -87,9 +87,7 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     const portal = role === "booster" ? "booster" : "admin";
     await signIn(page, request, email, `/${portal}/login`);
     await expect(
-      page.getByText(
-        "Authenticator verification is required to finish signing in.",
-      ),
+      page.getByText("Enter your authenticator code to finish signing in."),
     ).toBeVisible();
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
       portal === "admin" ? 403 : 401,

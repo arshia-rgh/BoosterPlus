@@ -172,7 +172,7 @@ for (const width of [320, 390, 768, 1280]) {
       "Your provisional estimate is shown here",
     );
     await expect(dialog).not.toContainText(
-      "Check your selections for a provisional estimate",
+      "Choose your goal to see an estimate",
     );
     await dialog.getByText("Price breakdown", { exact: true }).click();
     await expect(dialog.getByText(/Synthetic review amount/)).toBeVisible();

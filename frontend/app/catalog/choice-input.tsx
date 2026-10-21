@@ -49,11 +49,15 @@ export default function ChoiceInput({
     >
       <legend>{label}</legend>
       {multiple && (
-        <p id={countId} aria-live="polite" aria-atomic="true">
-          {selected.length} selected
+        <p
+          id={countId}
+          className="quiet catalog-choice-count"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {field.max_selections > 0
-            ? ` · Choose up to ${String(field.max_selections)}`
-            : ""}
+            ? `${String(selected.length)} of ${String(field.max_selections)} selected`
+            : `${String(selected.length)} selected`}
           {full ? ". Remove a selection to choose another." : ""}
         </p>
       )}
@@ -149,9 +153,11 @@ export default function ChoiceInput({
       </div>
       {searchable && (
         <p role="status">
-          {matches.length
-            ? `${String(matches.length)} matching choices`
-            : "No matches. Try another name or clear the search."}
+          {!search.trim()
+            ? ""
+            : matches.length
+              ? `${String(matches.length)} matching choices`
+              : "No matches. Try another name or clear the search."}
         </p>
       )}
     </fieldset>

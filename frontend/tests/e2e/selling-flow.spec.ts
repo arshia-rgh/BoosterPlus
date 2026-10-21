@@ -121,9 +121,24 @@ for (const width of [320, 390, 768, 1280]) {
         "I control this account and have authority to submit it for review",
       )
       .check();
-    await page
-      .getByLabel("Private account title")
-      .fill("My account for review");
+    await page.getByLabel("Account title").fill("My account for review");
+    if (width >= 768) {
+      // FORMS172: paired intake controls share one top edge.
+      const tops = await page
+        .locator(".seller-intake-fields > *")
+        .evaluateAll((cells) =>
+          cells
+            .slice(0, 2)
+            .map(
+              (cell) =>
+                cell
+                  .querySelector("input, select, fieldset")
+                  ?.getBoundingClientRect().top ?? Number.NaN,
+            ),
+        );
+      expect(tops).toHaveLength(2);
+      expect(Math.abs((tops[0] ?? 0) - (tops[1] ?? 0))).toBeLessThan(2);
+    }
     await page.screenshot({
       path: info.outputPath("intake.png"),
       fullPage: true,
@@ -213,7 +228,7 @@ test("new listing and new submission return to an explicit next step", async ({
   await page
     .getByRole("button", { name: "Choose Mobile Legends", exact: true })
     .click();
-  await page.getByLabel("Private account title").fill("New synthetic account");
+  await page.getByLabel("Account title").fill("New synthetic account");
   await page
     .getByRole("button", { name: "Continue to account details", exact: true })
     .click();

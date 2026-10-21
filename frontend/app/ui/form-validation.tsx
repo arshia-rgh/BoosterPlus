@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import "./forms.css";
 
 export interface FieldIssue {
   path: string;
@@ -179,6 +180,18 @@ export function fieldError(
 }
 
 /** A real label, persistent help and error association for a single text control. */
+/** Shows a trailing required/optional flag quietly without changing the accessible name. */
+export function FlaggedLabel({ text }: { text: string }) {
+  const flag = / \((required|optional)\)$/.exec(text);
+  if (!flag) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, flag.index)}
+      <span className="field-flag">{flag[0]}</span>
+    </>
+  );
+}
+
 export function TextField({
   name,
   label,
@@ -218,7 +231,9 @@ export function TextField({
       .join(" ") || undefined;
   return (
     <div className="ui-field">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>
+        <FlaggedLabel text={label} />
+      </label>
       <input
         ref={fieldRef}
         id={id}

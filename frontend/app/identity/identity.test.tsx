@@ -68,8 +68,7 @@ it("explains why an unenrolled customer has no recovery codes and links to setup
   expect(
     screen.getByRole("link", { name: "Set up an authenticator" }),
   ).toHaveAttribute("href", "/account/security");
-  expect(screen.queryByText(/A recovery code replaces/)).toBeNull();
-  expect(screen.queryByText(/If fresh verification is needed/)).toBeNull();
+  expect(screen.queryByText(/Each recovery code replaces/)).toBeNull();
 });
 it("loads passwordless sign-in without credentials in storage", async () => {
   const fetcher = vi
@@ -109,7 +108,7 @@ it("gates staff before second-factor verification", async () => {
   );
   show();
   await screen.findByText(
-    "Authenticator verification is required to finish signing in.",
+    "Enter your authenticator code to finish signing in.",
   );
   expect(
     screen.queryByRole("button", { name: "Save profile" }),

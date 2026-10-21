@@ -1,4 +1,5 @@
 import { useCallback, useContext, useId, useRef } from "react";
+import { Link } from "../portal-router";
 import { FieldValidation, fieldError } from "../ui/form-validation";
 import { Action, Select } from "./controls";
 import { Input } from "./dynamic-form";
@@ -17,10 +18,12 @@ export function PackageContents({
   service,
   config,
   variant,
+  customHref,
 }: {
   service: Service;
   config: Configuration;
   variant: Variant;
+  customHref?: string | undefined;
 }) {
   const fields = service.fields.filter((field) =>
     Object.hasOwn(variant.preset_answers ?? {}, field.key),
@@ -48,7 +51,12 @@ export function PackageContents({
         </dl>
       )}
       <p className="package-scope-note">
-        Fixed contents. Need something different? Choose a custom boost.
+        Need something different?{" "}
+        {customHref ? (
+          <Link to={customHref}>Choose a custom boost</Link>
+        ) : (
+          "Choose a custom boost."
+        )}
       </p>
     </section>
   );

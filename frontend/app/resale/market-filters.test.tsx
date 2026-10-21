@@ -95,7 +95,7 @@ it("keeps game context and rejects ambiguous or rounded price comparisons", () =
     screen.getByText("Enter a positive price with at most two decimal places."),
   ).toBeVisible();
   expect(screen.getByLabelText("Maximum price")).toHaveAccessibleDescription(
-    "Optional · up to two decimal places. Enter a positive price with at most two decimal places.",
+    "Enter a positive price with at most two decimal places.",
   );
   fireEvent.change(screen.getByLabelText("Maximum price"), {
     target: { value: "12.34" },

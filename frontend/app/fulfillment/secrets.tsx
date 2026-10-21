@@ -87,9 +87,8 @@ export function CustomerSecret({ work }: { work: Work }) {
     <section className="catalog-section">
       <h3>Temporary game access</h3>
       <p>
-        Use temporary game credentials only. Never share your Google/email
-        password or recovery codes. Change your game password after reassignment
-        or completion.
+        Use a temporary game password — never your Google/email password or
+        recovery codes. Change it when the work is done.
       </p>
       <ErrorNotice error={error ?? status.error} />
       {status.data && (
@@ -102,24 +101,26 @@ export function CustomerSecret({ work }: { work: Work }) {
       )}
       {active(work) && (
         <>
-          <label htmlFor={id}>Temporary game login instructions</label>
-          <textarea
-            id={id}
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={8192}
-            value={value}
-            disabled={busy}
-            onChange={(event) => {
-              setValue(event.target.value);
-              retry.current = null;
-            }}
-          />
-          <p>
-            Only authorized staff can reveal this. When confirmation is needed,
-            they use an authenticator or email code. You cannot read the saved
-            value back.
-          </p>
+          <div className="catalog-label">
+            <label htmlFor={id}>Temporary game login instructions</label>
+            <textarea
+              id={id}
+              aria-describedby={id + "-help"}
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={8192}
+              value={value}
+              disabled={busy}
+              onChange={(event) => {
+                setValue(event.target.value);
+                retry.current = null;
+              }}
+            />
+            <p className="quiet" id={id + "-help"}>
+              Only authorized staff can view this. You can’t view it after
+              saving.
+            </p>
+          </div>
           <Action
             disabled={busy || !value.trim() || !status.data || !!status.error}
             onClick={() => {
@@ -132,6 +133,7 @@ export function CustomerSecret({ work }: { work: Work }) {
       )}
       {status.data?.state === "active" && (
         <Action
+          variant="destructive"
           disabled={busy}
           onClick={() => {
             void revoke();

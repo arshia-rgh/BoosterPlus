@@ -129,6 +129,12 @@ export function Input({
     .filter(Boolean)
     .join(" ");
   const label = field.label + (required ? " (required)" : "");
+  const labelContent = (
+    <>
+      {field.label}
+      {required && <span className="field-flag"> (required)</span>}
+    </>
+  );
   const common = {
     id,
     "aria-describedby": description || undefined,
@@ -179,7 +185,7 @@ export function Input({
   else if (field.type === "boolean")
     control = (
       <>
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>{labelContent}</label>
         <select
           {...common}
           value={typeof value === "boolean" ? String(value) : ""}
@@ -198,7 +204,7 @@ export function Input({
   else if (field.type === "select" || field.type === "rank")
     control = (
       <>
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>{labelContent}</label>
         <select
           {...common}
           value={scalar}
@@ -246,7 +252,7 @@ export function Input({
   else if (field.type === "long_text")
     control = (
       <>
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>{labelContent}</label>
         <textarea
           {...common}
           value={scalar}
@@ -261,8 +267,10 @@ export function Input({
     control = (
       <>
         <label htmlFor={id}>
-          {label}
-          {field.unit && ` · ${field.unit}`}
+          {labelContent}
+          {field.unit &&
+            !field.label.toLowerCase().includes(field.unit.toLowerCase()) &&
+            ` · ${field.unit}`}
         </label>
         <input
           {...common}
@@ -286,11 +294,6 @@ export function Input({
             change(e.target.value);
           }}
         />
-        {(field.type === "integer" || field.type === "decimal") && (
-          <span className="quiet">
-            {field.min}–{field.max}, step {field.step}
-          </span>
-        )}
       </>
     );
   return (
@@ -679,29 +682,12 @@ function ConfigurationForm({
         </noscript>
         <div className="configuration-layout">
           <fieldset disabled={!hydrated || busy || unavailable}>
-            <legend>
+            <legend className="sr-only">
               {variant
                 ? "Your delivery information"
                 : `${service.name} selections`}
             </legend>
             {choiceNotice && <p role="status">{choiceNotice}</p>}
-            {service.fulfillment && (
-              <details className="configuration-privacy">
-                <summary>How your information is shared</summary>
-                <p>
-                  After payment, your assigned booster can see these selected
-                  fields:{" "}
-                  {service.fields
-                    .filter((field) =>
-                      service.fulfillment?.share_fields.includes(field.key),
-                    )
-                    .map((field) => field.label)
-                    .join(", ") || "none"}
-                  . Temporary game access is collected separately only for
-                  play-on-account work.
-                </p>
-              </details>
-            )}
             {[
               {
                 title: "Your goal",
@@ -873,31 +859,33 @@ function ConfigurationForm({
             {!previewPath &&
               (!journey || stage === "estimate") &&
               (stage === "estimate" || stage === "order") && (
-                <div className="catalog-input">
-                  <label htmlFor={couponID}>Coupon code (optional)</label>
-                  <input
-                    ref={couponRef}
-                    id={couponID}
-                    aria-invalid={couponError ? true : undefined}
-                    aria-describedby={
-                      couponError ? couponID + "-error" : undefined
-                    }
-                    value={coupon}
-                    maxLength={40}
-                    onChange={(event) => {
-                      setCoupon(event.target.value);
-                      journey?.invalidate();
-                      setChanged(true);
-                      setIssues([]);
-                      setEstimate(null);
-                      setValid(false);
-                      setError(null);
-                    }}
-                  />
-                  <p className="quiet">
-                    One code per order. Eligibility is rechecked when you accept
-                    the final price.
-                  </p>
+                <div className="configuration-fields configuration-coupon">
+                  <div className="catalog-input">
+                    <label htmlFor={couponID}>
+                      Coupon code
+                      <span className="field-flag"> (optional)</span>
+                    </label>
+                    <input
+                      ref={couponRef}
+                      id={couponID}
+                      aria-invalid={couponError ? true : undefined}
+                      aria-describedby={
+                        couponError ? couponID + "-error" : undefined
+                      }
+                      value={coupon}
+                      maxLength={40}
+                      onChange={(event) => {
+                        setCoupon(event.target.value);
+                        journey?.invalidate();
+                        setChanged(true);
+                        setIssues([]);
+                        setEstimate(null);
+                        setValid(false);
+                        setError(null);
+                      }}
+                    />
+                    <p className="quiet">One code per order.</p>
+                  </div>
                 </div>
               )}
             {journey && stage === "order" && (
@@ -913,7 +901,19 @@ function ConfigurationForm({
                 </button>
               </p>
             )}
+            <p className="quiet">
+              Do not enter game passwords or recovery codes in this form.
+            </p>
             <div className="configuration-actions">
+              {journey && stage === "estimate" && (
+                <button
+                  className="button"
+                  type="button"
+                  onClick={() => void submit(undefined, true)}
+                >
+                  {busy ? "Checking…" : "Continue to order information →"}
+                </button>
+              )}
               <button
                 className={
                   journey && stage === "estimate"
@@ -929,16 +929,24 @@ function ConfigurationForm({
                     ? "Continue with this package"
                     : "Check selections"}
               </button>
-              {journey && stage === "estimate" && (
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => void submit(undefined, true)}
-                >
-                  {busy ? "Checking…" : "Continue to order information →"}
-                </button>
-              )}
             </div>
+            {service.fulfillment && (
+              <details className="configuration-privacy quiet">
+                <summary>How your information is shared</summary>
+                <p>
+                  After payment, your assigned booster can see these selected
+                  fields:{" "}
+                  {service.fields
+                    .filter((field) =>
+                      service.fulfillment?.share_fields.includes(field.key),
+                    )
+                    .map((field) => field.label)
+                    .join(", ") || "none"}
+                  . Temporary game access is collected separately only for
+                  play-on-account work.
+                </p>
+              </details>
+            )}
           </fieldset>
           {!previewPath && !onCommit && (
             <SelectionSummary
@@ -998,10 +1006,7 @@ function ConfigurationForm({
         )}
         {valid && !uploadPending && (
           <p role="status">
-            Selections are valid. No order has been created.{" "}
-            {variant
-              ? "Your delivery information is ready. This package has a fixed price."
-              : "A custom order will require an administrator’s final quote."}
+            Selections checked. No order has been created yet.
           </p>
         )}
         {(previewPath || onCommit) && priceView}
@@ -1074,9 +1079,6 @@ function ConfigurationForm({
         {unavailable && (
           <p role="status">This offering is currently unavailable.</p>
         )}
-        <p className="quiet">
-          Do not enter game passwords or recovery codes in this form.
-        </p>
       </form>
     </FieldValidation>
   );
@@ -1103,9 +1105,8 @@ export default function DynamicForm(
     <>
       {restored && (
         <p role="status" className="configuration-resumed">
-          Your saved choices are restored. Check them against the current
-          catalog before submitting. Private details and consent must be entered
-          again.
+          We restored your saved choices. Re-enter private details and consent
+          before submitting.
         </p>
       )}
       <ConfigurationForm

@@ -90,11 +90,8 @@ function Export() {
       }}
     >
       <p>
-        Download each category in pages of up to 100 records. Shop delivery
-        identifiers are included with your orders. When requested, confirm with
-        an email code or your enrolled authenticator in the verification dialog.
-        Exports contain your personal information; store them privately.
-        Internal staff notes and authentication secrets are excluded.
+        Download your data one category at a time (up to 100 records each).
+        Exports contain personal information — store them privately.
       </p>
       <label>
         Data category
@@ -108,7 +105,7 @@ function Export() {
         >
           {sections.map((item) => (
             <option key={item} value={item}>
-              {item.replaceAll("_", " ")}
+              {sentence(item)}
             </option>
           ))}
         </select>
@@ -116,6 +113,10 @@ function Export() {
       <p role="status">{message}</p>
     </Form>
   );
+}
+function sentence(value: string) {
+  const text = value.replaceAll("_", " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 export default function Privacy({ admin = false }: { admin?: boolean }) {
   const [after, setAfter] = useState("");
@@ -132,13 +133,15 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
       <h2>
         {admin ? "Privacy request review" : "Data controls and retention"}
       </h2>
-      <p>
-        Active orders, disputes, unsettled payouts, inventory and unresolved
-        support hold deletion. Owner review and all retention deadlines must
-        pass. Financial agreements, dispute evidence and audit history remain
-        preserved under the approved policy. File cleanup is tracked separately;
-        backups follow the operator's published policy.
-      </p>
+      {(admin || enabled) && (
+        <p>
+          Active orders, disputes, unsettled payouts, inventory and unresolved
+          support hold deletion. Owner review and all retention deadlines must
+          pass. Financial agreements, dispute evidence and audit history remain
+          preserved under the approved policy. File cleanup is tracked
+          separately; backups follow the operator's published policy.
+        </p>
+      )}
       {admin ? (
         <p>
           <Link to="/admin/content?kind=retention&section=editor">
@@ -186,14 +189,16 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
       <h3>
         {admin ? "Requests awaiting action and history" : "Your requests"}
       </h3>
-      <Action onClick={resource.reload}>Refresh privacy requests</Action>
+      <Action variant="secondary" onClick={resource.reload}>
+        Refresh privacy requests
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.data?.requests.length === 0 && <p>No privacy requests.</p>}
       {resource.data?.requests.map((request) => (
         <article className="identity-card" key={request.id}>
           <h3>Request {request.id}</h3>
           {admin && <p>Customer {request.user_id}</p>}
-          <p>Status: {request.state.replaceAll("_", " ")}</p>
+          <p>Status: {sentence(request.state)}</p>
           {request.hold_reason && <p>{request.hold_reason}</p>}
           {request.eligible_at && (
             <p>

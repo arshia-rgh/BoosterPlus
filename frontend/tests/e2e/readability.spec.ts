@@ -87,6 +87,75 @@ for (const width of [320, 768, 1440]) {
   });
 }
 
+for (const width of [1440, 390]) {
+  test(`form fields and filter actions stay aligned at ${String(width)}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${origin}/forms`);
+    // FORMS172: labels sit directly above their controls in identity forms.
+    const label = await page
+      .locator("label", { hasText: /^Region \(optional\)$/ })
+      .boundingBox();
+    const region = await page
+      .getByLabel("Region (optional)", { exact: true })
+      .boundingBox();
+    expect(label && region).toBeTruthy();
+    expect(
+      (region?.y ?? 0) - (label?.y ?? 0) - (label?.height ?? 0),
+    ).toBeLessThanOrEqual(10);
+    for (const name of ["Display name"]) {
+      const text = await page
+        .locator("label", { hasText: new RegExp(`^${name}$`) })
+        .boundingBox();
+      const input = await page.getByLabel(name, { exact: true }).boundingBox();
+      expect(
+        (input?.y ?? 0) - (text?.y ?? 0) - (text?.height ?? 0),
+      ).toBeLessThanOrEqual(10);
+    }
+    // Refresh actions outside forms keep the secondary treatment.
+    const refresh = page.getByRole("button", {
+      name: "Refresh privacy requests",
+    });
+    expect((await refresh.boundingBox())?.height ?? 0).toBeLessThan(46);
+    expect(
+      await refresh.evaluate((node) => getComputedStyle(node).backgroundColor),
+    ).toBe("rgba(0, 0, 0, 0)");
+    // Filter actions start at the field column edge, below the fields, and
+    // paired actions share one baseline.
+    const bars = [
+      ["Customer ID", ["Apply filters", "Clear filters"]],
+      ["Search game or full order ID", ["Filter orders"]],
+      // Narrow layouts move account filters into their drawer.
+      ...(width >= 1024
+        ? [["Search accounts", ["Apply account filters"]] as const]
+        : []),
+    ] as const;
+    for (const [first, buttons] of bars) {
+      const field = await page.getByLabel(first, { exact: true }).boundingBox();
+      const boxes = await Promise.all(
+        buttons.map((name) =>
+          page.getByRole("button", { name, exact: true }).boundingBox(),
+        ),
+      );
+      expect(field).toBeTruthy();
+      expect(Math.abs((boxes[0]?.x ?? 0) - (field?.x ?? 0))).toBeLessThan(2);
+      for (const box of boxes)
+        expect(box?.y ?? 0).toBeGreaterThanOrEqual(
+          (field?.y ?? 0) + (field?.height ?? 0),
+        );
+      const [a, b] = boxes;
+      if (a && b && width >= 640)
+        expect(Math.abs(a.y + a.height - b.y - b.height)).toBeLessThan(2);
+    }
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
+
 test("forms keep guidance and focus during validation and protected editing", async ({
   page,
 }, info) => {

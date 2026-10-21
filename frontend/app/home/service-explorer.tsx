@@ -141,11 +141,6 @@ export function ServiceExplorer({
               </p>
               <h3>{section.title}</h3>
               <p>{section.description}</p>
-              {(kind === "shop" || kind === "news") && (
-                <p className="service-availability-note">
-                  Availability is shown on each game page.
-                </p>
-              )}
               <a
                 className="home-button"
                 href="#game-selection"

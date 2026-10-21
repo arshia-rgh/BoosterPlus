@@ -114,7 +114,7 @@ export function linkedChoiceState(
         rule.links?.find((link) => link.parent === parent)?.children ?? [];
       options = options.filter((option) => allowed.includes(option.key));
       hint =
-        "Showing choices for your selected " +
+        "Filtered by " +
         (service.fields.find((f) => f.key === rule.from)?.label ?? "category") +
         ".";
     }

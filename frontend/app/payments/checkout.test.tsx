@@ -46,7 +46,7 @@ it("requires route and current policy consent, then binds the immutable contract
   const { reload, changed } = setup();
   vi.mocked(post).mockResolvedValue({});
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  const submit = screen.getByRole("button", { name: "Create secure checkout" });
+  const submit = screen.getByRole("button", { name: "Go to payment" });
   expect(submit).toBeDisabled();
   fireEvent.change(screen.getByLabelText("Payment asset and network"), {
     target: { value: "usdttrc20" },
@@ -93,9 +93,7 @@ it("requires fresh acceptance when the published policy changes", () => {
     reload,
   });
   view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
-  expect(
-    screen.getByRole("button", { name: "Create secure checkout" }),
-  ).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Go to payment" })).toBeDisabled();
 });
 it("keeps orders unpaid when checkout is paused", () => {
   const { data, reload, changed } = setup();
@@ -107,7 +105,7 @@ it("keeps orders unpaid when checkout is paused", () => {
   });
   render(<Checkout detail={detail} admin={false} changed={changed} />);
   expect(
-    screen.queryByRole("button", { name: "Create secure checkout" }),
+    screen.queryByRole("button", { name: "Go to payment" }),
   ).not.toBeInTheDocument();
   expect(screen.getByText(/Checkout is currently unavailable/)).toBeVisible();
 });
@@ -115,7 +113,7 @@ it("does not let staff create customer checkout", () => {
   const { changed } = setup();
   render(<Checkout detail={detail} admin changed={changed} />);
   expect(
-    screen.queryByRole("button", { name: "Create secure checkout" }),
+    screen.queryByRole("button", { name: "Go to payment" }),
   ).not.toBeInTheDocument();
 });
 it("recovers a failed read without claiming to still be loading", () => {
@@ -135,7 +133,7 @@ it("recovers a failed read without claiming to still be loading", () => {
   );
   expect(reload).toHaveBeenCalledOnce();
   expect(
-    screen.queryByRole("button", { name: "Create secure checkout" }),
+    screen.queryByRole("button", { name: "Go to payment" }),
   ).not.toBeInTheDocument();
 });
 it("locks repeated checkout requests while the provider request is pending", async () => {
@@ -156,7 +154,7 @@ it("locks repeated checkout requests while the provider request is pending", asy
       "I accept this payment policy and the agreed order price",
     ),
   );
-  const button = screen.getByRole("button", { name: "Create secure checkout" });
+  const button = screen.getByRole("button", { name: "Go to payment" });
   fireEvent.click(button);
   fireEvent.click(button);
   expect(post).toHaveBeenCalledOnce();
@@ -190,9 +188,7 @@ it("withdraws consent when the selected network changes and blocks stale reads",
     reload,
   });
   view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
-  expect(
-    screen.getByRole("button", { name: "Create secure checkout" }),
-  ).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Go to payment" })).toBeDisabled();
 });
 it.each(["uncertain", "confirming", "settled", "closed", "exception"])(
   "does not offer a new or payable link for %s",
@@ -226,7 +222,7 @@ it.each(["uncertain", "confirming", "settled", "closed", "exception"])(
       screen.queryByRole("link", { name: /Go to payment/ }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Create secure checkout" }),
+      screen.queryByRole("button", { name: "Go to payment" }),
     ).not.toBeInTheDocument();
     expect(screen.getByText(/No received funds recorded/)).toBeVisible();
   },
@@ -344,7 +340,7 @@ it("keeps payment uncertainty guidance when status retrieval fails", () => {
     screen.getByText(/Payment status cannot be verified right now/),
   ).toHaveTextContent("do not send again");
   expect(
-    screen.queryByRole("button", { name: "Create secure checkout" }),
+    screen.queryByRole("button", { name: "Go to payment" }),
   ).not.toBeInTheDocument();
 });
 
@@ -362,9 +358,7 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Create secure checkout" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Go to payment" }));
   await waitFor(() => {
     expect(reload).toHaveBeenCalledOnce();
   });
@@ -424,9 +418,7 @@ it("brings a failed checkout into view and links minimum errors to this order's 
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Create secure checkout" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Go to payment" }));
   const help = await screen.findByRole("link", {
     name: "Ask support about this order",
   });

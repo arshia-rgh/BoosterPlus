@@ -76,3 +76,11 @@
 .email-recovery-dialog .identity-section > .identity-card > h2 {
   display: none;
 }
+/* The dialog is the card; its form must not add a second inset frame. */
+.email-recovery-dialog .identity-card {
+  padding: 0;
+  border: 0;
+  background: none;
+  margin: 0;
+  box-shadow: none;
+}

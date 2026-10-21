@@ -208,7 +208,7 @@ it("surfaces authoritative field errors and stale releases without a success cla
   expect(
     screen.getByRole("complementary", { name: "Selection summary" }),
   ).toHaveTextContent("We couldn't finish checking");
-  expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Selections checked/)).not.toBeInTheDocument();
 });
 it("prevents validation for paused or exhausted offerings", () => {
   render(
@@ -269,7 +269,7 @@ it("renders a server estimate and clears it when selections change", async () =>
   ).not.toBeInTheDocument();
   expect(
     screen.getByRole("complementary", { name: "Selection summary" }),
-  ).toHaveTextContent("Your selections have changed");
+  ).toHaveTextContent("Selections changed");
 });
 
 it("does not retain validation success when pricing detects a stale release", async () => {
@@ -286,7 +286,7 @@ it("does not retain validation success when pricing detects a stale release", as
   );
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
   expect(await screen.findByText("Catalog changed. Reload.")).toBeVisible();
-  expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Selections checked/)).not.toBeInTheDocument();
   expect(
     screen.queryByRole("heading", { name: /Estimated price/ }),
   ).not.toBeInTheDocument();
@@ -369,10 +369,10 @@ it("preserves choices but invalidates prior validation when changing to order in
     target: { value: "false" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
-  await screen.findByText(/Selections are valid/);
+  await screen.findByText(/Selections checked/);
   view.rerender(<DynamicForm {...props} stage="order" />);
   expect(screen.getByLabelText("One hero")).toHaveValue("false");
-  expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Selections checked/)).not.toBeInTheDocument();
   expect(
     screen.queryByRole("region", { name: "Submit order" }),
   ).not.toBeInTheDocument();

@@ -18,6 +18,11 @@ import Privacy from "../../../app/privacy/pages";
 import PurchaseReview from "../../../app/reviews/form";
 import { ChatFormCard } from "../../../app/support/forms/card";
 import AccountAlerts from "../../../app/availability/accounts";
+import MarketFilters from "../../../app/resale/market-filters";
+import OrderList from "../../../app/orders/list";
+import { Form } from "../../../app/identity/identity";
+import { Text as EditableText } from "../../../app/catalog/controls";
+import "../../../app/resale/marketplace.css";
 import { customerSession } from "../supplier-shop/data";
 import catalog from "../mlbb-catalog/configuration167.json";
 import account from "./account.json";
@@ -180,8 +185,29 @@ function Forms() {
         />
       </section>
       <PurchaseReview orderID="synthetic-order" completed />
+      <Form title="Profile" label="Save profile" submit={async () => {}}>
+        <EditableText
+          name="display_name"
+          label="Display name"
+          value="Synthetic player"
+          change={() => {}}
+        />
+      </Form>
       <AccountAlerts slug="mobile-legends" />
       <Privacy />
+      <section className="catalog-section">
+        <h2>Account filters</h2>
+        <MarketFilters
+          params={new URLSearchParams()}
+          gameSlug="mobile-legends"
+          apply={() => {}}
+          clear={() => {}}
+        />
+      </section>
+      <section className="catalog-section">
+        <h2>Your orders</h2>
+        <OrderList />
+      </section>
     </main>
   );
 }

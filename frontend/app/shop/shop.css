@@ -283,3 +283,6 @@
 .supplier-delivery .button-row > * {
   margin: 0;
 }
+.supplier-checkout fieldset {
+  max-width: 36rem;
+}

@@ -28,7 +28,7 @@ function InboxFilters({
   const [draft, setDraft] = useState(value);
   return (
     <form
-      className="chat-inbox-filters"
+      className="chat-inbox-filters filter-grid"
       onSubmit={(event) => {
         event.preventDefault();
         apply(draft);
@@ -40,7 +40,7 @@ function InboxFilters({
         change={(search) => {
           setDraft({ ...draft, search });
         }}
-        help="Search a subject or full order, submission or conversation reference. Message contents are private and are not searched."
+        help="Subject or full reference. Message text isn’t searched."
       />
       <Select
         label="Conversation status"
@@ -94,9 +94,11 @@ function InboxFilters({
           }}
         />
       )}
-      <button className="button" type="submit">
-        Search conversations
-      </button>
+      <div className="form-actions">
+        <button className="button" type="submit">
+          Search conversations
+        </button>
+      </div>
     </form>
   );
 }
@@ -136,10 +138,6 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
     <section className="chat-inbox">
       <div className="chat-inbox-heading">
         {!admin && <h2>Your conversations</h2>}
-        <span className="quiet">
-          Private support, seller reviews and shared coordination have separate
-          audiences.
-        </span>
       </div>
       {!admin && (
         <details
@@ -172,11 +170,16 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
         }}
       />
       <div className="chat-inbox-actions">
-        <Action disabled={resource.loading} onClick={resource.reload}>
+        <Action
+          variant="secondary"
+          disabled={resource.loading}
+          onClick={resource.reload}
+        >
           {resource.loading ? "Refreshing inbox…" : "Refresh inbox"}
         </Action>
         {filtered && (
           <Action
+            variant="secondary"
             onClick={() => {
               setParams({});
             }}

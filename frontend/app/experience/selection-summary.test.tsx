@@ -185,9 +185,9 @@ it("counts only the buyer's editable delivery details for a fixed package and do
       editableFields={["region", "player"]}
     />,
   );
-  expect(screen.getByText("1 of 2 delivery details completed.")).toBeVisible();
+  expect(screen.getByText("1 of 2 details added")).toBeVisible();
   expect(
-    screen.getByRole("progressbar", { name: "Delivery details completed" }),
+    screen.getByRole("progressbar", { name: "Details added" }),
   ).toHaveAttribute("max", "2");
   expect(screen.queryByText("High rank")).toBeNull();
   expect(screen.queryByText("Fixed rank")).toBeNull();

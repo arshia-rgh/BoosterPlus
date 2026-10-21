@@ -342,9 +342,7 @@ it("keeps focus while correcting one of multiple rejected response fields", asyn
   vi.mocked(post).mockRejectedValueOnce(error);
   fireEvent.click(screen.getByRole("button", { name: "Send response" }));
   await waitFor(() =>
-    expect(first).toHaveAccessibleDescription(
-      "Visible to the people listed above. Use the registered value.",
-    ),
+    expect(first).toHaveAccessibleDescription("Use the registered value."),
   );
   expect(first).toHaveFocus();
   expect(first).toBeEnabled();
@@ -393,9 +391,7 @@ it("reopens authoring and focuses a server-rejected share answer without losing 
   const field = await screen.findByRole("textbox", { name: /^Note/ });
   await waitFor(() => expect(field).toHaveFocus());
   expect(field).toHaveValue("Retained note");
-  expect(field).toHaveAccessibleDescription(
-    "Visible to the people listed above. Complete the note.",
-  );
+  expect(field).toHaveAccessibleDescription("Complete the note.");
 });
 
 it("recalculates corrected expiry after a definitive rejection", async () => {

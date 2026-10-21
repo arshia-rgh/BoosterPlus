@@ -82,8 +82,6 @@ it("does not offer customer cancellation after live erasure starts", () => {
     screen.getByText(/This request can no longer be cancelled/),
   ).toBeVisible();
   expect(
-    screen.getByText(
-      /confirm with an email code or your enrolled authenticator/,
-    ),
+    screen.getByText(/Exports contain personal information/),
   ).toBeVisible();
 });

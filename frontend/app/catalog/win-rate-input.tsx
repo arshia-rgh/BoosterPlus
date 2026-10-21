@@ -78,8 +78,9 @@ export default function WinRateInput({
           : "");
   }
   const helpID = id + "-terms";
+  const numeric = mode === "range" || mode === "below" || mode === "above";
   function described(message: string, errorID: string) {
-    return [describedBy, helpID, message ? errorID : ""]
+    return [describedBy, numeric ? helpID : "", message ? errorID : ""]
       .filter(Boolean)
       .join(" ");
   }
@@ -189,10 +190,11 @@ export default function WinRateInput({
           describe your current request.
         </p>
       )}
-      <p id={helpID} className="quiet">
-        Use 0–100%, with up to one decimal place. The accepted package or order
-        defines the agreed outcome.
-      </p>
+      {numeric && (
+        <p id={helpID} className="quiet">
+          0–100%, up to one decimal place.
+        </p>
+      )}
     </fieldset>
   );
 }

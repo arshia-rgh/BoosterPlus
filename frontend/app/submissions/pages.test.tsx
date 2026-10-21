@@ -58,7 +58,7 @@ it("retains the selected game and identical draft request after an uncertain res
     "/catalog/games/review-game",
     expect.anything(),
   );
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title"), {
     target: { value: "Private review title" },
   });
   fireEvent.click(
@@ -67,7 +67,7 @@ it("retains the selected game and identical draft request after an uncertain res
   const retry = await screen.findByRole("button", {
     name: "Check the same submission request",
   });
-  expect(screen.getByLabelText("Private account title")).toBeDisabled();
+  expect(screen.getByLabelText("Account title")).toBeDisabled();
   expect(
     screen.getByRole("button", { name: "Choose Other game" }),
   ).toBeDisabled();
@@ -76,7 +76,7 @@ it("retains the selected game and identical draft request after an uncertain res
     expect(post).toHaveBeenCalledTimes(2);
   });
   await waitFor(() => expect(retry).toBeEnabled());
-  expect(screen.getByLabelText("Private account title")).toBeDisabled();
+  expect(screen.getByLabelText("Account title")).toBeDisabled();
   fireEvent.click(retry);
   await screen.findByRole("heading", { name: "Saved private submission" });
   expect(vi.mocked(post).mock.calls.map((call) => call[1])).toEqual(
@@ -108,7 +108,7 @@ function renderDraft() {
 
 it("focuses an invalid draft title, retains it, and permits correction before creating", async () => {
   renderDraft();
-  const title = screen.getByLabelText("Private account title");
+  const title = screen.getByLabelText("Account title");
   const create = screen.getByRole("button", {
     name: "Continue to account details",
   });
@@ -144,7 +144,7 @@ it("associates server draft errors with their field and refocuses on an identica
     }),
   );
   renderDraft();
-  const title = screen.getByLabelText("Private account title");
+  const title = screen.getByLabelText("Account title");
   fireEvent.change(title, { target: { value: "My account" } });
   const create = screen.getByRole("button", {
     name: "Continue to account details",

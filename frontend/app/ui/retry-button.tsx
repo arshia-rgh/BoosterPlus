@@ -22,16 +22,18 @@ export function RetryButton({
   onRetry,
   children,
   busy = false,
+  secondary = false,
 }: {
   deadline: number | undefined;
   onRetry: () => void;
   children: ReactNode;
   busy?: boolean;
+  secondary?: boolean;
 }) {
   const pending = useRetryPending(deadline);
   return (
     <button
-      className="button"
+      className={secondary ? "button compact secondary" : "button"}
       type="button"
       disabled={pending || busy}
       aria-busy={busy}

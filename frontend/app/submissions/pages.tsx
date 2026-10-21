@@ -185,10 +185,10 @@ function DraftStart({
               <legend>Private draft title</legend>
               <Text
                 name="title"
-                label="Private account title"
+                label="Account title"
                 value={title}
                 change={setTitle}
-                help="A short label for your submission. Do not enter login or recovery information."
+                help="Only you and staff see this. No login details."
               />
             </fieldset>
             {unknown && (

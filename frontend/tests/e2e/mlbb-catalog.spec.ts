@@ -107,7 +107,7 @@ for (const width of [320, 768, 1280]) {
     await hero
       .getByRole("button", { name: "Clear search", exact: true })
       .click();
-    await expect(hero.getByText(/1 selected/)).toBeVisible();
+    await expect(hero.getByText(/1 (of \d+ )?selected/)).toBeVisible();
     await page
       .getByLabel("Server / usual play location (required)", { exact: true })
       .selectOption("option_13");
@@ -117,13 +117,13 @@ for (const width of [320, 768, 1280]) {
     await page
       .getByLabel("Starting rank / division (required)", { exact: true })
       .selectOption("option_27");
-    const stars = page.getByLabel("Current stars (required) · stars", {
+    const stars = page.getByLabel("Current stars (required)", {
       exact: true,
     });
     await expect(
       page
         .getByRole("region", { name: "Your goal", exact: true })
-        .getByLabel("Current stars (required) · stars", { exact: true }),
+        .getByLabel("Current stars (required)", { exact: true }),
     ).toBeVisible();
     await stars.fill("6");
     await expect(stars).not.toHaveAttribute("aria-invalid", "true");

@@ -66,9 +66,10 @@ export function AnswerInput({
     autoComplete: "off",
     spellCheck: !field.secure,
     "aria-invalid": error ? true : undefined,
-    "aria-describedby": [id + "-help", error ? id + "-error" : ""]
-      .filter(Boolean)
-      .join(" "),
+    "aria-describedby":
+      [field.secure ? id + "-help" : "", error ? id + "-error" : ""]
+        .filter(Boolean)
+        .join(" ") || undefined,
     onChange: (
       e: React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -82,7 +83,9 @@ export function AnswerInput({
     <div className="catalog-label">
       <label htmlFor={id}>
         {field.label}
-        {field.required ? " (required)" : " (optional)"}
+        <span className="field-flag">
+          {field.required ? " (required)" : " (optional)"}
+        </span>
         {field.secure && <span className="form-secure-badge">Protected</span>}
       </label>
       {field.kind === "select" ? (
@@ -124,11 +127,11 @@ export function AnswerInput({
       ) : (
         <input {...props} type={field.secure ? "password" : "text"} />
       )}
-      <small id={id + "-help"}>
-        {field.secure
-          ? "Encrypted; never shown in message previews."
-          : "Visible to the people listed above."}
-      </small>
+      {field.secure && (
+        <small id={id + "-help"}>
+          Encrypted; never shown in message previews.
+        </small>
+      )}
       {error && (
         <p id={id + "-error"} className="field-error">
           {error}

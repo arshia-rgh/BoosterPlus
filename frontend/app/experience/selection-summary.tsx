@@ -104,14 +104,12 @@ export default function SelectionSummary({
         <>
           <p>
             {fixed
-              ? `${String(chosen)} of ${String(fields.length)} delivery details completed.`
-              : `${String(chosen)} of ${String(fields.length)} visible fields answered. This is a completion guide, not validation.`}
+              ? `${String(chosen)} of ${String(fields.length)} details added`
+              : `${String(chosen)} of ${String(fields.length)} answered`}
           </p>
           <progress
             className="selection-progress"
-            aria-label={
-              fixed ? "Delivery details completed" : "Visible fields answered"
-            }
+            aria-label={fixed ? "Details added" : "Fields answered"}
             value={chosen}
             max={fields.length}
           />
@@ -144,9 +142,9 @@ export default function SelectionSummary({
             : state === "error"
               ? "We couldn't finish checking. Try again before continuing."
               : state === "invalid"
-                ? "Some selections need attention. Resolve the highlighted issues and check again."
+                ? "Some selections need attention."
                 : state === "changed"
-                  ? "Your selections have changed. Check again for an updated result."
+                  ? "Selections changed. Check again for an updated result."
                   : state === "manual"
                     ? "These selections need a manual price review. Continue to request a quote from our team."
                     : state === "estimated"
@@ -154,17 +152,11 @@ export default function SelectionSummary({
                         ? "Your provisional package discount is shown here. Eligibility is checked again at checkout."
                         : "Your provisional estimate is shown here. Our team confirms the final quote before you pay."
                       : state === "valid"
-                        ? "Your selections are checked. Review the request and consent below before submitting."
+                        ? "Selections checked. Review and consent below to submit."
                         : fixed
-                          ? "Review the published variant price and check your selections before creating your order."
-                          : "Check your selections for a provisional estimate. Our team reviews your request before you accept a final quote."}
+                          ? "Add your details, then continue."
+                          : "Choose your goal to see an estimate."}
       </p>
-      {!fixed && (
-        <p>
-          Private order details stay in the form. Selected non-private choices
-          can be restored after sign-in.
-        </p>
-      )}
     </>
   );
   return (

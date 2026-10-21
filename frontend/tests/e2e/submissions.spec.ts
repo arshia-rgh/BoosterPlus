@@ -103,7 +103,7 @@ test("seller drafts, clarification and review stay private and create no commerc
         exact: true,
       })
       .click();
-    await seller.getByLabel("Private account title").fill(privateTitle);
+    await seller.getByLabel("Account title").fill(privateTitle);
     await accessible(seller);
     await seller
       .getByRole("button", { name: "Continue to account details" })

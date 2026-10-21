@@ -135,9 +135,7 @@ it("keeps checkout continuation through the real workspace's temporary access su
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Create secure checkout" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Go to payment" }));
   await waitFor(() => {
     expect(post).toHaveBeenCalledOnce();
   });

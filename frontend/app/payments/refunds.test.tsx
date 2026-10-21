@@ -60,9 +60,14 @@ it("requires customer confirmation of recipient, route and terms", async () => {
     ),
   );
   expect(button).toBeEnabled();
-  fireEvent.change(screen.getByLabelText("Refund memo or destination tag"), {
-    target: { value: "tag" },
-  });
+  fireEvent.change(
+    screen.getByLabelText(
+      "Refund memo or destination tag (if your wallet needs one)",
+    ),
+    {
+      target: { value: "tag" },
+    },
+  );
   expect(button).toBeDisabled();
   fireEvent.click(
     screen.getByLabelText(
@@ -97,9 +102,14 @@ it("focuses failed recipient feedback and preserves the exact reviewed retry", a
   fireEvent.change(screen.getByLabelText("Refund destination address"), {
     target: { value: "synthetic-test-recipient" },
   });
-  fireEvent.change(screen.getByLabelText("Refund memo or destination tag"), {
-    target: { value: "synthetic-tag" },
-  });
+  fireEvent.change(
+    screen.getByLabelText(
+      "Refund memo or destination tag (if your wallet needs one)",
+    ),
+    {
+      target: { value: "synthetic-tag" },
+    },
+  );
   fireEvent.click(
     screen.getByLabelText(
       "I accept these refund terms and confirm this address, network and memo",
@@ -115,9 +125,11 @@ it("focuses failed recipient feedback and preserves the exact reviewed retry", a
   expect(screen.getByLabelText("Refund destination address")).toHaveValue(
     "synthetic-test-recipient",
   );
-  expect(screen.getByLabelText("Refund memo or destination tag")).toHaveValue(
-    "synthetic-tag",
-  );
+  expect(
+    screen.getByLabelText(
+      "Refund memo or destination tag (if your wallet needs one)",
+    ),
+  ).toHaveValue("synthetic-tag");
   expect(post).toHaveBeenCalledTimes(1);
   expect(reload).not.toHaveBeenCalled();
   const initial = vi.mocked(post).mock.calls[0]?.[1];
@@ -182,7 +194,9 @@ it.each([
       target: { value: saved.recipient.address },
     });
     fireEvent.change(
-      screen.getByLabelText(`${title} memo or destination tag`),
+      screen.getByLabelText(
+        `${title} memo or destination tag (if your wallet needs one)`,
+      ),
       {
         target: { value: saved.recipient.memo },
       },
@@ -218,7 +232,9 @@ it.each([
       "",
     );
     expect(
-      screen.getByLabelText(`${title} memo or destination tag`),
+      screen.getByLabelText(
+        `${title} memo or destination tag (if your wallet needs one)`,
+      ),
     ).toHaveValue("");
     resource = failedRead
       ? { data: null, loading: false, error: new Error("Status unavailable") }

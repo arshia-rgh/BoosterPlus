@@ -96,7 +96,7 @@ export function DirectoryFilters({
           ))}
         </select>
       </label>
-      <div className="catalog-actions directory-filter-actions">
+      <div className="form-actions directory-filter-actions">
         <button type="submit" className="button">
           Apply filters
         </button>

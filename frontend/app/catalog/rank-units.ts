@@ -45,7 +45,7 @@ export function rankUnitsField(
       ...field,
       min: String(lo),
       max: String(hi),
-      help: `${option.label}: enter ${String(lo)}–${String(hi)} stars as shown in the game. ${field.help}`.trim(),
+      help: `${option.label}: ${String(lo)}–${String(hi)} stars. ${field.help}`.trim(),
     };
   }
   return field;

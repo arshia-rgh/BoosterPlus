@@ -45,9 +45,8 @@ export default function IntakeImage({
         {label} <span className="quiet">(optional)</span>
       </h3>
       <p>
-        Share an image with the PLAYORA team reviewing this request. It is not
-        shared with boosters. Crop out personal details and never include
-        passwords or recovery codes.
+        Only PLAYORA staff see this image. Hide personal details, passwords and
+        recovery codes.
       </p>
       <ErrorNotice error={session.error} />
       {session.loading ? (

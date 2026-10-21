@@ -390,7 +390,9 @@ body:has(.selection-details-dialog[open]) {
     max-height: none;
   }
   .configuration-steps li {
-    flex: 1 1 12rem;
+    display: inline-flex;
+    align-items: center;
+    width: auto;
   }
 }
 

@@ -22,7 +22,7 @@ export async function hostedCheckout(page: Page): Promise<string> {
       body: "<!doctype html><html lang='en'><title>Synthetic provider</title><body><h1>Isolated hosted checkout</h1><p>No real payment is available.</p></body></html>",
     });
   });
-  await page.getByRole("button", { name: "Create secure checkout" }).click();
+  await page.getByRole("button", { name: "Go to payment" }).click();
   await expect(page).toHaveURL(
     /^https:\/\/nowpayments\.io\/payment\/\?iid=[1-9][0-9]*$/,
     { timeout: 30000 },

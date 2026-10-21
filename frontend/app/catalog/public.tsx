@@ -406,20 +406,23 @@ function ServiceDetails({
       </ol>
       {query.get("step") === "review" && !reviewed && (
         <p role="status">
-          Check your restored selections before reviewing the request. Private
-          details and consent are never restored after a reload.
+          Check your restored choices. Private details and consent need to be
+          entered again.
         </p>
       )}
-      <h2 ref={stepTitle} tabIndex={-1} className="configuration-step-title">
+      <h2
+        ref={stepTitle}
+        tabIndex={-1}
+        className="configuration-step-title sr-only"
+      >
         {stage === "estimate"
           ? "1. Your goal & estimate"
           : "2. Review & request"}
       </h2>
       {stage === "order" && (
         <p>
-          Review your goal, preferences and provisional estimate. Add only the
-          order details requested below. Nothing is charged when you submit a
-          quote request; our team confirms the final price before payment.
+          Add the order details below. Nothing is charged yet; we confirm the
+          final price before payment.
         </p>
       )}
       <RequestJourney>
@@ -543,6 +546,13 @@ function PackageDetails({
               config={release.configuration}
               service={service}
               variant={variant}
+              customHref={
+                release.configuration.services.some(
+                  (candidate) => candidate.key === service.key,
+                )
+                  ? `/games/${release.slug}/services/${service.key}`
+                  : undefined
+              }
             />
           )}
           {service && variant.preset_answers !== undefined && (

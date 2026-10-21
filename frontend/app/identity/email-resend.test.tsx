@@ -99,7 +99,7 @@ it.each(["customer", "admin", "booster"] as const)(
     expect(
       screen.getByRole("button", { name: "Resend code in 2:00" }),
     ).toBeDisabled();
-    expect(screen.getByText(/Another code was requested/)).toBeVisible();
+    expect(screen.getByText(/New code requested/)).toBeVisible();
     expect(
       fixture.fetcher.mock.calls
         .filter(([path]) => path.endsWith("/email/request"))
@@ -203,9 +203,7 @@ it("guards concurrent resends and handles a lost connection without inventing su
   expect(screen.getByRole("alert")).toHaveTextContent(
     "The service is unavailable",
   );
-  expect(
-    screen.queryByText(/Another code was requested/),
-  ).not.toBeInTheDocument();
+  expect(screen.queryByText(/New code requested/)).not.toBeInTheDocument();
   expect(screen.queryByText(/private transport/)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Resend code" })).toBeEnabled();
 });
@@ -262,7 +260,5 @@ it("does not replace a working challenge when resend timing is missing", async (
   expect(screen.getByLabelText("Email verification code")).toHaveValue(
     "123456",
   );
-  expect(
-    screen.queryByText(/Another code was requested/),
-  ).not.toBeInTheDocument();
+  expect(screen.queryByText(/New code requested/)).not.toBeInTheDocument();
 });

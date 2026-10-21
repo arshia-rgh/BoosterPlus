@@ -1,0 +1,505 @@
+/* FORMS172: one field system for every portal form, decided in the senior
+   UI/UX review (docs/redesign/reviews/FORMS172_DESIGN.md). Loaded with the
+   shared form validation module; the body prefix keeps these rules above
+   feature styles regardless of chunk order. */
+:root {
+  --field-bg: #102019;
+  --field-line: #55735f;
+  --field-hint: #bdd0c5;
+  --field-gap: 1.25rem;
+  --control-h: 48px;
+}
+
+/* S-01: storefront and booster controls share the green field palette. */
+body.storefront-app
+  :is(.catalog-label, .catalog-input, .ui-field, .identity-card)
+  :is(
+    input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+    select,
+    textarea
+  ) {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control-h);
+  padding: 0.75rem 0.875rem;
+  background: var(--field-bg);
+  border: 1px solid var(--field-line);
+  border-radius: 0.6rem;
+  color: var(--text, #f0f6ee);
+  font: inherit;
+  font-size: 1rem;
+}
+body.storefront-app
+  :is(.catalog-label, .catalog-input, .ui-field, .identity-card)
+  textarea {
+  min-height: 7.5rem;
+}
+body:is(.storefront-app, .admin-app)
+  :is(.catalog-label, .catalog-input, .ui-field, .identity-card)
+  :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--danger, #f08a8a);
+}
+
+/* S-02: label, control, hint, error; spacing comes from the parent grid. */
+body:is(.storefront-app, .admin-app) :is(.catalog-label, .catalog-input) {
+  display: grid;
+  row-gap: 0.5rem;
+  align-content: start;
+  min-width: 0;
+}
+body.storefront-app :is(.catalog-label, .catalog-input) {
+  margin: 0 0 var(--field-gap);
+  padding: 0;
+  border: 0;
+}
+body.storefront-app
+  :is(.configuration-fields, .form-grid, .filter-grid)
+  > :is(.catalog-label, .catalog-input, .ui-field, .catalog-check) {
+  margin: 0;
+  padding: 0;
+}
+body.storefront-app
+  .identity-card
+  label:not(.check):not(.catalog-check):not(.ui-field > label):not(
+    .catalog-label > label
+  ) {
+  margin: 0 0 var(--field-gap);
+  gap: 0.5rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+body.storefront-app .identity-card .ui-field {
+  margin-block: 0 var(--field-gap);
+}
+body.storefront-app .identity-card .ui-field label {
+  margin: 0;
+}
+body:is(.storefront-app, .admin-app)
+  :is(.catalog-label, .catalog-input, .ui-field)
+  > :is(.quiet, .ui-field-help, p:not(.field-error)) {
+  margin: 0;
+  max-width: 65ch;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--field-hint);
+}
+body.storefront-app .configuration-group {
+  margin: 1.5rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid #39523f;
+}
+body.storefront-app .configuration-group:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* S-03: field grids are top-aligned two columns; filter bars bottom-align. */
+body.storefront-app :is(.configuration-fields, .form-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--field-gap) 1.25rem;
+  align-items: start;
+}
+body.storefront-app
+  :is(.configuration-fields, .form-grid)
+  > :is(
+    .catalog-input:has(textarea),
+    .catalog-input:has(.catalog-choices),
+    .catalog-label:has(textarea),
+    .form-wide
+  ) {
+  grid-column: 1 / -1;
+}
+body:is(.storefront-app, .admin-app) .filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem 1.25rem;
+  align-items: end;
+}
+body:is(.storefront-app, .admin-app) .filter-grid > .form-actions {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+body:is(.storefront-app, .admin-app)
+  :is(
+    .filter-grid > .form-actions,
+    .market-filter-actions,
+    .directory-filter-actions
+  )
+  > :is(.button, .ui-button) {
+  min-height: var(--control-h);
+}
+@media (max-width: 639px) {
+  body.storefront-app :is(.configuration-fields, .form-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* S-04: fieldsets inside cards carry no second frame. */
+body.storefront-app
+  :is(
+    .catalog-section,
+    .identity-card,
+    .record-section,
+    .account-panel,
+    .support-new,
+    .seller-intake,
+    .payment-checkout,
+    .shop-purchase,
+    .supplier-purchase
+  )
+  fieldset:not(.catalog-choices) {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+body.storefront-app
+  :is(.catalog-section, .identity-card, .record-section, .account-panel)
+  fieldset
+  > legend:not(.sr-only) {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+body.storefront-app
+  :is(
+    .configuration-fields,
+    .form-grid,
+    .catalog-input,
+    .shop-purchase,
+    .supplier-purchase
+  )
+  fieldset
+  > legend:not(.sr-only),
+body.storefront-app .catalog-input > legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+body.storefront-app .win-rate-preference {
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+}
+@media (max-width: 639px) {
+  body.storefront-app .experience .configuration-layout > fieldset {
+    border: 0;
+    padding: 0;
+    background: none;
+  }
+}
+
+/* S-05: checkboxes and radios align their first text line with the box. */
+body:is(.storefront-app, .admin-app)
+  :is(
+    .catalog-check,
+    .identity-card .check,
+    .ui-confirmation label,
+    .composer-enter-preference
+  ) {
+  display: grid;
+  grid-template-columns: 1.125rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: start;
+  min-height: 44px;
+  margin: 0;
+  padding-block: 0;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+body:is(.storefront-app, .admin-app)
+  :is(
+    .catalog-check,
+    .identity-card .check,
+    .ui-confirmation label,
+    .composer-enter-preference
+  )
+  > input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.2rem 0 0;
+}
+body:is(.storefront-app, .admin-app) .catalog-choice-options label {
+  margin: 0;
+}
+
+/* S-06: one action row, one button scale and an explicit hierarchy. */
+body:is(.storefront-app, .admin-app) .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+body:is(.storefront-app, .admin-app) .form-actions > * {
+  margin: 0;
+}
+body:is(.storefront-app, .admin-app)
+  .form-actions
+  > :is(.button, a, button)
+  + :is(.button, a, button) {
+  margin-inline-start: 0;
+}
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .button {
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.7rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .button.compact {
+  padding: 0.625rem 1rem;
+}
+body.storefront-app form .button.compact,
+body.storefront-app .form-actions .button {
+  margin: 0;
+}
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .button.secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid #718562;
+}
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .button.secondary:hover:not(:disabled) {
+  background: #263d30;
+  color: #d2f3bf;
+}
+body.storefront-app .button[data-variant="destructive"] {
+  background: #53232c;
+  color: #ffe5e9;
+  border: 1px solid #bc6574;
+}
+body.storefront-app .button[data-variant="destructive"]:hover:not(:disabled) {
+  background: #6a2c37;
+}
+@media (max-width: 639px) {
+  body.storefront-app :is(.form-actions, .configuration-actions),
+  body.storefront-app .filter-grid > .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* S-07: required/optional text stays in the accessible label, quietly. */
+.field-flag {
+  font-weight: 400;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* S-08: programmatic focus targets do not draw a pointer-focus box. */
+[tabindex="-1"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* S-06: foundation buttons share the storefront action scale. */
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .ui-button.ui-button {
+  min-height: 44px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.7rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+body.storefront-app
+  :is(
+    form,
+    fieldset,
+    .form-actions,
+    .identity-card,
+    .catalog-section,
+    .shop-summary,
+    .configuration-actions
+  )
+  .ui-button.ui-button[data-variant="secondary"] {
+  background: transparent;
+  color: var(--accent);
+  border-color: #718562;
+}
+body.storefront-app .form-actions > .ui-button.ui-button {
+  margin: 0;
+}
+
+.profile-facts {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.profile-facts dt {
+  font-weight: 600;
+  color: var(--text, #f0f6ee);
+}
+.profile-facts dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* Round 2 review corrections (R2-02, R2-03, R2-07, R2-09, R2-11, R2-14, R2-15). */
+body.storefront-app section.shop-summary > :is(div, .form-actions) {
+  flex-basis: 100%;
+}
+body.storefront-app section.shop-summary > .form-actions {
+  margin-top: 1rem;
+}
+body.storefront-app .configuration-coupon {
+  margin-top: var(--field-gap);
+}
+body.storefront-app .email-recovery-dialog .identity-card,
+body.storefront-app .email-recovery-dialog .identity-card fieldset {
+  padding-inline: 0;
+  margin-inline: 0;
+}
+body.storefront-app .catalog-section > .identity-card {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  margin: 0;
+}
+body.storefront-app .catalog-section > .identity-card > h2 {
+  font-size: 1.125rem;
+  font-weight: 650;
+  margin: 1rem 0 0.75rem;
+}
+body.storefront-app .account-purchase fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+body.storefront-app :is(.account-purchase, .market-filters) fieldset > legend {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+.check-hint {
+  margin: 0.25rem 0 0 1.875rem;
+  font-size: 0.875rem;
+  color: var(--field-hint);
+}
+body.storefront-app .catalog-choice-control > legend {
+  float: left;
+  padding: 0;
+  margin: 0 0.75rem 0.5rem 0;
+  font-size: 0.925rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+body.storefront-app .catalog-choice-control > .catalog-choice-count {
+  float: left;
+  margin: 0 0 0.5rem;
+  line-height: 1.45;
+  font-size: 0.875rem;
+}
+body.storefront-app
+  .catalog-choice-control
+  > :not(legend):not(.catalog-choice-count) {
+  clear: both;
+}
+/* R2-08: the seller photo step keeps one compact rhythm. */
+body.storefront-app .seller-intake fieldset > h4 {
+  margin: 1.5rem 0 0.5rem;
+}
+body.storefront-app .seller-image-step {
+  margin: 0;
+}
+body.storefront-app .seller-image-step > p {
+  margin: 0 0 var(--field-gap);
+}
+body.storefront-app .seller-image-step > fieldset {
+  gap: var(--field-gap);
+}
+body.storefront-app .seller-image-step section {
+  margin: 0;
+}
+body.storefront-app .seller-image-step :is(div, p):empty {
+  display: none;
+}
+body.storefront-app .seller-image-step .form-actions {
+  margin-top: 1rem;
+}
+
+/* Round 3 corrections (R3-01–R3-04). */
+body.storefront-app .identity-card :is(.catalog-label, .ui-field) > label {
+  margin: 0;
+}
+body.storefront-app .button.secondary {
+  min-height: 44px;
+  padding: 0.625rem 1rem;
+  border: 1px solid #718562;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+body.storefront-app .button.secondary:hover:not(:disabled) {
+  background: #263d30;
+  color: #d2f3bf;
+}
+body.storefront-app .market-filters .market-filter-actions {
+  margin-top: 0;
+}
+body.storefront-app .catalog-choice-control {
+  margin-inline: 0;
+}

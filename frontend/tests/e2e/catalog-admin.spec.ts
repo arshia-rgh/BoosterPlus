@@ -739,13 +739,13 @@ test("staff builds, previews, publishes and archives another game through the ge
     await customer
       .getByRole("button", { name: "Check selections", exact: true })
       .click();
-    await expect(customer.getByText(/Selections are valid/)).toBeVisible();
+    await expect(customer.getByText(/Selections checked/)).toBeVisible();
     await customer.getByLabel("Single hero").selectOption("false");
     await expect(customer.getByLabel("Hero (required)")).toHaveCount(0);
     await customer
       .getByRole("button", { name: "Check selections", exact: true })
       .click();
-    await expect(customer.getByText(/Selections are valid/)).toBeVisible();
+    await expect(customer.getByText(/Selections checked/)).toBeVisible();
     expect(
       (await new AxeBuilder({ page: customer }).analyze()).violations,
     ).toEqual([]);
@@ -798,7 +798,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     await customer
       .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
-    await expect(customer.getByText(/Selections are valid/)).toBeVisible();
+    await expect(customer.getByText(/Selections checked/)).toBeVisible();
     await customer.getByLabel("Coupon code (optional)").fill("UNKNOWN-COUPON");
     await customer
       .getByRole("button", { name: "Continue with this package", exact: true })

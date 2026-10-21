@@ -42,7 +42,7 @@ it("offers each preference without inventing an order guarantee and keeps exact 
   fireEvent.change(select, { target: { value: "exact" } });
   expect(screen.getByLabelText("Request")).toHaveTextContent("exact:100");
   expect(screen.queryByLabelText("Above win rate (%)")).toBeNull();
-  expect(screen.getByText(/accepted package or order defines/)).toBeVisible();
+  expect(screen.queryByText(/up to one decimal place/)).toBeNull();
 });
 it.each([
   ["range:80:60", "Upper win rate (%)"],

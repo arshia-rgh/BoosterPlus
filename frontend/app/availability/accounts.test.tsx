@@ -24,17 +24,15 @@ it("saves explicit account criteria with exact minor units and separate email co
       <AccountAlerts slug="game" />
     </MemoryRouter>,
   );
-  fireEvent.change(screen.getByLabelText("Region (optional exact match)"), {
+  fireEvent.change(screen.getByLabelText("Region (optional)"), {
     target: { value: "EU" },
   });
-  fireEvent.change(
-    screen.getByLabelText("Price currency (optional, for example USD)"),
-    { target: { value: "usd" } },
-  );
-  fireEvent.change(
-    screen.getByLabelText("Maximum price (optional, requires currency)"),
-    { target: { value: "19.01" } },
-  );
+  fireEvent.change(screen.getByLabelText("Currency (optional)"), {
+    target: { value: "usd" },
+  });
+  fireEvent.change(screen.getByLabelText("Max price (optional)"), {
+    target: { value: "19.01" },
+  });
   fireEvent.click(screen.getByRole("checkbox"));
   fireEvent.click(screen.getByRole("button", { name: "Save account alert" }));
   await screen.findByText(/Account alert saved/);

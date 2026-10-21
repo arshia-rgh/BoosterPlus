@@ -670,6 +670,9 @@
 .chat-inbox-filters > .catalog-label:first-child {
   flex-basis: 100%;
 }
+.chat-inbox-filters.filter-grid > .catalog-label:first-child {
+  grid-column: 1 / -1;
+}
 .chat-inbox-actions {
   display: flex;
   flex-wrap: wrap;

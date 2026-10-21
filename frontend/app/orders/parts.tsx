@@ -285,8 +285,7 @@ export function Decisions({
                 >
                   Read terms
                 </Link>
-                . Review the amount, scope, delivery estimate, and expiry above.
-                Accepting creates an unpaid contract.
+                . Accepting creates an unpaid order contract.
               </p>
               <Check
                 name="accept_terms"
@@ -381,10 +380,7 @@ function ReorderForm({ draft }: { draft: Reorder }) {
   return (
     <section className="catalog-section">
       <h2>New order from current catalog</h2>
-      <p>
-        Review all choices and the current price. Previous text, credentials,
-        coupons, and payment details are excluded.
-      </p>
+      <p>Text fields and coupons aren’t copied — enter them again.</p>
       <Issues issues={draft.issues} />
       <DynamicForm
         key={draft.offer.id}

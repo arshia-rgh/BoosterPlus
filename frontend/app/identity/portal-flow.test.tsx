@@ -143,7 +143,7 @@ it("moves focus from email verification into the staff authenticator step", asyn
   fireEvent.change(code, { target: { value: "123456" } });
   submit("Verify email code");
   const heading = await screen.findByRole("heading", {
-    name: "Authenticator security",
+    name: "Verify authenticator",
   });
   await waitFor(() => expect(heading).toHaveFocus());
   expect(screen.getByText("Can’t use your authenticator?")).toBeInTheDocument();
@@ -227,7 +227,7 @@ it("gives customer MFA recovery public help without a staff contact or inbox loo
       <Login />
     </MemoryRouter>,
   );
-  await screen.findByRole("heading", { name: "Authenticator security" });
+  await screen.findByRole("heading", { name: "Verify authenticator" });
   expect(screen.getByText("2 · Verify authenticator")).toHaveAttribute(
     "aria-current",
     "step",

@@ -419,13 +419,13 @@ export function SupplierPurchase({
                 value={quantity}
                 change={setQuantity}
                 inputMode="decimal"
-                help={`Minimum ${source.quantity.min}${source.quantity.max !== "0" ? ` · Maximum ${source.quantity.max}` : ""}${source.quantity.step !== "0" ? ` · Steps of ${source.quantity.step}` : ""}`}
+                help={`${source.quantity.min}${source.quantity.max !== "0" ? `–${source.quantity.max}` : " or more"}${source.quantity.step !== "0" ? `, in steps of ${source.quantity.step}` : ""}`}
               />
             )}
             {!source.fields.length && (
               <p>
                 {source.method === "code"
-                  ? "No account details are needed. Your code will be available privately in your order after delivery."
+                  ? "No details needed. Your code appears in your order after delivery."
                   : "No delivery details are required for this product."}
               </p>
             )}
@@ -472,46 +472,44 @@ export function SupplierPurchase({
                 changes, support will review your order; you will not be charged
                 extra.
               </p>
-              {pending ? (
-                <p>
-                  Your confirmed details and terms are kept with this request.
-                </p>
-              ) : (
+              <p>
+                <Link to="/terms">Terms</Link> ·{" "}
+                <Link to="/privacy">Privacy</Link>
+              </p>
+              {!pending && (
                 <Check
                   label="I confirm the delivery details, region, price and product terms"
                   value={accepted}
                   change={setAccepted}
                 />
               )}
-              <p>
-                <Link to="/terms">Terms</Link> ·{" "}
-                <Link to="/privacy">Privacy</Link>
-              </p>
-              <Button
-                variant="secondary"
-                disabled={disabled || !!pending}
-                onClick={() => {
-                  setQuote(null);
-                  setAccepted(false);
-                }}
-              >
-                Edit details
-              </Button>
-              {expired ? (
-                <Action
+              <div className="form-actions">
+                {expired ? (
+                  <Action
+                    disabled={disabled || !!pending}
+                    onClick={() => void refreshQuote()}
+                  >
+                    Refresh price
+                  </Action>
+                ) : (
+                  <Action
+                    disabled={disabled || !accepted || !!pending}
+                    onClick={() => void reserve()}
+                  >
+                    Go to payment
+                  </Action>
+                )}
+                <Button
+                  variant="secondary"
                   disabled={disabled || !!pending}
-                  onClick={() => void refreshQuote()}
+                  onClick={() => {
+                    setQuote(null);
+                    setAccepted(false);
+                  }}
                 >
-                  Refresh price
-                </Action>
-              ) : (
-                <Action
-                  disabled={disabled || !accepted || !!pending}
-                  onClick={() => void reserve()}
-                >
-                  Go to payment
-                </Action>
-              )}
+                  Edit details
+                </Button>
+              </div>
             </section>
           )}
         </ActionFields>

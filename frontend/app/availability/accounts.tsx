@@ -20,9 +20,8 @@ export default function AccountAlerts({
     <section className="catalog-section">
       <h2>Account availability alerts</h2>
       <p>
-        Receive email for new matching inventory or renewed availability. Alerts
-        reserve neither accounts nor prices. Existing available listings do not
-        trigger an immediate email.
+        Get an email when a matching account is listed. Alerts don’t reserve
+        accounts or prices.
       </p>
       {saved ? (
         <p role="status">
@@ -85,32 +84,34 @@ export default function AccountAlerts({
             </label>
           )}
           {!listingID && (
-            <>
+            <div className="form-grid">
               <Text
                 name="region"
-                label="Region (optional exact match)"
+                label="Region (optional)"
                 required={false}
                 maxLength={80}
               />
               <Text
                 name="rank"
-                label="Rank (optional exact match)"
+                label="Rank (optional)"
                 required={false}
                 maxLength={80}
               />
               <Text
                 name="currency"
-                label="Price currency (optional, for example USD)"
+                label="Currency (optional)"
+                help="e.g. USD"
                 required={false}
                 maxLength={3}
               />
               <Text
                 name="amount"
-                label="Maximum price (optional, requires currency)"
+                label="Max price (optional)"
+                help="Needs a currency."
                 required={false}
                 maxLength={13}
               />
-            </>
+            </div>
           )}
           <Confirmation name="consent">
             Email me about matching account availability. I can unsubscribe at

@@ -329,8 +329,7 @@ export function TransferRecord({
             <legend>Confirm your {noun.toLowerCase()} destination</legend>
             <p>
               Use an address for {record.currency.toUpperCase()} on{" "}
-              {record.network}. Include the required memo or tag. A recent
-              Google or email sign-in is required.
+              {record.network}. Include the required memo or tag.
             </p>
             <Text
               name="address"
@@ -343,7 +342,7 @@ export function TransferRecord({
             />
             <Text
               name="memo"
-              label={`${noun} memo or destination tag`}
+              label={`${noun} memo or destination tag (if your wallet needs one)`}
               value={memo}
               change={(value) => {
                 setMemo(value);
@@ -356,9 +355,11 @@ export function TransferRecord({
               value={accepted}
               change={setAccepted}
             />
-            <Action disabled={!accepted} onClick={() => void recipient()}>
-              Confirm {noun.toLowerCase()} recipient
-            </Action>
+            <div className="form-actions">
+              <Action disabled={!accepted} onClick={() => void recipient()}>
+                Confirm {noun.toLowerCase()} recipient
+              </Action>
+            </div>
           </fieldset>
         )}
         {record.manual_receipt && <ManualPayoutEvidence record={record} />}

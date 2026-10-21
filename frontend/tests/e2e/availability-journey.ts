@@ -64,7 +64,7 @@ export async function availabilityJourney(
   await subscribe.click();
   await expect(buyer.getByText("Availability alerts enabled.")).toBeVisible();
   await buyer.goto("/availability");
-  await expect(buyer.getByText("Emails: active")).toBeVisible();
+  await expect(buyer.getByText("Email alerts on")).toBeVisible();
   expect((await new AxeBuilder({ page: buyer }).analyze()).violations).toEqual(
     [],
   );
@@ -165,12 +165,12 @@ export async function availabilityJourney(
     await anonymous.close();
   }
   await buyer.reload();
-  await expect(buyer.getByText("Emails: unsubscribed")).toBeVisible();
+  await expect(buyer.getByText("Email alerts off")).toBeVisible();
   await buyer
     .getByLabel(/Email me when this variant becomes available again/)
     .check();
   await buyer.getByRole("button", { name: /Reactivate emails for/ }).click();
-  await expect(buyer.getByText("Emails: active")).toBeVisible();
+  await expect(buyer.getByText("Email alerts on")).toBeVisible();
   const customer = sessionSchema.parse(
     await (await buyer.request.get(authURL(buyer, "session"))).json(),
   );

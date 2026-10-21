@@ -133,7 +133,7 @@ it("keeps edits private until an explicit save or submit action", async () => {
   const submit = screen.getByRole("button", {
     name: "Save and submit for review",
   });
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title (required)"), {
     target: { value: "Edited private title" },
   });
   expect(submit).toBeEnabled();
@@ -178,7 +178,7 @@ it("preserves a dirty draft across a newer server revision until explicitly disc
   const { rerender } = render(
     <SubmissionEditor value={value} reload={reload} />,
   );
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title (required)"), {
     target: { value: "Unsaved ordinary draft" },
   });
   const current = {
@@ -190,7 +190,7 @@ it("preserves a dirty draft across a newer server revision until explicitly disc
     },
   };
   rerender(<SubmissionEditor value={current} reload={reload} />);
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "Unsaved ordinary draft",
   );
   expect(
@@ -205,7 +205,7 @@ it("preserves a dirty draft across a newer server revision until explicitly disc
       name: "Discard this draft and load current details",
     }),
   );
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "Changed by another tab",
   );
   expect(
@@ -222,7 +222,7 @@ it("submits only the acknowledged saved revision without waiting for a parent re
     };
   vi.mocked(post).mockResolvedValue(saved);
   render(<SubmissionEditor value={value} reload={vi.fn()} />);
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title (required)"), {
     target: { value: "Saved title" },
   });
   fireEvent.change(screen.getByLabelText("Account notes (optional)"), {
@@ -235,7 +235,7 @@ it("submits only the acknowledged saved revision without waiting for a parent re
       screen.getByRole("button", { name: "Save and submit for review" }),
     ).toBeEnabled();
   });
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "Saved title",
   );
   fireEvent.click(
@@ -263,7 +263,7 @@ it("updates an untouched form when current details change", () => {
       reload={vi.fn()}
     />,
   );
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "Fresh record",
   );
 });
@@ -283,7 +283,7 @@ it("saves and submits in one action using the returned revision, with optional n
     });
   const reload = vi.fn();
   render(<SubmissionEditor value={value} reload={reload} />);
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title (required)"), {
     target: { value: "New title" },
   });
   fireEvent.click(screen.getByRole("checkbox"));
@@ -322,7 +322,7 @@ it("retains saved input and its actual revision when submission validation fails
     .mockResolvedValueOnce(saved)
     .mockRejectedValueOnce(new APIError("Complete required game details."));
   render(<SubmissionEditor value={value} reload={vi.fn()} />);
-  fireEvent.change(screen.getByLabelText("Private account title"), {
+  fireEvent.change(screen.getByLabelText("Account title (required)"), {
     target: { value: "New title" },
   });
   fireEvent.click(screen.getByRole("checkbox"));
@@ -332,7 +332,7 @@ it("retains saved input and its actual revision when submission validation fails
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Complete required game details.",
   );
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "New title",
   );
   vi.mocked(post).mockResolvedValue(saved);
@@ -364,7 +364,7 @@ it("shows API field errors under seller answers and focuses the first editable f
   await waitFor(() => expect(region).toHaveFocus());
   expect(region).toHaveAttribute("aria-invalid", "true");
   expect(region).toHaveAccessibleDescription("Select the account region.");
-  expect(screen.getByLabelText("Private account title")).toHaveValue(
+  expect(screen.getByLabelText("Account title (required)")).toHaveValue(
     "Private account",
   );
 });

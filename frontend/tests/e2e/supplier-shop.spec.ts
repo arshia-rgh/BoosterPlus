@@ -52,6 +52,19 @@ test("fresh quote, keyboard validation and uncertain reservation retain one requ
       .getByRole("button", { name: "Go to payment" })
       .evaluate((el) => getComputedStyle(el).backgroundColor),
   );
+  // FORMS172: consent sits on its own row above the payment actions.
+  const consent = await page
+    .getByLabel(
+      "I confirm the delivery details, region, price and product terms",
+    )
+    .boundingBox();
+  const pay = await page
+    .getByRole("button", { name: "Go to payment" })
+    .boundingBox();
+  expect(consent && pay).toBeTruthy();
+  expect(
+    (pay?.y ?? 0) - (consent?.y ?? 0) - (consent?.height ?? 0),
+  ).toBeGreaterThan(8);
   expect(
     await page.evaluate(
       () => window.nexusUIRequests.find((r) => r.path.endsWith("/quote"))?.body,
@@ -426,6 +439,23 @@ test("combined storefront filters preserve manual products and returning shop co
   await page.getByLabel("Region", { exact: true }).selectOption("Türkiye");
   await page.getByLabel("Product type").selectOption("Upgrades");
   await page.getByLabel("Delivery method").selectOption("account");
+  const viewport = page.viewportSize();
+  if (viewport && viewport.width >= 1024) {
+    // FORMS172: filter actions share one baseline and the field column edge.
+    const search = await page.getByLabel("Search shop").boundingBox();
+    const select = await page.getByLabel("Delivery method").boundingBox();
+    const apply = await page
+      .getByRole("button", { name: "Apply filters" })
+      .boundingBox();
+    const clear = await page
+      .getByRole("link", { name: "Clear filters" })
+      .boundingBox();
+    expect(search && select && apply && clear).toBeTruthy();
+    const bottom = (box: typeof apply) => (box ? box.y + box.height : 0);
+    expect(Math.abs(bottom(apply) - bottom(clear))).toBeLessThan(2);
+    expect(Math.abs((apply?.x ?? 0) - (search?.x ?? 0))).toBeLessThan(2);
+    expect(Math.abs((search?.y ?? 0) - (select?.y ?? 0))).toBeLessThan(2);
+  }
   await page.getByRole("button", { name: "Apply filters" }).click();
   await expect(page.locator(".shop-card")).toHaveCount(1);
   expect(

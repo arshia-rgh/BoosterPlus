@@ -9,7 +9,7 @@ import {
 } from "react";
 import { Link, useSearchParams } from "../portal-router";
 import { ErrorNotice, Select, Text, Action } from "../catalog/controls";
-import { listingSchema, states, stateLabel } from "./model";
+import { listingSchema, states, stateLabel, stateOption } from "./model";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { nextAction, orderKind } from "./presentation";
 import "./order-workspace.css";
@@ -112,17 +112,11 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
   return (
     <section className="orders-workspace-list">
       {admin && <h2>Requests and active work</h2>}
-      {!admin && (
-        <>
-          <p>
-            Review requests, follow your progress, and keep in touch with your
-            team.
-          </p>
-        </>
-      )}
       <form
         onSubmit={filter}
-        className={admin ? "catalog-grid order-filters" : "orders-filters"}
+        className={
+          admin ? "catalog-grid order-filters" : "orders-filters filter-grid"
+        }
       >
         <Text
           label="Search game or full order ID"
@@ -135,7 +129,7 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
           change={setState}
           options={[
             ["", "All statuses"],
-            ...states.map((v) => [v, stateLabel(v)] as const),
+            ...states.map((v) => [v, stateOption(v)] as const),
           ]}
         />
         {admin && (
@@ -206,12 +200,16 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
             </div>
           </details>
         )}
-        <button className="button" type="submit">
-          Filter orders
-        </button>
+        <div className="form-actions">
+          <button className="button" type="submit">
+            Filter orders
+          </button>
+        </div>
       </form>
       <div className="order-toolbar">
-        <Action onClick={resource.reload}>Refresh orders</Action>
+        <Action variant="secondary" onClick={resource.reload}>
+          Refresh orders
+        </Action>
         {!!params.toString() && (
           <Action
             onClick={() => {

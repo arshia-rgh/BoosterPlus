@@ -102,13 +102,12 @@ export default function SellerImages({
   }
   return (
     <section className="seller-image-step">
-      <h4>Account screenshots</h4>
-      <p>
-        Optional: up to four screenshots per batch, 4 MB each. Remove private
-        details, then select Send screenshots to attach them for review.
+      <p className="quiet">
+        Optional · JPEG, PNG or WebP, up to 4 MB each, 4 per batch. Hide
+        passwords and private details.
       </p>
       <fieldset disabled={busy || unknown}>
-        <legend>Images for this submission</legend>
+        <legend className="sr-only">Images for this submission</legend>
         {slots.map((slot, i) => (
           <Slot
             key={slot.key}
@@ -119,14 +118,6 @@ export default function SellerImages({
             operationPending={operationPending}
           />
         ))}
-        <Action
-          disabled={slots.length >= 4}
-          onClick={() => {
-            setSlots((old) => [...old, emptySlot()]);
-          }}
-        >
-          Add another screenshot
-        </Action>
       </fieldset>
       <div ref={outcome} tabIndex={-1}>
         <ErrorNotice error={error} />
@@ -138,16 +129,27 @@ export default function SellerImages({
             message.
           </p>
         )}
-        <Action
-          disabled={busy || pending || !ids.length}
-          onClick={() => void send()}
-        >
-          {busy
-            ? "Sending screenshots…"
-            : unknown
-              ? "Retry sending these screenshots"
-              : "Send screenshots for review"}
-        </Action>
+        <div className="form-actions">
+          <Action
+            disabled={busy || pending || !ids.length}
+            onClick={() => void send()}
+          >
+            {busy
+              ? "Sending screenshots…"
+              : unknown
+                ? "Retry sending these screenshots"
+                : "Send screenshots for review"}
+          </Action>
+          <Action
+            variant="secondary"
+            disabled={busy || unknown || slots.length >= 4}
+            onClick={() => {
+              setSlots((old) => [...old, emptySlot()]);
+            }}
+          >
+            Add another screenshot
+          </Action>
+        </div>
       </div>
     </section>
   );
@@ -183,6 +185,7 @@ function Slot({
       admin={false}
       visibility="public"
       label={`Account screenshot ${String(index + 1)}`}
+      guidance={false}
       change={change}
       operationPending={working}
     />
