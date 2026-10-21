@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { once } from "node:events";
+import { access, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
 
 async function freePort() {
   const server = createServer();
@@ -19,6 +21,9 @@ test(
     const storefront = await freePort();
     const admin = await freePort();
     assert.notEqual(storefront, admin);
+    const roots = resolve(".react-router/dev");
+    const before = new Set(await readdir(roots).catch(() => []));
+    let launchRoot;
     const child = spawn(process.execPath, ["scripts/dev.mjs"], {
       env: {
         ...process.env,
@@ -59,6 +64,20 @@ test(
         ready,
         `Both Vite applications must start and render admin deep links through one origin:\n${startupOutput}`,
       );
+      const created = (await readdir(roots)).filter(
+        (name) => name.startsWith(`launch-${child.pid}-`) && !before.has(name),
+      );
+      assert.equal(created.length, 1);
+      launchRoot = resolve(roots, created[0]);
+      for (const application of ["admin", "storefront"]) {
+        await access(
+          resolve(
+            launchRoot,
+            application,
+            ".react-router/types/+server-build.d.ts",
+          ),
+        );
+      }
       const home = await fetch(origin);
       assert.equal(home.status, 200);
       const homeHTML = await home.text();
@@ -78,6 +97,7 @@ test(
         fetch("http://127.0.0.1:" + port, { signal: AbortSignal.timeout(500) }),
       );
     }
+    await assert.rejects(access(launchRoot), { code: "ENOENT" });
   },
 );
 test(

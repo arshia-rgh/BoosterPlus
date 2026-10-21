@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
+import { rmSync } from "node:fs";
+import { mkdir, mkdtemp, symlink } from "node:fs/promises";
 import { createServer } from "node:net";
+import { resolve } from "node:path";
 
 async function available(port) {
   const server = createServer();
@@ -21,6 +24,28 @@ if (
   throw new Error("Choose distinct development ports between 1025 and 65535");
 await available(storefrontPort);
 await available(adminPort);
+// Router watchers clear their generated types at startup. Keep each app's
+// generated directory separate, including across concurrent launcher sessions.
+const generated = resolve(".react-router/dev");
+await mkdir(generated, { recursive: true });
+const routerRoot = await mkdtemp(resolve(generated, `launch-${process.pid}-`));
+process.once("exit", () =>
+  rmSync(routerRoot, { recursive: true, force: true }),
+);
+for (const application of ["admin", "storefront"]) {
+  const root = resolve(routerRoot, application);
+  await mkdir(root);
+  for (const entry of [
+    "react-router.config.ts",
+    "vite.config.ts",
+    "public",
+    "app",
+    "admin-app",
+    "booster-app",
+  ]) {
+    await symlink(resolve(entry), resolve(root, entry));
+  }
+}
 const children = [];
 let stopping = false;
 function stop(code) {
@@ -49,6 +74,7 @@ for (const application of ["admin", "storefront"]) {
       env: {
         ...process.env,
         FRONTEND_APP: application,
+        REACT_ROUTER_ROOT: resolve(routerRoot, application),
         DEV_ADMIN_ORIGIN: "http://127.0.0.1:" + adminPort,
       },
       stdio: "inherit",

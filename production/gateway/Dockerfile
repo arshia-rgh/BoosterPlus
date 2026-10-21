@@ -4,6 +4,7 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
 WORKDIR /build
 # Preserve the Caddy release while replacing dependencies with security fixes.
 RUN xcaddy build v2.11.4 --output /build/caddy \
+    --replace github.com/klauspost/compress=github.com/klauspost/compress@v1.18.7 \
     --replace golang.org/x/crypto=golang.org/x/crypto@v0.57.0 \
     --replace golang.org/x/net=golang.org/x/net@v0.60.0 \
     --replace golang.org/x/text=golang.org/x/text@v0.42.0 \
