@@ -33,3 +33,13 @@ Remediation commit `dd91020` passed the full-scope focused hook. Its exact CI396
 Count correction: local component runs reported 209 files / 991 cases because they included the user-owned untracked cameo test file, which is never committed. The tracked suite is 208 files / 981 cases, as CI reports.
 
 The normal hook, exact CI, signed image release, server preflight and a fresh exact recovery decision remain required before activation. No publication, message, invoice or funds action is included.
+
+## Deployment completed — 22 October 2026
+
+Remediation commit `6eaad20` passed the normal full-scope focused hook, then exact CI39680232797 and image release39682617820 including image scans. The bundle was signed locally and verified against the trusted key. The server preflight bound the exact source and signed bundle, pulled all five images by digest, validated configuration and the isolated gateway, confirmed migration history at schema47 and passed current/candidate dependency and storage probes, all without changing the live release.
+
+The owner approved exactly “Deploy 6eaad20 forms update with this recovery risk” about four minutes after the preflight. Normal signed activation completed at schema47; all eight services are healthy on the exact signed images, public HTTPS/redirect boundaries, unchanged public legal/retention responses and private webmail passed, and runtime and private configuration hashes are unchanged.
+
+Twelve live read-only Chromium cases passed with every non-GET request aborted and nothing typed or submitted: the homepage note is absent; customer sign-in has no single-step chip and a 9 px label gap; the custom-boost form has no range/step hint, quiet required flags, green fields and the coupon field; the unpublished MLBB shop shows its honest unavailable state; desktop account filters sit below the fields at the column edge with 48 px actions; admin and booster sign-in render. The first two live harness runs stopped on harness assumptions (custom services need `?path=custom`; the shop has no published products) and are retained under `.cache/forms172/failed-live-*`; they were not application failures. Shop filter alignment remains covered by fixture regressions only.
+
+Current manifest: `/srv/playora/releases/6eaad20/deployment.env`. Private evidence: `/srv/playora-qualification/forms172` and `.cache/forms172/`. The one-release recovery exception is consumed. Off-host backup remains absent; the prior signed `c8530fc` is retained without claiming qualified application rollback, and recovery may require a forward fix. Checkout is enabled; supplier purchases, outgoing transfers and deletion remain disabled; Vendoria is absent. No publication, message, invoice, funds or customer-data test occurred.
