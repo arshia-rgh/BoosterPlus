@@ -30,6 +30,15 @@ type PublicProduct struct {
 	SupplierAvailable bool           `json:"supplier_available"`
 }
 
+// MarshalJSON hides staff artwork provenance only at the HTTP boundary. The
+// full definition remains available internally for immutable purchase records.
+func (p PublicProduct) MarshalJSON() ([]byte, error) {
+	type customerProduct PublicProduct
+	view := customerProduct(p)
+	view.Definition.AssetSource = ""
+	return json.Marshal(view)
+}
+
 // PublicPage is bounded by a stable product cursor. Filters apply before pagination.
 type PublicPage struct {
 	Items []PublicProduct `json:"items"`

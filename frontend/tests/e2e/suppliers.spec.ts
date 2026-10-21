@@ -25,6 +25,44 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   await server.close();
 });
+test("draft filters show unprepared offers separately from existing listings", async ({
+  page,
+}, info) => {
+  await page.goto(origin + "/admin/shop/suppliers?stage=listing-filter");
+  const products = page.getByRole("list", { name: "Imported products" });
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.getByLabel("PLAYORA drafts").selectOption("not_added");
+    await expect(
+      products.getByRole("heading", { name: /Weekly Diamond Pass/ }),
+    ).toBeVisible();
+    await expect(
+      products.getByRole("heading", { name: /86 Diamonds/ }),
+    ).toHaveCount(0);
+    await page.screenshot({
+      path: info.outputPath(`not-added-${String(width)}.png`),
+      fullPage: true,
+    });
+    await page.getByLabel("PLAYORA drafts").selectOption("added");
+    await expect(
+      products.getByRole("link", { name: "Open listing draft" }),
+    ).toBeVisible();
+    await expect(
+      products.getByRole("heading", { name: /Weekly Diamond Pass/ }),
+    ).toHaveCount(0);
+    await page.getByLabel("PLAYORA drafts").selectOption("");
+    await expect(products.getByRole("heading")).toHaveCount(2);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  expect(
+    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+      .violations,
+  ).toEqual([]);
+});
 test("private library and exact pricing are readable across responsive layouts", async ({
   page,
 }, info) => {

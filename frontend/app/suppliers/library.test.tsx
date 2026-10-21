@@ -77,6 +77,30 @@ it("separates environments, private imports and manual products without a purcha
     screen.queryByRole("button", { name: /publish|purchase|buy now/i }),
   ).not.toBeInTheDocument();
 });
+it("filters the entire import by draft status and resets pinned pagination", () => {
+  data.next = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+  mount();
+  fireEvent.change(screen.getByLabelText("PLAYORA drafts"), {
+    target: { value: "not_added" },
+  });
+  expect(useResource).toHaveBeenCalledWith(
+    "/admin/shop/suppliers/nexus-sandbox/library?listing=not_added",
+    expect.anything(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Next products" }));
+  expect(useResource).toHaveBeenCalledWith(
+    `/admin/shop/suppliers/nexus-sandbox/library?listing=not_added&after=${data.next}&import=${importID}`,
+    expect.anything(),
+  );
+  fireEvent.change(screen.getByLabelText("PLAYORA drafts"), {
+    target: { value: "added" },
+  });
+  expect(useResource).toHaveBeenLastCalledWith(
+    "/admin/shop/suppliers/nexus-sandbox/library?listing=added",
+    expect.anything(),
+  );
+  expect(post).not.toHaveBeenCalled();
+});
 it("shows exact adjacent previews, persistent field errors and ordinary fixed-price input", async () => {
   mount();
   fireEvent.click(screen.getByRole("button", { name: "Review Player ID" }));

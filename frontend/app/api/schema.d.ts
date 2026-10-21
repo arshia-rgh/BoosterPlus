@@ -25495,6 +25495,8 @@ export interface operations {
         q?: string;
         game?: string;
         category?: string;
+        /** @description Filter current offers by whether a PLAYORA listing draft has been prepared. Added includes published or archived listings. */
+        listing?: "not_added" | "added";
       };
       header?: never;
       path: {

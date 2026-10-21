@@ -203,8 +203,8 @@ function PrivateDelivery({ data, admin, refresh }: DeliveryProps) {
           </p>
         ) : data.state === "unresolved" ? (
           <p>
-            We are checking the supplier’s response. This does not mean your
-            order failed. You do not need to order again.
+            We are checking your delivery status. This does not mean your order
+            failed. You do not need to order again.
           </p>
         ) : data.state === "awaiting_payment" ? (
           <p>
@@ -293,7 +293,7 @@ function PrivateDelivery({ data, admin, refresh }: DeliveryProps) {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  Open Nexus verification
+                  Continue secure verification
                 </a>
               </>
             ) : action.kind === "join_game" &&

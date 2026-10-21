@@ -3,17 +3,14 @@ package supply
 import (
 	"context"
 	"encoding/json"
-	"strings"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/suppliers"
 )
 
 // Filters pins pagination to one immutable import, not a changing provider catalog.
-type Filters struct{ ImportID, After, Search, GameID, CategoryID string }
+type Filters struct{ ImportID, After, Search, GameID, CategoryID, Listing string }
 
 // Library contains private metadata and one bounded product page.
 type Library struct {
@@ -106,7 +103,7 @@ func productView(product *suppliers.Product, markup int, prices map[string]*ent.
 // Library returns only complete imports and rechecks staff authority on every page.
 func (s *Store) Library(ctx context.Context, p *identity.Principal, id suppliers.Connection, filter Filters) (out Library, err error) {
 	out.Games, out.Categories, out.Items = []suppliers.Game{}, []suppliers.Category{}, []ProductView{}
-	if !validConnection(id) || filter.ImportID != "" && !validID(filter.ImportID) || filter.After != "" && (!validID(filter.After) || filter.ImportID == "") || !boundedText(filter.Search, 120) || !boundedText(filter.GameID, 240) || !boundedText(filter.CategoryID, 240) {
+	if !validConnection(id) || filter.ImportID != "" && !validID(filter.ImportID) || filter.After != "" && (!validID(filter.After) || filter.ImportID == "") || !boundedText(filter.Search, 120) || !boundedText(filter.GameID, 240) || !boundedText(filter.CategoryID, 240) || !validListingFilter(filter.Listing) {
 		return out, ErrInvalid
 	}
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, _ *identity.Principal) error {
@@ -151,52 +148,9 @@ func (s *Store) Library(ctx context.Context, p *identity.Principal, id suppliers
 		}
 		out.Games = append(out.Games, metadata.Games...)
 		out.Categories = append(out.Categories, metadata.Categories...)
-		query := tx.SupplierItem.Query().Where(supplieritem.ImportIDEQ(importID)).Order(ent.Asc(supplieritem.FieldID)).Limit(26)
-		if filter.After != "" {
-			query.Where(supplieritem.IDGT(filter.After))
-		}
-		if filter.GameID != "" {
-			query.Where(supplieritem.GameIDEQ(filter.GameID))
-		}
-		if filter.CategoryID != "" {
-			query.Where(supplieritem.CategoryIDEQ(filter.CategoryID))
-		}
-		if search := strings.TrimSpace(filter.Search); search != "" {
-			query.Where(supplieritem.Or(supplieritem.TitleContainsFold(search), supplieritem.ProductIDEQ(search)))
-		}
-		rows, e := query.All(ctx)
-		if e != nil {
-			return e
-		}
-		if len(rows) > 25 {
-			out.Next = rows[24].ID
-			rows = rows[:25]
-		}
-		if len(rows) == 0 {
-			return nil
-		}
-		ids := make([]string, len(rows))
-		for i, row := range rows {
-			ids[i] = row.ProductID
-		}
-		prices, e := tx.SupplierPrice.Query().Where(supplierprice.ConnectionIDEQ(string(id)), supplierprice.ProductIDIn(ids...)).All(ctx)
-		if e != nil {
-			return e
-		}
-		index := map[string]map[string]*ent.SupplierPrice{}
-		for _, row := range prices {
-			if index[row.ProductID] == nil {
-				index[row.ProductID] = map[string]*ent.SupplierPrice{}
-			}
-			index[row.ProductID][row.OfferID] = row
-		}
-		for _, row := range rows {
-			if row.Data == nil || row.ConnectionID != string(id) || row.Data.ID != row.ProductID {
-				return ErrConflict
-			}
-			out.Items = append(out.Items, productView(row.Data, conn.MarkupBps, index[row.ProductID]))
-		}
-		return nil
+		items, next, e := libraryPage(ctx, tx, id, importID, conn.MarkupBps, filter)
+		out.Items, out.Next = items, next
+		return e
 	})
 	return out, err
 }

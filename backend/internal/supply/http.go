@@ -103,7 +103,7 @@ func (s *Store) connectionsHTTP(w http.ResponseWriter, r *http.Request, p *ident
 }
 func (s *Store) libraryHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 	q := r.URL.Query()
-	out, err := s.Library(r.Context(), p, suppliers.Connection(r.PathValue("connection")), Filters{ImportID: q.Get("import"), After: q.Get("after"), Search: q.Get("q"), GameID: q.Get("game"), CategoryID: q.Get("category")})
+	out, err := s.Library(r.Context(), p, suppliers.Connection(r.PathValue("connection")), Filters{ImportID: q.Get("import"), After: q.Get("after"), Search: q.Get("q"), GameID: q.Get("game"), CategoryID: q.Get("category"), Listing: q.Get("listing")})
 	if err != nil {
 		return err
 	}

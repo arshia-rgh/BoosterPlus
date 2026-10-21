@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/suppliers"
@@ -187,5 +189,67 @@ func TestSupplierImportFailureCancellationAndStaleWorker(t *testing.T) {
 	}
 	if err = store.ImportHandler()(ctx, supplierImportJob(t, stale.ID)); !errors.Is(err, identity.ErrForbidden) || reader.calls.Load() != before {
 		t.Fatal("revoked author performed queued work", err)
+	}
+}
+
+func TestSupplierListingFilterAcrossPagesAndImports(t *testing.T) {
+	f := orderDB(t)
+	ctx := t.Context()
+	store, reader := supplierFixture(t, f)
+	reader.value.Products = nil
+	for i := range 140 {
+		id := fmt.Sprintf("product-%03d", i)
+		reader.value.Products = append(reader.value.Products, suppliers.Product{ID: id, Name: id, GameID: "test", CategoryID: "test:coins", Offers: []suppliers.Offer{{ID: "default", Name: "ID", Cost: "1", Available: true, SuggestedDelivery: "id", Quantity: suppliers.Quantity{Kind: "one", Min: "1", Max: "1", Step: "1"}}}})
+	}
+	importCatalog := func() string {
+		run, err := store.RequestImport(ctx, f.admin, suppliers.NexusSandbox, uuid.NewString())
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = store.ImportHandler()(ctx, supplierImportJob(t, run.ID)); err != nil {
+			t.Fatal(err)
+		}
+		return run.ID
+	}
+	first := importCatalog()
+	rows, err := f.auth.client.SupplierItem.Query().Where(supplieritem.ImportIDEQ(first)).Order(supplieritem.ByID()).All(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The first whole scan batch is linked, then 30 unprepared products remain.
+	for _, row := range rows[:110] {
+		if _, err = f.auth.client.SupplierPrice.Create().SetConnectionID(string(suppliers.NexusSandbox)).SetProductID(row.ProductID).SetOfferID("default").SetShopProductID(uuid.NewString()).SetUpdatedBy(f.admin.User.ID).Save(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+	filter := supply.Filters{ImportID: first, Listing: "not_added", GameID: "test", CategoryID: "test:coins", Search: "product"}
+	page, err := store.Library(ctx, f.admin, suppliers.NexusSandbox, filter)
+	if err != nil || len(page.Items) != 25 || page.Next != rows[134].ID {
+		t.Fatal("filtered first page skipped late offers", err, page.Next, len(page.Items))
+	}
+	filter.After = page.Next
+	page, err = store.Library(ctx, f.admin, suppliers.NexusSandbox, filter)
+	if err != nil || len(page.Items) != 5 || page.Next != "" || page.Items[0].ID != rows[135].ProductID {
+		t.Fatal("filtered continuation omitted or repeated an offer", err)
+	}
+	// Binding is independent of import ID and includes archived/published drafts.
+	second := importCatalog()
+	page, err = store.Library(ctx, f.admin, suppliers.NexusSandbox, supply.Filters{ImportID: second, Search: rows[0].ProductID, Listing: "added"})
+	if err != nil || len(page.Items) != 1 || page.Items[0].Offers[0].Pricing.ShopProductID == "" {
+		t.Fatal("reimport lost a prepared listing", err)
+	}
+	if _, err = store.Library(ctx, f.admin, suppliers.NexusSandbox, supply.Filters{Listing: "published"}); !errors.Is(err, supply.ErrInvalid) {
+		t.Fatal("invalid status accepted", err)
+	}
+	if _, err = store.Library(ctx, f.buyer, suppliers.NexusSandbox, supply.Filters{Listing: "not_added"}); !errors.Is(err, identity.ErrForbidden) {
+		t.Fatal("customer accessed private listing filter", err)
+	}
+	// Removing a binding makes it visible again without changing the import.
+	if _, err = f.auth.client.SupplierPrice.Update().Where(supplierprice.ProductIDEQ(rows[0].ProductID)).ClearShopProductID().Save(ctx); err != nil {
+		t.Fatal(err)
+	}
+	page, err = store.Library(ctx, f.admin, suppliers.NexusSandbox, supply.Filters{ImportID: second, Search: rows[0].ProductID, Listing: "not_added"})
+	if err != nil || len(page.Items) != 1 {
+		t.Fatal("filter ignored current draft binding", err)
 	}
 }

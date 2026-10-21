@@ -111,6 +111,10 @@ func nexusCheckoutFixtureWithSetup(t *testing.T, codes bool, setup func(*payment
 	}
 	value := draft.Definition
 	manual := shopDefinition()
+	// Retain the prepared instant-delivery category when applying commercial
+	// fixture terms; substituting manual hours correctly clears review on save.
+	manual.Policy.DeliveryMinHours = value.Policy.DeliveryMinHours
+	manual.Policy.DeliveryMaxHours = value.Policy.DeliveryMaxHours
 	value.Asset, value.AssetAlt, value.AssetSource, value.Policy, value.Reviewed = manual.Asset, manual.AssetAlt, manual.AssetSource, manual.Policy, true
 	value.Policy.EvidenceRequired = false
 	draft, err = store.Save(ctx, f.base.admin, draft.ID, draft.Version, value)
@@ -170,6 +174,13 @@ func TestNexusCheckoutPublicationQuoteAndPaidDelivery(t *testing.T) {
 	detail, e := f.shop.ReserveSupplier(ctx, base.buyer, base.game.Slug, f.product.ID, input)
 	if e != nil {
 		t.Fatal("reserve", e)
+	}
+	if detail.Purchase.Product.AssetSource != "" {
+		t.Fatal("customer checkout exposed staff artwork provenance")
+	}
+	staffView, e := f.shop.Delivery(ctx, base.admin, detail.OrderID, true)
+	if e != nil || staffView.Purchase.Product.AssetSource == "" {
+		t.Fatal("immutable purchase lost staff provenance or stopped validating", e)
 	}
 	again, e := f.shop.ReserveSupplier(ctx, base.buyer, base.game.Slug, f.product.ID, input)
 	if e != nil || again.OrderID != detail.OrderID {

@@ -294,6 +294,18 @@ function ConnectionLibrary({
               </button>
             </form>
             <Select
+              label="PLAYORA drafts"
+              value={new URLSearchParams(query).get("listing") ?? ""}
+              change={(value) => {
+                update("listing", value);
+              }}
+              options={[
+                ["", "All offers"],
+                ["not_added", "Not added to drafts"],
+                ["added", "Already added"],
+              ]}
+            />
+            <Select
               label="Supplier game"
               value={new URLSearchParams(query).get("game") ?? ""}
               change={(value) => {
@@ -329,6 +341,10 @@ function ConnectionLibrary({
               ]}
             />
           </fieldset>
+          <p className="quiet">
+            “Already added” includes private and published listings. Only
+            matching offers appear when a draft filter is selected.
+          </p>
           {data.items.length === 0 && (
             <div className="supplier-empty">
               <h3>
@@ -338,7 +354,7 @@ function ConnectionLibrary({
               </h3>
               <p>
                 {data.import
-                  ? "Try another game, category or search."
+                  ? "Try another draft status, game, category or search."
                   : "The catalog will include unavailable products and items that need review. Your own manual products stay unchanged."}
               </p>
               {query && (
@@ -390,6 +406,11 @@ function ConnectionLibrary({
                           {offer.pricing.issues.length
                             ? "Needs review"
                             : "Mapping saved"}
+                        </span>
+                        <span>
+                          {offer.pricing.shop_product_id
+                            ? "Added to PLAYORA"
+                            : "Not added to drafts"}
                         </span>
                       </div>
                       <dl>

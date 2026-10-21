@@ -24978,6 +24978,15 @@
               "type": "string",
               "maxLength": 240
             }
+          },
+          {
+            "name": "listing",
+            "in": "query",
+            "description": "Filter current offers by whether a PLAYORA listing draft has been prepared. Added includes published or archived listings.",
+            "schema": {
+              "type": "string",
+              "enum": ["not_added", "added"]
+            }
           }
         ],
         "responses": {

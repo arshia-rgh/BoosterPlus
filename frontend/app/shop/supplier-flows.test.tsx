@@ -256,6 +256,19 @@ it("keeps an uncertain supplier outcome read-only and does not expose customer s
   expect(reload).toHaveBeenCalledOnce();
   expect(post).not.toHaveBeenCalled();
 });
+it("describes an uncertain customer delivery without internal sourcing or pricing", () => {
+  delivery = supplierDelivery("unresolved");
+  const { container } = mount("delivery");
+  expect(
+    screen.getByText(/We are checking your delivery status/),
+  ).toBeVisible();
+  expect(container.textContent).not.toMatch(
+    /supplier|provider|nexus|vendoria|markup|15%/i,
+  );
+  expect(
+    screen.queryByRole("button", { name: /Retry purchase/ }),
+  ).not.toBeInTheDocument();
+});
 it("exposes verification errors with a useful retry and rejects foreign handoff URLs", async () => {
   delivery = supplierDelivery("pending", "account");
   vi.mocked(post).mockRejectedValueOnce(

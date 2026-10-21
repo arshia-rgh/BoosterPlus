@@ -17,6 +17,7 @@ func exportShopOrders(ctx context.Context, tx *ent.Tx, userID string, rows []*en
 	byID := map[string]map[string]any{}
 	for i, row := range rows {
 		if row.Kind == order.KindShop {
+			omitShopProvenance(records[i])
 			ids = append(ids, row.ID)
 			byID[row.ID] = records[i]
 		}
@@ -44,4 +45,14 @@ func exportShopOrders(ctx context.Context, tx *ent.Tx, userID string, rows []*en
 		byID[row.OrderID]["shop_reservation"] = map[string]any{"product_id": row.ProductID, "release_id": row.ReleaseID, "variant_key": row.VariantKey, "quantity": row.Quantity, "state": row.State, "expires_at": row.ExpiresAt, "created_at": row.CreatedAt, "updated_at": row.UpdatedAt}
 	}
 	return nil
+}
+
+// Export the buyer's accepted description and terms, not staff artwork notes.
+// exportRecord already made an independent JSON copy of the persisted order.
+func omitShopProvenance(record map[string]any) {
+	if snapshot, ok := record["shop_snapshot"].(map[string]any); ok {
+		if product, ok := snapshot["product"].(map[string]any); ok {
+			delete(product, "asset_source")
+		}
+	}
 }

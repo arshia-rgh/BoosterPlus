@@ -25,6 +25,11 @@ document.body.dataset.portal = "admin";
 const params = new URLSearchParams(location.search),
   stage = params.get("stage") ?? "ready";
 const catalog = supplierLibrary();
+if (stage === "listing-filter") {
+  const linked = catalog.items[0]?.offers[0];
+  if (linked)
+    linked.pricing.shop_product_id = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+}
 let run = catalog.import,
   reads = 0,
   conflictShown = false;
@@ -80,15 +85,29 @@ window.fetch = async (input, init) => {
           ? "vendoria-test"
           : catalog.connection.id,
       },
-      items: catalog.items.filter(
-        (item) =>
-          (!url.searchParams.get("q") ||
-            item.name
-              .toLowerCase()
-              .includes((url.searchParams.get("q") ?? "").toLowerCase())) &&
-          (!url.searchParams.get("category") ||
-            item.category_id === url.searchParams.get("category")),
-      ),
+      items: catalog.items
+        .filter(
+          (item) =>
+            (!url.searchParams.get("q") ||
+              item.name
+                .toLowerCase()
+                .includes((url.searchParams.get("q") ?? "").toLowerCase())) &&
+            (!url.searchParams.get("category") ||
+              item.category_id === url.searchParams.get("category")),
+        )
+        .map((item) => ({
+          ...item,
+          offers: item.offers.filter((offer) => {
+            const listing = url.searchParams.get("listing");
+            return (
+              !listing ||
+              Boolean(offer.pricing.shop_product_id) === (listing === "added")
+            );
+          }),
+        }))
+        .filter(
+          (item) => !url.searchParams.get("listing") || item.offers.length > 0,
+        ),
     });
   }
   if (path === "/api/v1/admin/catalog/games")

@@ -97,6 +97,9 @@ func (s *Store) deliveryView(ctx context.Context, tx *ent.Tx, row *ent.Order, ad
 		return DeliveryView{}, err
 	}
 	out := DeliveryView{OrderState: string(row.State), OrderID: row.ID, OrderVersion: row.Version, State: string(row.State), UpdatedAt: row.UpdatedAt, Purchase: purchase}
+	if !admin {
+		out.Purchase.Product.AssetSource = ""
+	}
 	if purchase.Product.Supplier != nil {
 		delivery, e := tx.SupplierPurchase.Query().Where(supplierpurchase.OrderIDEQ(row.ID), supplierpurchase.UserIDEQ(row.UserID), supplierpurchase.ContractIDEQ(row.CurrentContract)).Only(ctx)
 		if e != nil {

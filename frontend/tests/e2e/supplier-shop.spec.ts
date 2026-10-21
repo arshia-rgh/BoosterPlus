@@ -198,12 +198,12 @@ test("delivery actions handle errors and reject a foreign verification destinati
     page.getByText("The action could not be verified. Contact support."),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Open Nexus verification" }),
+    page.getByRole("link", { name: "Continue secure verification" }),
   ).toHaveCount(0);
   await page.goto(origin + "/delivery?state=pending");
   await page.getByRole("button", { name: "Check required action" }).click();
   await expect(
-    page.getByRole("link", { name: "Open Nexus verification" }),
+    page.getByRole("link", { name: "Continue secure verification" }),
   ).toHaveAttribute("rel", "noreferrer noopener");
   await expect(
     page.getByRole("heading", { name: "Action needed to complete delivery" }),
@@ -214,7 +214,7 @@ test("delivery actions handle errors and reject a foreign verification destinati
       .evaluate((el) => getComputedStyle(el).backgroundColor),
   ).not.toBe(
     await page
-      .getByRole("link", { name: "Open Nexus verification" })
+      .getByRole("link", { name: "Continue secure verification" })
       .evaluate((el) => getComputedStyle(el).backgroundColor),
   );
   await page.screenshot({
@@ -225,7 +225,7 @@ test("delivery actions handle errors and reject a foreign verification destinati
     window.dispatchEvent(new Event("blur"));
   });
   await expect(
-    page.getByRole("link", { name: "Open Nexus verification" }),
+    page.getByRole("link", { name: "Continue secure verification" }),
   ).toHaveCount(0);
 });
 test("reviewed library prepares a private listing in the real editor", async ({
@@ -398,7 +398,7 @@ test("protected reveal uses the real recent-verification dialog and does not res
   await dialog.getByRole("button", { name: "Verify and continue" }).click();
   await expect(dialog).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Open Nexus verification" }),
+    page.getByRole("link", { name: "Continue secure verification" }),
   ).toHaveCount(0);
   expect(
     await page.evaluate(
@@ -409,7 +409,7 @@ test("protected reveal uses the real recent-verification dialog and does not res
   ).toBe(1);
   await page.getByRole("button", { name: "Check required action" }).click();
   await expect(
-    page.getByRole("link", { name: "Open Nexus verification" }),
+    page.getByRole("link", { name: "Continue secure verification" }),
   ).toBeVisible();
 });
 test("combined storefront filters preserve manual products and returning shop context", async ({
