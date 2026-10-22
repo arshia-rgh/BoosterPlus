@@ -15,7 +15,7 @@ func TestInvoiceMinimumReadUsesMerchantRouteAndExactPolicy(t *testing.T) {
 		if r.Method != http.MethodGet || r.URL.Path != "/v1/min-amount" || query.Get("currency_from") != "usdttrc20" || query.Get("fiat_equivalent") != "usd" || query.Get("is_fixed_rate") != "true" || query.Get("is_fee_paid_by_user") != "false" || query.Has("currency_to") {
 			t.Error("minimum changed route, policy or method")
 		}
-		respond(t, w, map[string]any{"currency_from": "usdttrc20", "min_amount": "8.83353975", "fiat_equivalent": "8.84547653"})
+		respond(t, w, map[string]any{"currency_from": "USDTTRC20", "min_amount": "8.83353975", "fiat_equivalent": "8.84547653"})
 	})
 	input := sampleRequest()
 	for _, tc := range []struct {

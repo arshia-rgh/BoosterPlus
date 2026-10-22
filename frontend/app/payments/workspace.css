@@ -277,3 +277,61 @@
 .payment-choice-feedback p {
   margin-block: 0.8rem;
 }
+
+.payment-route-scroll {
+  max-height: 26rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 0.35rem;
+  border-block: 1px solid #416452;
+}
+.payment-route-scroll:focus-visible {
+  outline: 2px solid #8be6b2;
+  outline-offset: 3px;
+}
+.payment-route-scroll .payment-choice-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.payment-route-scroll .payment-choice {
+  padding: 0.75rem;
+  min-height: 44px;
+}
+.payment-route-group h3 {
+  margin: 0.75rem 0 0.5rem;
+  color: #dccba9;
+}
+.payment-route-group {
+  min-width: 0;
+  margin-block-end: 0.75rem;
+}
+.payment-route-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.payment-route-toolbar p {
+  margin: 0;
+}
+.payment-selected {
+  padding: 0.75rem;
+  border-left: 2px solid #8be6b2;
+  background: #10261c;
+  overflow-wrap: anywhere;
+}
+.payment-route-legacy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+@media (max-width: 640px) {
+  .payment-route-scroll {
+    max-height: 22rem;
+  }
+  .payment-route-scroll .payment-choice-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

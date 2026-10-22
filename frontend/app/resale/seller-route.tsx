@@ -1,3 +1,4 @@
+import { manualPayoutNetwork, routeLabel } from "../payments/routes";
 import { Action, ErrorNotice, Select } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { routeSchema } from "../payments/model";
@@ -27,7 +28,9 @@ export function sellerRouteIssue(
   if (resource.loading) return "Wait for the published payout routes to load.";
   if (resource.error || !resource.data)
     return "Payout routes could not be checked. Refresh payout routes and try again.";
-  const routes = resource.data.published?.data.routes ?? [];
+  const routes = (resource.data.published?.data.routes ?? []).filter((route) =>
+    manualPayoutNetwork(route.network),
+  );
   if (!routes.length)
     return "No payout route is published. Publish a payment policy in Finance, then refresh payout routes.";
   if (
@@ -48,7 +51,9 @@ export function SellerRoute({
   terms: Pick<SellerTerms, "currency" | "network">;
   change: (currency: string, network: string) => void;
 }) {
-  const routes = resource.data?.published?.data.routes ?? [];
+  const routes = (resource.data?.published?.data.routes ?? []).filter((route) =>
+    manualPayoutNetwork(route.network),
+  );
   const value = routeKey(terms);
   const selected = routes.find(
     (v) => v.code === terms.currency && v.network === terms.network,
@@ -69,7 +74,7 @@ export function SellerRoute({
             (v) =>
               [
                 routeKey({ currency: v.code, network: v.network }),
-                v.label,
+                routeLabel(v),
               ] as const,
           ),
         ]}
@@ -82,12 +87,13 @@ export function SellerRoute({
       />
       {selected && (
         <p className="quiet" role="status">
-          Selected route: {selected.label}
+          Selected route: {routeLabel(selected)}
         </p>
       )}
       <p className="quiet">
-        Only published routes are available. Changing the route clears the
-        conversion quote; your account base price and terms stay in place.
+        Only published routes supported for manual seller payouts are listed.
+        Changing the route clears the conversion quote; your account base price
+        and terms stay in place.
       </p>
       {resource.loading && <Loading compact label="Loading payout routes" />}
       <ErrorNotice

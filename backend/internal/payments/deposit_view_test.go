@@ -89,3 +89,20 @@ func TestDepositNeverOverridesCommercialOrPaymentEvidence(t *testing.T) {
 		}
 	}
 }
+
+func TestTONDestinationDoesNotInventRequiredMemo(t *testing.T) {
+	attempt, p, now := depositFixture()
+	attempt.Route = map[string]any{"code": "ton", "network": "ton", "label": "TON"}
+	p.PayCurrency = "ton"
+	p.Network = "ton"
+	p.Destination.Memo = ""
+	view, err := depositView(attempt, p, now)
+	if err != nil || view == nil || view.Memo != "" {
+		t.Fatal("TON destination incorrectly required a memo", err)
+	}
+	p.Destination.Memo = "123456"
+	view, err = depositView(attempt, p, now)
+	if err != nil || view == nil || view.Memo != "123456" {
+		t.Fatal("provider supplied memo lost", err)
+	}
+}

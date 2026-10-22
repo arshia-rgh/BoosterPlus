@@ -57,3 +57,13 @@ func TestSellerRouteValidation(t *testing.T) {
 		t.Fatal("empty published routes accepted an offer")
 	}
 }
+
+func TestPaymentOnlyNetworksCannotCreateUnsupportedManualSellerPayout(t *testing.T) {
+	routes := []sellerPayoutRoute{{Code: "usdtton", Network: "ton"}, {Code: "usdtbsc", Network: "bsc"}}
+	if validateSellerRoute(routes, SellerTerms{Currency: "usdtton", Network: "ton"}) == nil {
+		t.Fatal("payment-only network exposed to manual payout")
+	}
+	if err := validateSellerRoute(routes, SellerTerms{Currency: "usdtbsc", Network: "bsc"}); err != nil {
+		t.Fatal(err)
+	}
+}

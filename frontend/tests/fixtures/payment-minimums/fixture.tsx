@@ -1,3 +1,7 @@
+import { useState } from "react";
+import PolicyRoutes from "../../../app/payments/policy-routes";
+import { paymentRoutes } from "../../../app/payments/routes";
+import type { Policy } from "../../../app/payments/model";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import Checkout from "../../../app/payments/checkout";
@@ -65,6 +69,19 @@ const checkoutDetail = detailSchema.parse({
   },
 });
 
+function PolicyFixture() {
+  const [routes, change] = useState<Policy["routes"]>([
+    ...paymentRoutes.filter((route) => route.code !== "usdtbsc"),
+    { code: "usdtbsc", network: "eth", label: "Old USDT" },
+    { code: "legacy", network: "old", label: "Saved legacy route" },
+  ]);
+  return (
+    <>
+      <h2>Payment policy</h2>
+      <PolicyRoutes routes={routes} change={change} />
+    </>
+  );
+}
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing fixture root");
 createRoot(root).render(
@@ -74,11 +91,15 @@ createRoot(root).render(
       style={{ maxWidth: "52rem", margin: "2rem auto", padding: "1rem" }}
     >
       <h1>Complete your payment</h1>
-      <Checkout
-        detail={checkoutDetail}
-        admin={new URLSearchParams(location.search).has("admin")}
-        changed={() => {}}
-      />
+      {new URLSearchParams(location.search).has("policy") ? (
+        <PolicyFixture />
+      ) : (
+        <Checkout
+          detail={checkoutDetail}
+          admin={new URLSearchParams(location.search).has("admin")}
+          changed={() => {}}
+        />
+      )}
     </main>
   </BrowserRouter>,
 );

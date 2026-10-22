@@ -88,7 +88,7 @@ it("requires route and current policy consent, then binds the immutable contract
   render(<Checkout detail={detail} admin={false} changed={changed} />);
   const submit = screen.getByRole("button", { name: "Go to payment" });
   expect(submit).toBeDisabled();
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   expect(submit).toBeDisabled();
   fireEvent.click(
     screen.getByLabelText(
@@ -116,7 +116,7 @@ it("requires fresh acceptance when the published policy changes", () => {
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -182,7 +182,7 @@ it("locks repeated checkout requests while the provider request is pending", asy
       }),
   );
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -202,13 +202,13 @@ it("withdraws consent when the selected network changes and blocks stale reads",
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT BNB/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*BNB/ }));
   expect(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -383,7 +383,7 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -441,7 +441,7 @@ it("brings a failed checkout into view and links minimum errors to this order's 
   error.status = 422;
   vi.mocked(post).mockRejectedValue(error);
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",

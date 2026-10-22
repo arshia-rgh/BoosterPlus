@@ -39,7 +39,7 @@ export const paymentOptionsSchema = z
           valid_until: z.iso.datetime({ offset: true }).nullable(),
         }),
       )
-      .max(20),
+      .max(40),
   })
   .superRefine((value, context) => {
     const seen = new Set<string>();

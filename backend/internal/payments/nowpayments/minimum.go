@@ -32,7 +32,7 @@ func (c *Client) MinimumInvoice(ctx context.Context, input InvoiceRequest) (Mini
 	if err != nil {
 		return Minimum{}, ErrUnavailable
 	}
-	if value["currency_from"] != input.PayCurrency {
+	if code, ok := currencyCode(value["currency_from"]); !ok || code != input.PayCurrency {
 		return Minimum{}, ErrEvidence
 	}
 	crypto, err := decimal(value["min_amount"])

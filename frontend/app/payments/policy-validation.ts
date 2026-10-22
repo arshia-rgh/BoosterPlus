@@ -1,3 +1,4 @@
+import { paymentRoutes, maximumRoutes } from "./routes";
 import type { FieldIssue } from "../ui/form-validation";
 import { remedyLabels, remedyText, type Policy } from "./model";
 
@@ -64,26 +65,32 @@ export function policyIssues(value: Policy): FieldIssue[] {
       "currencies",
       "Choose at least one supported pricing currency, without duplicates.",
     );
-  if (value.routes.length < 1 || value.routes.length > 20)
+  if (value.routes.length < 1 || value.routes.length > maximumRoutes)
     add(
       "routes",
-      "Add between 1 and 20 approved asset and network combinations.",
+      "Choose between 1 and 40 approved coin and network combinations.",
     );
   const seen = new Set<string>();
   value.routes.forEach((route, index) => {
     const path = "routes." + String(index);
+    const known = paymentRoutes.find((value) => value.code === route.code);
+    if (known && known.network !== route.network)
+      add("routes", "Choose the matching coin and network from the list.");
     if (!/^[a-z0-9]{1,32}$/.test(route.code) || seen.has(route.code))
       add(
         path + ".code",
-        "Enter a unique NOWPayments asset code using 1–32 lowercase letters or digits.",
+        "Remove the invalid or duplicate saved option and choose its replacement from the list.",
       );
     seen.add(route.code);
     if (!text(route.label, 1, 80))
-      add(path + ".label", "Enter a customer-facing label of 1–80 characters.");
+      add(
+        path + ".label",
+        "Remove the saved option with an invalid label and choose its replacement from the list.",
+      );
     if (!/^[a-z0-9][a-z0-9_-]{0,31}$/.test(route.network))
       add(
         path + ".network",
-        "Enter a network identifier of 1–32 lowercase letters, digits, underscores or hyphens, starting with a letter or digit.",
+        "Remove the saved option with an invalid network and choose its replacement from the list.",
       );
   });
   return issues;

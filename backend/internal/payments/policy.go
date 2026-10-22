@@ -2,10 +2,12 @@ package payments
 
 import (
 	"context"
+	"slices"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/paymentroutes"
 )
 
 func published(ctx context.Context, client *ent.Client) (*PolicyView, error) {
@@ -69,6 +71,15 @@ func (s *Store) SavePolicy(ctx context.Context, p *identity.Principal, input Pol
 		}
 		if row.Version != input.Version {
 			return ErrConflict
+		}
+		previous, err := decode[Policy](row.Draft)
+		if err != nil {
+			return err
+		}
+		for _, route := range input.Data.Routes {
+			if _, known := paymentroutes.Find(route.Code); !known && !slices.Contains(previous.Routes, route) {
+				return ErrInvalid
+			}
 		}
 		doc, err := document(input.Data)
 		if err != nil {

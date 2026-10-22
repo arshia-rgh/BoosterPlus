@@ -1,3 +1,4 @@
+import { paymentRoutes } from "./routes";
 import { expect, it } from "vitest";
 import { policyIssues } from "./policy-validation";
 import { emptyRemedies, remedyLabels, type Policy } from "./model";
@@ -116,4 +117,17 @@ it("rejects duplicate asset codes even when the labels differ", () => {
       expect.objectContaining({ path: "routes.1.code" }),
     ]),
   );
+});
+
+it("accepts all 30 reviewed routes and rejects a mismatched chain", () => {
+  expect(policyIssues({ ...valid, routes: paymentRoutes })).toEqual([]);
+  expect(
+    policyIssues({
+      ...valid,
+      routes: [{ code: "usdc", network: "bsc", label: "USDC" }],
+    }),
+  ).toContainEqual({
+    path: "routes",
+    message: "Choose the matching coin and network from the list.",
+  });
 });

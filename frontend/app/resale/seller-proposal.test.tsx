@@ -4,7 +4,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { APIError, post } from "../identity/api";
 import { useResource } from "../orders/resource";
 import SellerOffers from "./offers";
-import { routeKey, sellerRouteIssue } from "./seller-route";
+import { routeKey, sellerRouteIssue, SellerRoute } from "./seller-route";
 import {
   fixtureDefaults,
   fixturePolicy,
@@ -18,6 +18,43 @@ vi.mock("../identity/api", async (original) => ({
 }));
 vi.mock("../orders/resource", () => ({ useResource: vi.fn() }));
 afterEach(() => vi.clearAllMocks());
+
+it("names payout networks even when saved labels are short and excludes unsupported recording networks", () => {
+  const resource = {
+    data: {
+      published: {
+        id: "policy",
+        data: {
+          routes: [
+            { code: "usdtbsc", label: "USDT", network: "bsc" },
+            { code: "usdttrc20", label: "USDT", network: "trx" },
+            { code: "btc", label: "BTC", network: "btc" },
+          ],
+        },
+      },
+    },
+    loading: false,
+    error: null,
+    reload: vi.fn(),
+  };
+  render(
+    <SellerRoute
+      resource={resource}
+      terms={{ currency: "usdtbsc", network: "bsc" }}
+      change={vi.fn()}
+    />,
+  );
+  expect(
+    screen.getByRole("option", { name: "USDT · BNB Smart Chain (BEP20)" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("option", { name: "USDT · TRON (TRC20)" }),
+  ).toBeInTheDocument();
+  expect(screen.queryByRole("option", { name: /BTC/ })).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "USDT · BNB Smart Chain (BEP20)",
+  );
+});
 
 function setup() {
   const policy = {

@@ -62,6 +62,7 @@ type Client struct {
 	tokenMu                                          sync.Mutex
 	token                                            string
 	tokenUntil                                       time.Time
+	currencies                                       currencyCache
 }
 
 // New validates configuration without making a network call or enabling checkout routes.
@@ -225,9 +226,10 @@ func (c *Client) requestBytes(ctx context.Context, method, path string, body []b
 	if err != nil {
 		return nil, ErrUnavailable
 	}
-	raw, readErr := io.ReadAll(io.LimitReader(response.Body, maxBody+1))
+	maximum := responseLimit(method, path)
+	raw, readErr := io.ReadAll(io.LimitReader(response.Body, int64(maximum)+1))
 	closeErr := response.Body.Close()
-	if readErr != nil || closeErr != nil || len(raw) > maxBody || response.StatusCode < 200 || response.StatusCode >= 300 {
+	if readErr != nil || closeErr != nil || len(raw) > maximum || response.StatusCode < 200 || response.StatusCode >= 300 {
 		return nil, ErrUnavailable
 	}
 	return raw, nil
@@ -237,7 +239,7 @@ func (c *Client) requestValue(ctx context.Context, method, path string, body []b
 	if err != nil {
 		return nil, err
 	}
-	value, err := jsonValue(raw)
+	value, err := jsonValueLimit(raw, responseLimit(method, path))
 	if err != nil {
 		return nil, ErrEvidence
 	}
@@ -273,4 +275,12 @@ func (c *Client) requestAcknowledgement(ctx context.Context, path string, body [
 		return ErrEvidence
 	}
 	return nil
+}
+
+// Only the read-only currency directory needs a larger bounded response.
+func responseLimit(method, path string) int {
+	if method == http.MethodGet && path == "/full-currencies" {
+		return 2 * 1024 * 1024
+	}
+	return maxBody
 }

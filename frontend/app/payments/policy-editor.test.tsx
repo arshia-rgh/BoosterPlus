@@ -215,27 +215,27 @@ it("explains invalid fields before posting, focuses the first error and preserve
   fireEvent.change(screen.getByLabelText("Customer payment policy"), {
     target: { value: "Retain these full customer-facing policy terms." },
   });
-  fireEvent.change(screen.getByLabelText("NOWPayments asset code"), {
-    target: { value: "USDT_TRC20" },
-  });
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: "USDT · TRON (TRC20)" }),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Save policy draft" }));
   await waitFor(() => {
     expect(screen.getByLabelText("Policy title")).toHaveFocus();
   });
   expect(post).not.toHaveBeenCalled();
-  expect(screen.getByLabelText("NOWPayments asset code")).toHaveAttribute(
+  expect(screen.getByLabelText("Find a coin or network")).toHaveAttribute(
     "aria-invalid",
     "true",
   );
   expect(
-    screen.getByLabelText("NOWPayments asset code"),
-  ).toHaveAccessibleDescription(/unique NOWPayments asset code/);
+    screen.getByLabelText("Find a coin or network"),
+  ).toHaveAccessibleDescription(/Choose between 1 and 40/);
   expect(screen.getByLabelText("Customer payment policy")).toHaveValue(
     "Retain these full customer-facing policy terms.",
   );
   expect(
     screen.getByRole("link", {
-      name: /NOWPayments asset code: Enter a unique/,
+      name: /Find a coin or network: Choose between/,
     }),
   ).toBeVisible();
   fireEvent.change(screen.getByLabelText("Policy title"), {
@@ -244,8 +244,14 @@ it("explains invalid fields before posting, focuses the first error and preserve
   expect(screen.getByLabelText("Policy title")).not.toHaveAttribute(
     "aria-invalid",
   );
-  expect(screen.getByLabelText("NOWPayments asset code")).toHaveAttribute(
+  expect(screen.getByLabelText("Find a coin or network")).toHaveAttribute(
     "aria-invalid",
     "true",
+  );
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: "USDT · BNB Smart Chain (BEP20)" }),
+  );
+  expect(screen.getByLabelText("Find a coin or network")).not.toHaveAttribute(
+    "aria-invalid",
   );
 });

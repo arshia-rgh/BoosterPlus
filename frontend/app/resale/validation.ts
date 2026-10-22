@@ -23,10 +23,13 @@ export function sellerIssues(
   if (!/^[a-z0-9]{1,32}$/.test(terms.currency))
     add(
       "currency",
-      "Enter the provider’s lowercase asset code, up to 32 letters or digits.",
+      "Choose an available payout asset and network from the list.",
     );
   if (!text(terms.network, 1, 64))
-    add("network", "Enter the payout network, up to 64 characters.");
+    add(
+      "currency",
+      "Choose an available payout asset and network from the list.",
+    );
   for (const [field, value] of [
     ["proceeds_basis", terms.proceeds_basis],
     ["fees", terms.fees],

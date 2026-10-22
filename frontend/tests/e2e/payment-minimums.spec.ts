@@ -1,3 +1,4 @@
+import { paymentRoutes } from "../../app/payments/routes";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { createServer, type ViteDevServer } from "vite";
@@ -34,7 +35,7 @@ const routes = [
   { code: "usdtbsc", label: "USDT", network: "BNB Smart Chain (BEP20)" },
   { code: "usdttrc20", label: "USDT", network: "TRON (TRC20)" },
 ];
-async function isolate(page: Page, mode = "mixed") {
+async function isolate(page: Page, mode = "mixed", choices = routes) {
   const state = { mode, posts: 0, reads: 0 };
   await page.route("**/api/v1/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
@@ -60,7 +61,7 @@ async function isolate(page: Page, mode = "mixed") {
           currency: "USD",
           amount_minor: "5000",
           server_time: new Date().toISOString(),
-          routes: routes.map((v, i) => ({
+          routes: choices.map((v, i) => ({
             code: v.code,
             status:
               state.mode === "all-below" || i ? "below_minimum" : "available",
@@ -82,7 +83,7 @@ async function isolate(page: Page, mode = "mixed") {
           policy: {
             id: "policy",
             data: {
-              routes,
+              routes: choices,
               currencies: ["USD"],
               remedies: null,
               label: "Payment agreement",
@@ -224,5 +225,92 @@ for (const width of [390, 1440]) {
       fullPage: true,
     });
     expect(state.posts).toBe(0);
+  });
+}
+
+for (const width of [390, 1440]) {
+  test(`thirty payment routes remain navigable at ${String(width)}`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 960 });
+    const state = await isolate(page, "mixed", paymentRoutes);
+    await page.goto(origin);
+    await expect(page.getByRole("radio")).toHaveCount(30);
+    await page.getByRole("radio", { name: /BTC/ }).check();
+    await expect(page.getByText(/Use BTC on Bitcoin only/)).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath(`thirty-${String(width)}.png`),
+      fullPage: true,
+    });
+    await page.getByLabel("Find a coin or network").fill("TRON");
+    await expect(page.getByText("Selected:")).toBeVisible();
+    await expect(page.getByRole("radio")).toHaveCount(4);
+    await page.screenshot({
+      path: info.outputPath(`filtered-${String(width)}.png`),
+      fullPage: true,
+    });
+    await page.getByLabel("Find a coin or network").fill("no-such-network");
+    await expect(page.getByText("No matching coin or network.")).toBeVisible();
+    await page.getByRole("button", { name: "Clear search" }).click();
+    await expect(page.getByRole("radio", { name: /BTC/ })).toBeChecked();
+    expect(
+      (await new AxeBuilder({ page }).include("main").analyze()).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    state.mode = "all-below";
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await expect(page.getByRole("radio", { name: /BTC/ })).toBeDisabled();
+    await expect(
+      page.getByRole("button", { name: "Go to payment" }),
+    ).toBeDisabled();
+    await page.screenshot({
+      path: info.outputPath(`thirty-disabled-${String(width)}.png`),
+      fullPage: true,
+    });
+    expect(state.posts).toBe(0);
+  });
+  test(`admin canonical picker at ${String(width)}`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 960 });
+    await page.goto(`${origin}/?policy`);
+    await expect(page.getByRole("checkbox")).toHaveCount(31);
+    await expect(
+      page.getByRole("region", { name: "Saved options needing review" }),
+    ).toBeVisible();
+    const collision = page.getByRole("checkbox", {
+      name: "USDT · BNB Smart Chain (BEP20)",
+    });
+    await expect(collision).toBeDisabled();
+    await expect(collision).not.toBeChecked();
+    await page.getByLabel("Find a coin or network").fill("usdtbsc");
+    await page.screenshot({
+      path: info.outputPath(`policy-collision-${String(width)}.png`),
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Remove Old USDT" }).click();
+    await expect(collision).toBeEnabled();
+    await collision.check();
+    await page.getByRole("button", { name: "Clear search" }).click();
+    await page.screenshot({
+      path: info.outputPath(`policy-${String(width)}.png`),
+      fullPage: true,
+    });
+    await page.getByRole("checkbox", { name: "Selected only" }).check();
+    await page.getByLabel("Find a coin or network").fill("USDT");
+    await page.screenshot({
+      path: info.outputPath(`policy-selected-${String(width)}.png`),
+      fullPage: true,
+    });
+    expect(
+      (await new AxeBuilder({ page }).include("main").analyze()).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
   });
 }

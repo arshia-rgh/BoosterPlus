@@ -55,6 +55,10 @@ func (s *Store) preflight(ctx context.Context, p *identity.Principal, id string,
 	if !minorPattern.MatchString(commercial.AmountMinor) || !slices.Contains(policy.Data.Currencies, commercial.Currency) {
 		return ErrConflict
 	}
+	availability, availabilityErr := s.currencies(ctx, policy)
+	if availabilityErr != nil || !s.instant().Before(availability.ValidUntil) || availability.Routes[input.Route] != policy.Data.Routes[index].Network {
+		return ErrUnavailable
+	}
 	err = s.provider.CheckInvoice(ctx, nowpayments.InvoiceRequest{OrderID: id, AmountMinor: commercial.AmountMinor, Currency: commercial.Currency, PayCurrency: input.Route, FixedRate: policy.Data.RateMode == "fixed", FeePaidByUser: policy.Data.FeeMode == "customer"})
 	if err != nil {
 		s.minimums.invalidate(routeMinimumKey(policy, commercial.Currency, input.Route))

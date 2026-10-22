@@ -1,0 +1,242 @@
+[
+  {
+    "code": "btc",
+    "network": "btc",
+    "symbol": "BTC",
+    "network_label": "Bitcoin",
+    "label": "BTC \u00b7 Bitcoin",
+    "group": "Popular coins"
+  },
+  {
+    "code": "eth",
+    "network": "eth",
+    "symbol": "ETH",
+    "network_label": "Ethereum (ERC20)",
+    "label": "ETH \u00b7 Ethereum (ERC20)",
+    "group": "Popular coins"
+  },
+  {
+    "code": "ltc",
+    "network": "ltc",
+    "symbol": "LTC",
+    "network_label": "Litecoin",
+    "label": "LTC \u00b7 Litecoin",
+    "group": "Popular coins"
+  },
+  {
+    "code": "trx",
+    "network": "trx",
+    "symbol": "TRX",
+    "network_label": "TRON (TRC20)",
+    "label": "TRX \u00b7 TRON (TRC20)",
+    "group": "Popular coins"
+  },
+  {
+    "code": "ton",
+    "network": "ton",
+    "symbol": "TON",
+    "network_label": "TON",
+    "label": "TON \u00b7 TON",
+    "group": "Popular coins"
+  },
+  {
+    "code": "bnbbsc",
+    "network": "bsc",
+    "symbol": "BNB",
+    "network_label": "BNB Smart Chain (BEP20)",
+    "label": "BNB \u00b7 BNB Smart Chain (BEP20)",
+    "group": "Popular coins"
+  },
+  {
+    "code": "usdttrc20",
+    "network": "trx",
+    "symbol": "USDT",
+    "network_label": "TRON (TRC20)",
+    "label": "USDT \u00b7 TRON (TRC20)",
+    "group": "USDT"
+  },
+  {
+    "code": "usdterc20",
+    "network": "eth",
+    "symbol": "USDT",
+    "network_label": "Ethereum (ERC20)",
+    "label": "USDT \u00b7 Ethereum (ERC20)",
+    "group": "USDT"
+  },
+  {
+    "code": "usdc",
+    "network": "eth",
+    "symbol": "USDC",
+    "network_label": "Ethereum (ERC20)",
+    "label": "USDC \u00b7 Ethereum (ERC20)",
+    "group": "USDC"
+  },
+  {
+    "code": "usdp",
+    "network": "eth",
+    "symbol": "USDP",
+    "network_label": "Ethereum (ERC20)",
+    "label": "USDP \u00b7 Ethereum (ERC20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "usdtbsc",
+    "network": "bsc",
+    "symbol": "USDT",
+    "network_label": "BNB Smart Chain (BEP20)",
+    "label": "USDT \u00b7 BNB Smart Chain (BEP20)",
+    "group": "USDT"
+  },
+  {
+    "code": "usdcmatic",
+    "network": "matic",
+    "symbol": "USDC",
+    "network_label": "Polygon",
+    "label": "USDC \u00b7 Polygon",
+    "group": "USDC"
+  },
+  {
+    "code": "usddtrc20",
+    "network": "trx",
+    "symbol": "USDD",
+    "network_label": "TRON (TRC20)",
+    "label": "USDD \u00b7 TRON (TRC20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "usdtarc20",
+    "network": "avaxc",
+    "symbol": "USDT",
+    "network_label": "Avalanche C-Chain",
+    "label": "USDT \u00b7 Avalanche C-Chain",
+    "group": "USDT"
+  },
+  {
+    "code": "usdcarc20",
+    "network": "avaxc",
+    "symbol": "USDC",
+    "network_label": "Avalanche C-Chain",
+    "label": "USDC \u00b7 Avalanche C-Chain",
+    "group": "USDC"
+  },
+  {
+    "code": "usdtmatic",
+    "network": "matic",
+    "symbol": "USDT",
+    "network_label": "Polygon",
+    "label": "USDT \u00b7 Polygon",
+    "group": "USDT"
+  },
+  {
+    "code": "usdtop",
+    "network": "op",
+    "symbol": "USDT",
+    "network_label": "Optimism",
+    "label": "USDT \u00b7 Optimism",
+    "group": "USDT"
+  },
+  {
+    "code": "fdusdbsc",
+    "network": "bsc",
+    "symbol": "FDUSD",
+    "network_label": "BNB Smart Chain (BEP20)",
+    "label": "FDUSD \u00b7 BNB Smart Chain (BEP20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "usdcbsc",
+    "network": "bsc",
+    "symbol": "USDC",
+    "network_label": "BNB Smart Chain (BEP20)",
+    "label": "USDC \u00b7 BNB Smart Chain (BEP20)",
+    "group": "USDC"
+  },
+  {
+    "code": "usdcarb",
+    "network": "arbitrum",
+    "symbol": "USDC",
+    "network_label": "Arbitrum One",
+    "label": "USDC \u00b7 Arbitrum One",
+    "group": "USDC"
+  },
+  {
+    "code": "usdcop",
+    "network": "op",
+    "symbol": "USDC",
+    "network_label": "Optimism",
+    "label": "USDC \u00b7 Optimism",
+    "group": "USDC"
+  },
+  {
+    "code": "fdusderc20",
+    "network": "eth",
+    "symbol": "FDUSD",
+    "network_label": "Ethereum (ERC20)",
+    "label": "FDUSD \u00b7 Ethereum (ERC20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "pyusd",
+    "network": "eth",
+    "symbol": "PYUSD",
+    "network_label": "Ethereum (ERC20)",
+    "label": "PYUSD \u00b7 Ethereum (ERC20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "usdtarb",
+    "network": "arbitrum",
+    "symbol": "USDT",
+    "network_label": "Arbitrum One",
+    "label": "USDT \u00b7 Arbitrum One",
+    "group": "USDT"
+  },
+  {
+    "code": "daiarb",
+    "network": "arbitrum",
+    "symbol": "DAI",
+    "network_label": "Arbitrum One",
+    "label": "DAI \u00b7 Arbitrum One",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "tusdtrc20",
+    "network": "trx",
+    "symbol": "TUSD",
+    "network_label": "TRON (TRC20)",
+    "label": "TUSD \u00b7 TRON (TRC20)",
+    "group": "Other stablecoins"
+  },
+  {
+    "code": "usdcsol",
+    "network": "sol",
+    "symbol": "USDC",
+    "network_label": "Solana",
+    "label": "USDC \u00b7 Solana",
+    "group": "USDC"
+  },
+  {
+    "code": "usdcalgo",
+    "network": "algo",
+    "symbol": "USDC",
+    "network_label": "Algorand",
+    "label": "USDC \u00b7 Algorand",
+    "group": "USDC"
+  },
+  {
+    "code": "usdtcelo",
+    "network": "celo",
+    "symbol": "USDT",
+    "network_label": "Celo",
+    "label": "USDT \u00b7 Celo",
+    "group": "USDT"
+  },
+  {
+    "code": "usdtton",
+    "network": "ton",
+    "symbol": "USDT",
+    "network_label": "TON",
+    "label": "USDT \u00b7 TON",
+    "group": "USDT"
+  }
+]

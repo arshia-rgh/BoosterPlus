@@ -5,6 +5,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/paymentroutes"
 )
 
 type sellerPayoutRoute struct {
@@ -14,7 +15,7 @@ type sellerPayoutRoute struct {
 
 func validateSellerRoute(routes []sellerPayoutRoute, terms SellerTerms) error {
 	for _, route := range routes {
-		if route.Code == terms.Currency && route.Network == terms.Network {
+		if route.Code == terms.Currency && route.Network == terms.Network && paymentroutes.ManualPayoutNetwork(route.Network) {
 			return nil
 		}
 	}

@@ -25,7 +25,10 @@ func object(raw []byte) (map[string]any, error) {
 	return result, nil
 }
 func jsonValue(raw []byte) (any, error) {
-	if len(raw) == 0 || len(raw) > maxBody || !utf8.Valid(raw) {
+	return jsonValueLimit(raw, maxBody)
+}
+func jsonValueLimit(raw []byte, maximum int) (any, error) {
+	if len(raw) == 0 || len(raw) > maximum || !utf8.Valid(raw) {
 		return nil, ErrEvidence
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))

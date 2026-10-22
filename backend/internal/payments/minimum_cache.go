@@ -124,10 +124,14 @@ func (s *Store) RunMinimumRefresh(ctx context.Context) {
 	for {
 		policy, err := published(ctx, s.client)
 		if err == nil && policy != nil && validatePolicy(policy.Data) == nil {
+			availability, availableErr := s.currencies(ctx, policy)
 			for _, currency := range policy.Data.Currencies {
 				for _, route := range policy.Data.Routes {
 					if ctx.Err() != nil {
 						return
+					}
+					if availableErr != nil || availability.Routes[route.Code] != route.Network {
+						continue
 					}
 					s.minimums.get(ctx, provider, routeMinimumKey(policy, currency, route.Code), s.instant)
 				}

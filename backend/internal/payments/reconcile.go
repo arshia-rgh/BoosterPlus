@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -103,7 +104,7 @@ func (s *Store) receipt(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 	if p.Status == "refunded" {
 		state = "reversed"
 	}
-	network := p.Network
+	network := strings.ToLower(p.Network)
 	route, err := decode[Route](attempt.Route)
 	if err != nil {
 		return nil, err
@@ -125,7 +126,9 @@ func (s *Store) receipt(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 	if existing == nil {
 		return tx.PaymentReceipt.Create().SetRecordID(record.ID).SetAttemptID(attempt.ID).SetOrderID(attempt.OrderID).SetUserID(attempt.UserID).SetCurrency(p.PayCurrency).SetNetwork(network).SetAmount(string(p.ActuallyPaid)).SetState(state).SetObservationID(observation.ID).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
 	}
-	if existing.Currency != p.PayCurrency || existing.Network != network {
+	// Older receipts retain the provider's original network casing. Compare the
+	// same chain case-insensitively without rewriting historical receipt data.
+	if existing.Currency != p.PayCurrency || !strings.EqualFold(existing.Network, network) {
 		return nil, nowpayments.ErrEvidence
 	}
 	previous, err := nowpayments.Decimal(existing.Amount).Rational()

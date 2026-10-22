@@ -1,3 +1,4 @@
+import { paymentRoutes } from "./routes";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { expect, it, vi } from "vitest";
@@ -75,3 +76,48 @@ it.each(["loading", "error", "all-below"])(
     }
   },
 );
+
+it("searches thirty routes without changing selection or enabling unavailable routes", () => {
+  const p = {
+    ...props(),
+    routes: paymentRoutes.map((route) => ({ ...route, label: route.symbol })),
+    route: "usdtbsc",
+    data: {
+      ...data,
+      routes: paymentRoutes.map((r) => ({
+        code: r.code,
+        minimum_crypto: "10",
+        minimum_fiat: "10",
+        checked_at: data.server_time,
+        valid_until: "2026-10-23T00:00:00Z",
+        status:
+          r.code === "usdtop"
+            ? ("unavailable" as const)
+            : ("available" as const),
+      })),
+    },
+  };
+  render(
+    <MemoryRouter>
+      <PaymentChoices {...p} />
+    </MemoryRouter>,
+  );
+  expect(screen.getAllByRole("radio")).toHaveLength(30);
+  fireEvent.change(screen.getByLabelText("Find a coin or network"), {
+    target: { value: "Optimism" },
+  });
+  expect(screen.getAllByRole("radio")).toHaveLength(2);
+  expect(screen.getByRole("radio", { name: /USDT.*Optimism/ })).toBeDisabled();
+  expect(screen.getByText("Selected:")).toHaveTextContent(
+    "USDT · BNB Smart Chain (BEP20)",
+  );
+  expect(p.change).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Find a coin or network"), {
+    target: { value: "unlisted" },
+  });
+  expect(screen.getByText("No matching coin or network.")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+  expect(
+    screen.getByRole("radio", { name: /USDT.*BNB Smart Chain/ }),
+  ).toBeChecked();
+});

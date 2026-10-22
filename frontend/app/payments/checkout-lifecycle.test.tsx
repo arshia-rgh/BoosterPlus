@@ -160,7 +160,7 @@ it("keeps checkout continuation through the real workspace's temporary access su
     </StrictMode>
   );
   const view = render(content(false));
-  fireEvent.click(screen.getByRole("radio", { name: /USDT BSC/ }));
+  fireEvent.click(screen.getByRole("radio", { name: /USDT.*BNB/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",

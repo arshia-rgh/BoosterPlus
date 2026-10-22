@@ -26556,7 +26556,7 @@
           },
           "routes": {
             "type": "array",
-            "maxItems": 20,
+            "maxItems": 40,
             "items": {
               "$ref": "#/components/schemas/PaymentOption"
             }

@@ -12,6 +12,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/paymentroutes"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 )
 
@@ -78,7 +79,7 @@ func (s *Store) manualRecording(ctx context.Context, tx *ent.Tx, row *ent.MoneyT
 		result.Reason = "provider_attempt"
 	case row.State != "verified" || row.RecipientAt == nil:
 		result.Reason = "recipient_required"
-	case row.Network != "bsc" && row.Network != "eth" && row.Network != "trx" && row.Network != "sol":
+	case !paymentroutes.ManualPayoutNetwork(row.Network):
 		result.Reason = "unsupported_network"
 	default:
 		attempted, err := tx.TransferAttempt.Query().Where(transferattempt.TransferIDEQ(row.ID)).Exist(ctx)

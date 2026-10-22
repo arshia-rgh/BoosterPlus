@@ -72,11 +72,12 @@ func (s *Store) PaymentOptions(ctx context.Context, p *identity.Principal, id st
 	provider, supported := s.provider.(MinimumProvider)
 	readCtx, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()
+	availability, availableErr := s.currencies(readCtx, policy)
 	var group sync.WaitGroup
 	limit := make(chan struct{}, 4)
 	for i, route := range policy.Data.Routes {
 		result.Routes[i] = PaymentOption{Code: route.Code, Status: "unavailable"}
-		if !supported {
+		if !supported || availableErr != nil || availability.Routes[route.Code] != route.Network || !s.instant().Before(availability.ValidUntil) {
 			continue
 		}
 		group.Go(func() {
@@ -97,7 +98,8 @@ func (s *Store) PaymentOptions(ctx context.Context, p *identity.Principal, id st
 			} else if check != nil {
 				return
 			}
-			result.Routes[i] = PaymentOption{Code: route.Code, Status: status, MinimumCrypto: string(entry.value.Crypto), MinimumFiat: string(entry.value.Fiat), CheckedAt: &entry.checked, ValidUntil: &entry.until}
+			until := minTime(entry.until, availability.ValidUntil)
+			result.Routes[i] = PaymentOption{Code: route.Code, Status: status, MinimumCrypto: string(entry.value.Crypto), MinimumFiat: string(entry.value.Fiat), CheckedAt: &entry.checked, ValidUntil: &until}
 		})
 	}
 	group.Wait()

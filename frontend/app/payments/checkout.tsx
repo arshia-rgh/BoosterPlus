@@ -18,6 +18,7 @@ import { continueToProvider } from "./provider-navigation";
 import { paymentTitle } from "./presentation";
 import { usePaymentOptions } from "./options";
 import PaymentChoices from "./payment-choices";
+import { knownRoute } from "./routes";
 import DepositInstructions from "./deposit-instructions";
 import {
   effectiveInstructionStatus,
@@ -349,9 +350,14 @@ export default function Checkout({
               {selectionNotice && <p role="status">{selectionNotice}</p>}
               {selectedRoute && (
                 <p className="payment-route-note">
-                  Use {selectedRoute.label} on {selectedRoute.network} only. The
-                  provider displays the exact crypto amount and destination
-                  before you send.
+                  Use{" "}
+                  {knownRoute(selectedRoute.code, selectedRoute.network)
+                    ?.symbol ?? selectedRoute.label}{" "}
+                  on{" "}
+                  {knownRoute(selectedRoute.code, selectedRoute.network)
+                    ?.network_label ?? selectedRoute.network}{" "}
+                  only. The provider displays the exact crypto amount and
+                  destination before you send.
                 </p>
               )}
               <dl className="payment-facts">

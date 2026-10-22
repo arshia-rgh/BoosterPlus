@@ -115,6 +115,7 @@ func payment(v map[string]any) (Payment, error) {
 		return p, err
 	}
 	p.PriceCurrency, err = boundedText(v["price_currency"], 3)
+	p.PriceCurrency = strings.ToLower(p.PriceCurrency)
 	if err != nil {
 		return p, err
 	}
@@ -122,6 +123,7 @@ func payment(v map[string]any) (Payment, error) {
 		return p, ErrEvidence
 	}
 	p.PayCurrency, err = boundedText(v["pay_currency"], 32)
+	p.PayCurrency = strings.ToLower(p.PayCurrency)
 	if err != nil || !coinPattern.MatchString(p.PayCurrency) {
 		return p, ErrEvidence
 	}
@@ -133,6 +135,7 @@ func payment(v map[string]any) (Payment, error) {
 		p.OutcomeAmount = &d
 	}
 	p.OutcomeCurrency, err = boundedText(v["outcome_currency"], 32)
+	p.OutcomeCurrency = strings.ToLower(p.OutcomeCurrency)
 	if err != nil {
 		return p, err
 	}
@@ -140,6 +143,7 @@ func payment(v map[string]any) (Payment, error) {
 		return p, ErrEvidence
 	}
 	p.Network, err = boundedText(v["network"], 64)
+	p.Network = strings.ToLower(p.Network)
 	if err != nil {
 		return p, err
 	}

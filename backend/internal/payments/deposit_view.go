@@ -47,7 +47,7 @@ func depositView(attempt *ent.PaymentAttempt, p nowpayments.Payment, now time.Ti
 	if !attempt.NativeCheckout || attempt.ActiveContractID == nil || attempt.InvoiceID == nil || matching(attempt, p) != "" || p.Status != "waiting" || !nowpayments.ValidDestination(p.Destination) || !p.Destination.ExpiresAt.After(now) || !attempt.ExpiresAt.After(now) || attempt.FundsDetectedAt != nil {
 		return nil, nil
 	}
-	if slices.Contains([]string{"xrp", "xlm", "eos", "bnbmainnet", "ton"}, p.PayCurrency) && p.Destination.Memo == "" {
+	if slices.Contains([]string{"xrp", "xlm", "eos", "bnbmainnet"}, p.PayCurrency) && p.Destination.Memo == "" {
 		return nil, nil
 	}
 	if p.Network == "" || attempt.DepositPaymentID != "" && attempt.DepositPaymentID != p.ID {

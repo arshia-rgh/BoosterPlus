@@ -18,6 +18,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/paymentroutes"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 )
 
@@ -147,7 +148,7 @@ type Policy struct {
 }
 
 func validatePolicy(p Policy) error {
-	if !validText(p.Label, 1, 120) || !validText(p.Text, 20, 8000) || len(p.Currencies) < 1 || len(p.Currencies) > 3 || len(p.Routes) < 1 || len(p.Routes) > 20 || !slices.Contains([]string{"merchant", "customer"}, p.FeeMode) || !slices.Contains([]string{"fixed", "floating"}, p.RateMode) || p.WindowMinutes < 15 || p.WindowMinutes > 1440 {
+	if !validText(p.Label, 1, 120) || !validText(p.Text, 20, 8000) || len(p.Currencies) < 1 || len(p.Currencies) > 3 || len(p.Routes) < 1 || len(p.Routes) > paymentroutes.Maximum || !slices.Contains([]string{"merchant", "customer"}, p.FeeMode) || !slices.Contains([]string{"fixed", "floating"}, p.RateMode) || p.WindowMinutes < 15 || p.WindowMinutes > 1440 {
 		return ErrInvalid
 	}
 	seen := map[string]bool{}
@@ -159,6 +160,9 @@ func validatePolicy(p Policy) error {
 	}
 	clear(seen)
 	for _, route := range p.Routes {
+		if known, ok := paymentroutes.Find(route.Code); ok && known.Network != route.Network {
+			return ErrInvalid
+		}
 		if !codePattern.MatchString(route.Code) || strings.ContainsAny(route.Code, "_-") || !codePattern.MatchString(route.Network) || !validText(route.Label, 1, 80) || seen[route.Code] {
 			return ErrInvalid
 		}

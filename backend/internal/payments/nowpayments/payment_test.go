@@ -64,3 +64,17 @@ func TestPaymentRejectsWrongIdentityAndInvalidEvidence(t *testing.T) {
 		}
 	}
 }
+
+func TestPaymentCurrencyCasePreservesExactNetwork(t *testing.T) {
+	c := testClient(t)
+	value := paymentFixture()
+	value["price_currency"] = "USD"
+	value["pay_currency"] = "USDCARC20"
+	value["network"] = "AVAXC"
+	value["outcome_currency"] = "USDTBSC"
+	attach(t, c, func(w http.ResponseWriter, _ *http.Request) { respond(t, w, value) })
+	payment, err := c.GetPayment(t.Context(), "123")
+	if err != nil || payment.PayCurrency != "usdcarc20" || payment.Network != "avaxc" || payment.OutcomeCurrency != "usdtbsc" {
+		t.Fatal("case normalization changed route", payment, err)
+	}
+}

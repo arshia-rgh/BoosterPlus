@@ -1,3 +1,4 @@
+import PolicyRoutes from "./policy-routes";
 import {
   FieldValidation,
   useFormValidation,
@@ -330,61 +331,16 @@ export default function PaymentPolicyEditor({
               />
             ))}
           </fieldset>
-          {data.routes.map((route, index) => (
-            <fieldset key={index}>
-              <legend>Asset and network {index + 1}</legend>
-              {(
-                [
-                  ["code", "NOWPayments asset code"],
-                  ["label", "Customer label"],
-                  ["network", "Network identifier"],
-                ] as const
-              ).map(([key, label]) => (
-                <Text
-                  key={key}
-                  name={`routes.${String(index)}.${key}`}
-                  label={label}
-                  value={
-                    key === "code"
-                      ? route.code
-                      : key === "label"
-                        ? route.label
-                        : route.network
-                  }
-                  change={(value) => {
-                    setData({
-                      ...data,
-                      routes: data.routes.map((v, i) =>
-                        i === index ? { ...v, [key]: value } : v,
-                      ),
-                    });
-                  }}
-                />
-              ))}
-              <Action
-                onClick={() => {
-                  setData({
-                    ...data,
-                    routes: data.routes.filter((_, i) => i !== index),
-                  });
-                }}
-              >
-                Remove asset and network {index + 1}
-              </Action>
-            </fieldset>
-          ))}
-          <Action
-            name="routes"
-            disabled={data.routes.length >= 20}
-            onClick={() => {
-              setData({
-                ...data,
-                routes: [...data.routes, { code: "", label: "", network: "" }],
-              });
+          <PolicyRoutes
+            routes={data.routes}
+            change={(routes) => {
+              validation.correct("routes");
+              setIssues((current) =>
+                current.filter((issue) => !issue.path.startsWith("routes")),
+              );
+              setData({ ...data, routes });
             }}
-          >
-            Add asset and network
-          </Action>
+          />
           <div className="catalog-actions">
             <Action disabled={!dirty} onClick={() => void save("save")}>
               Save policy draft
