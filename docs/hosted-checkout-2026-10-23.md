@@ -1,6 +1,6 @@
 # HOSTED177 — USD hosted checkout
 
-Status: implementation and focused qualification complete; signed-release preparation in progress. Not deployed.
+Status: signed `d768cbd` deployed and verified on 23 October 2026, unchanged schema50. The owner-approved hosted payment policy is published.
 
 The owner explicitly replaced the unreleased MINIMUM176 coin-selection/minimum-cache work with NOWPayments hosted checkout. Create one invoice using the accepted USD amount, omit pay_currency, and let the customer choose a coin/network on the hosted page. PLAYORA does not promise that provider minimums disappear or every coin can pay every order.
 
@@ -16,7 +16,7 @@ Superseded MINIMUM176 hook3 passed at0435b7f; its bundle/logs and owned-source a
 
 ## Policy and activation sequence
 
-The owner authenticated to Finance. Current published policy `e1957da6-a9dd-4e66-b78b-4cd2ed4df190` explicitly restricts incoming payments to USDTBSC. Private revision4 is saved with only its title and first two payment paragraphs revised: USD hosted coin/network choice, provider conversion/minimums, and a precise PLAYORA reservation window distinct from provider quote validity. Fee mode merchant, fixed rate, 30-minute window, outgoing USDTBSC route, all remedies/refund/compensation wording and 365-day /30-day /3-appeal settings remain unchanged. Existing accepted copies remain immutable.
+Before activation, published policy `e1957da6-a9dd-4e66-b78b-4cd2ed4df190` explicitly restricted incoming payments to USDTBSC. Private revision4 changed only its title and first two payment paragraphs: USD hosted coin/network choice, provider conversion/minimums, and a precise PLAYORA reservation window distinct from provider quote validity. Fee mode merchant, fixed rate, 30-minute window, outgoing USDTBSC route, all remedies/refund/compensation wording and 365-day /30-day /3-appeal settings remain unchanged. Existing accepted copies remain immutable.
 
 After a signed candidate, preflight and fresh exact owner recovery approval, publish this compatible wording through the normal owner session/MFA **before** activating hosted-selection code; verify and bind the published revision/hash in the activation evidence. The previous application may offer only USDTBSC during that short interval, a compatible subset of the new nonexclusive wording. If publication is blocked, do not activate the new code. No checkout-setting bypass is required.
 
@@ -33,3 +33,17 @@ Server round5 passed formatting, canonical contract generation, affected Go unit
 Isolated TiDB run1 passed10 actual top-level scenarios (including two legacy native outcome subcases), in363 seconds. Its launcher incorrectly listed11 because a historical-network regression had lived in the removed options test file; retain that original receipt and the corrected enumerated `database-verified1.json`. The regression is restored in its own maintained file. Run2 passed the updated empty-payout JSON scenario and the restored historical-network scenario in59 seconds:11 distinct scenarios total. Both exact isolated containers and tmpfs data were removed. Provider responses were synthetic; no live invoice/funds/customer-data test occurred. First-run scenarios are retained rather than unnecessarily rerun after the projection-only correction.
 
 The independent designer approved18 mobile/desktop renders, the actual staff editor/customer preview and the final recovery/network-review states. Engineering review covers source, persisted evidence, legacy compatibility and the coordinated policy-publication sequence. Normal focused tracked hook, exact CI/image scans/signature, preflight and exact owner recovery consent still precede activation.
+
+## Delivered release and recovery record
+
+The normal server focused hook passed backend formatting, vet, golangci, standalone gosec, govulncheck, race tests, generation and builds; frontend 213 files/1,009 component cases and all three portal builds; and 83 deployment configuration cases. Exact CI39861397072 and image release39864233301 passed, and the five immutable image manifests/SBOMs were signed and verified. No full gate or local tests ran.
+
+A concurrent, separately owned documentation commit bfaa30c advanced local main after release dispatch. The original finalizer safely stopped at its HEAD assertion; its failure remains retained. A separately reviewed finalize-only continuation allowed exactly that direct descendant and its three documentation paths, verified the original d768cbd tree and qualification, then authenticated and signed the original image artifacts. No source rebuild or repeated tests were needed and the neighboring commit was not included in the deployed application.
+
+Before pulling images, only the inactive server Go build cache was cleared, reclaiming 3,695,489,024 bytes and restoring approximately22.7% free space. The20% storage floor, source, release images, data and qualification evidence were preserved. Registry-issued repository-pull tokens were memory-only; the GitHub credential stayed local and no server login was persisted.
+
+The signed candidate passed server preflight. The owner then approved “Deploy d768cbd hosted checkout with this recovery risk” and completed the normal authenticator confirmation for policy publication. Reloaded Finance and a fixed SELECT-only inspector verified revision5, published policy `934c1c6e-7355-457b-8455-5d8db12d34fc`, exact reviewed wording and all preserved financial settings/remedies. A reviewed guard checked the same policy again under the release lock before activation. The prior application briefly offering a subset of hosted choices did not require any bypass.
+
+Activation completed at unchanged schema50. All eight application/mail services are healthy and use the expected signed images; public HTTPS/redirects, unchanged legal and retention policies and private webmail passed. All14 read-only live browser cases passed across desktop/mobile public pages, customer/admin/booster sign-in and unauthenticated finance boundaries. The authenticated owner Finance screen also shows USD hosted checkout and a separately labeled seller-payout network list. No real invoice, funds, supplier purchase, message or customer-data test was performed.
+
+Current manifest: `/srv/playora/releases/d768cbd/deployment.env`. Private receipts: `/srv/playora-qualification/hosted177` and `.cache/hosted177/`. The previous signed6022122 remains retained, but old code cannot safely understand new hosted-selection records: application rollback is unqualified and a forward fix may be required. Off-host recovery remains absent and this exact-release exception is consumed. Checkout remains enabled; supplier purchases, automatic outgoing transfers and customer deletion remain disabled; Vendoria remains absent. Existing catalogs, accepted agreements, identities/MFA, private webmail and user-owned prototype/cameo/discount work are preserved.
