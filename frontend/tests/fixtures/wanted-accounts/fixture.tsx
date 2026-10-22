@@ -7,6 +7,8 @@ import { configurationSchema, type Release } from "../../../app/catalog/model";
 import { capabilitiesFor } from "../../../app/catalog/public-discovery";
 import { publicListingSchema } from "../../../app/resale/model";
 import { customerSession } from "../supplier-shop/data";
+import Inbox from "../../../app/support/inbox";
+import { PageHeader } from "../../../app/ui/page-header";
 import catalog from "../mlbb-catalog/configuration167.json";
 import account from "../readability/account.json";
 import "../../../app/styles.css";
@@ -94,6 +96,28 @@ window.fetch = async (input, init) => {
       status,
       headers: { "Content-Type": "application/json" },
     });
+  if (url.pathname === "/api/v1/conversations" && init?.method === "POST") {
+    // Record the created request for review; nothing leaves the fixture.
+    const body = JSON.parse(
+      typeof init.body === "string" ? init.body : "{}",
+    ) as Record<string, unknown>;
+    sessionStorage.setItem("fixture-conversation", JSON.stringify(body));
+    return send({
+      id: "synthetic-thread",
+      booster_shared: false,
+      kind: "presales",
+      order_id: "",
+      linked_order_id: "",
+      subject: body.subject,
+      slug: body.slug,
+      state: "open",
+      version: 1,
+      sequence: 0,
+      unread: 0,
+      updated_at: release.created_at,
+      created_at: release.created_at,
+    });
+  }
   if (init?.method && init.method !== "GET")
     return send({ code: "fixture_read_only" }, 422);
   if (url.pathname.endsWith("/session"))
@@ -109,6 +133,9 @@ window.fetch = async (input, init) => {
       promotions: [],
     });
   if (url.pathname.endsWith("/wanted-accounts")) {
+    // "delay=wanted" holds the read so reviewers can see the settled-only rule.
+    if (params.get("delay") === "wanted")
+      await new Promise((resolve) => setTimeout(resolve, 2500));
     if (scenario === "error") return send({ code: "fixture_failure" }, 503);
     return send({ items: wanted ?? [] });
   }
@@ -118,8 +145,44 @@ window.fetch = async (input, init) => {
       next: "",
     });
   if (url.pathname.endsWith("/favorites")) return send({ items: [], next: "" });
+  if (url.pathname === "/api/v1/conversations")
+    return send({
+      conversations:
+        params.get("inbox") === "long"
+          ? Array.from({ length: 12 }, (_, index) => ({
+              id: `00000000-0000-4000-8000-0000000051${String(index).padStart(2, "0")}`,
+              booster_shared: false,
+              kind: "presales",
+              order_id: "",
+              linked_order_id: "",
+              subject: `Synthetic question ${String(index + 1)}`,
+              slug: "",
+              state: "open",
+              version: 1,
+              sequence: 1,
+              unread: 0,
+              updated_at: release.created_at,
+              created_at: release.created_at,
+            }))
+          : [],
+      next: "",
+    });
+  if (url.pathname === "/api/v1/catalog/games/mobile-legends")
+    return params.get("game") === "error"
+      ? send({ code: "fixture_failure" }, 503)
+      : send(release);
   return send({ code: "fixture_unavailable" }, 404);
 };
+function Created() {
+  return (
+    <main id="main" className="page identity-page">
+      <h1>Synthetic conversation</h1>
+      <pre data-testid="created">
+        {sessionStorage.getItem("fixture-conversation")}
+      </pre>
+    </main>
+  );
+}
 const router = createBrowserRouter([
   {
     element: (
@@ -128,6 +191,19 @@ const router = createBrowserRouter([
       </div>
     ),
     children: [
+      {
+        path: "/support",
+        element: (
+          <main id="main" className="page identity-page" data-portal="customer">
+            <PageHeader title="Support" eyebrow="My account" />
+            <Inbox />
+          </main>
+        ),
+      },
+      {
+        path: "/support/:id",
+        element: <Created />,
+      },
       {
         path: "/games/:slug",
         loader: () => release,

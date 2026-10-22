@@ -42,6 +42,7 @@ import {
 } from "./account-presentation";
 export { ProductTerms } from "./account-presentation";
 import {
+  AccountRequest,
   useWantedAccounts,
   useWantedSection,
   WantedAccounts,
@@ -65,9 +66,17 @@ function GameMarket({ gameSlug }: { gameSlug: string }) {
     <MarketResults
       key={gameSlug + params.toString()}
       gameSlug={gameSlug}
-      teaser={wanted.length > 0 && <WantedTeaser section={section} />}
+      teaser={wanted.items.length > 0 && <WantedTeaser section={section} />}
       footer={
-        <WantedAccounts slug={gameSlug} items={wanted} section={section} />
+        !wanted.settled ? null : wanted.items.length ? (
+          <WantedAccounts
+            slug={gameSlug}
+            items={wanted.items}
+            section={section}
+          />
+        ) : (
+          <AccountRequest slug={gameSlug} />
+        )
       }
     />
   );

@@ -4,6 +4,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { useRef } from "react";
 import { get } from "../identity/api";
 import {
+  AccountRequest,
   useWantedAccounts,
   WantedAccounts,
   WantedTeaser,
@@ -21,12 +22,21 @@ afterEach(() => {
 });
 
 function Harness() {
-  const items = useWantedAccounts("mobile-legends");
+  const wanted = useWantedAccounts("mobile-legends");
   const section = useRef<HTMLElement>(null);
   return (
     <MemoryRouter>
-      <p>{items.length > 0 && <WantedTeaser section={section} />}</p>
-      <WantedAccounts slug="mobile-legends" items={items} section={section} />
+      <p>{wanted.items.length > 0 && <WantedTeaser section={section} />}</p>
+      {wanted.settled &&
+        (wanted.items.length ? (
+          <WantedAccounts
+            slug="mobile-legends"
+            items={wanted.items}
+            section={section}
+          />
+        ) : (
+          <AccountRequest slug="mobile-legends" />
+        ))}
     </MemoryRouter>
   );
 }
@@ -57,10 +67,20 @@ it("renders staff text literally with one sell action", async () => {
     }),
   ).toBeVisible();
   expect(container.querySelector("b, script")).toBeNull();
-  expect(section.querySelectorAll("a")).toHaveLength(1);
+  const links = [...section.querySelectorAll("a")];
+  expect(links.map((link) => link.textContent)).toEqual([
+    "Sell your account",
+    "Request an account",
+  ]);
   expect(
     screen.getByRole("link", { name: "Sell your account" }),
   ).toHaveAttribute("href", "/sell/new?slug=mobile-legends");
+  expect(
+    screen.getByRole("link", { name: "Request an account" }),
+  ).toHaveAttribute("href", "/support?account_request=mobile-legends");
+  expect(section).toHaveTextContent(
+    "Looking for a different account? Message our team with what you want to buy.",
+  );
   expect(section.textContent).not.toMatch(/\$|USD|price|guarantee|instant/i);
 });
 
@@ -76,19 +96,37 @@ it("focuses the section from the teaser and honours reduced motion", async () =>
   expect(scroll).toHaveBeenCalledWith({ block: "start", behavior: "auto" });
 });
 
+it("renders nothing while the wanted read is loading", async () => {
+  vi.mocked(get).mockImplementation(() => new Promise(() => {}));
+  const { container } = render(<Harness />);
+  await act(async () => {
+    await Promise.resolve();
+  });
+  expect(container.querySelector("section, a")).toBeNull();
+});
+
 for (const [name, setup] of [
-  ["loading", () => new Promise(() => {})],
   ["empty", () => Promise.resolve({ items: [] })],
   ["failed", () => Promise.reject(new Error("offline"))],
 ] as const)
-  it(`renders nothing while ${name}`, async () => {
+  it(`offers only the account request when the wanted read is ${name}`, async () => {
     vi.mocked(get).mockImplementation(setup);
     const { container } = render(<Harness />);
-    await act(async () => {
-      await Promise.resolve();
+    const request = await screen.findByRole("region", {
+      name: "Looking for a specific account?",
     });
-    expect(container.querySelector("section, a")).toBeNull();
+    expect(request).toHaveTextContent(
+      "Message our team with what you want to buy.",
+    );
+    expect(
+      screen.getByRole("link", { name: "Request an account" }),
+    ).toHaveAttribute("href", "/support?account_request=mobile-legends");
+    expect(container.querySelector("#wanted-accounts")).toBeNull();
+    expect(
+      screen.queryByRole("link", { name: "Wanted accounts ↓" }),
+    ).toBeNull();
     expect(screen.queryByRole("alert")).toBeNull();
+    expect(request.textContent).not.toMatch(/\$|USD|price|guarantee|instant/i);
   });
 
 it("validates admin text with the published limits", () => {

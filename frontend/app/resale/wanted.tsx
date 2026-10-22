@@ -17,13 +17,37 @@ export const wantedPublicSchema = z.object({
 });
 export type WantedPublic = z.infer<typeof wantedPublicSchema>;
 
-// Non-essential promotion: loading, empty and failed reads all render nothing.
+// Non-essential promotion: empty and failed reads render no list. "settled"
+// keeps the request block from flashing the wrong variant while loading.
 export function useWantedAccounts(slug: string) {
   const resource = useResource(
     `/games/${encodeURIComponent(slug)}/wanted-accounts`,
     wantedPublicSchema,
   );
-  return !resource.error && resource.data ? resource.data.items : [];
+  return {
+    settled: !!resource.error || !!resource.data,
+    items: !resource.error && resource.data ? resource.data.items : [],
+  };
+}
+
+function requestPath(slug: string) {
+  return `/support?account_request=${encodeURIComponent(slug)}`;
+}
+
+// Buyers ask staff for an account; staff may later publish it as wanted.
+export function AccountRequest({ slug }: { slug: string }) {
+  return (
+    <section
+      className="account-request"
+      aria-labelledby="account-request-title"
+    >
+      <h3 id="account-request-title">Looking for a specific account?</h3>
+      <p>Message our team with what you want to buy.</p>
+      <Link className="button secondary" to={requestPath(slug)}>
+        Request an account
+      </Link>
+    </section>
+  );
 }
 
 export function useWantedSection() {
@@ -96,6 +120,15 @@ export function WantedAccounts({
           to={`/sell/new?slug=${encodeURIComponent(slug)}`}
         >
           Sell your account
+        </Link>
+      </div>
+      <div className="account-request-row">
+        <p>
+          Looking for a different account? Message our team with what you want
+          to buy.
+        </p>
+        <Link className="button secondary" to={requestPath(slug)}>
+          Request an account
         </Link>
       </div>
     </section>

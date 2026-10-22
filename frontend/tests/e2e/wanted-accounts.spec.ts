@@ -118,8 +118,144 @@ for (const scenario of ["none", "error"]) {
       page.getByRole("link", { name: "Sell an account →" }),
     ).toBeVisible();
     await expect(page.locator("[role=alert]")).toHaveCount(0);
+    // WANTED174: buyers can still ask for an account without a wanted list.
+    const request = page.getByRole("region", {
+      name: "Looking for a specific account?",
+    });
+    await expect(request).toBeVisible();
+    await expect(request.getByRole("heading", { level: 3 })).toHaveText(
+      "Looking for a specific account?",
+    );
+    await expect(
+      request.getByRole("link", { name: "Request an account" }),
+    ).toHaveAttribute("href", "/support?account_request=mobile-legends");
   });
 }
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`account request row follows the sell action at ${String(width)}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${storefront}/games/mobile-legends/accounts?wanted=one`);
+    const section = page.getByRole("region", { name: "Wanted accounts" });
+    const sell = section.getByRole("link", { name: "Sell your account" });
+    const request = section.getByRole("link", { name: "Request an account" });
+    await expect(request).toHaveAttribute(
+      "href",
+      "/support?account_request=mobile-legends",
+    );
+    await sell.focus();
+    await page.keyboard.press("Tab");
+    await expect(request).toBeFocused();
+    const lead = section.locator(".account-request-row p");
+    await expect(lead).toHaveText(
+      "Looking for a different account? Message our team with what you want to buy.",
+    );
+    const [text, link, primary] = await Promise.all([
+      lead.boundingBox(),
+      request.boundingBox(),
+      sell.boundingBox(),
+    ]);
+    if (width >= 768) expect((link?.x ?? 0) > (text?.x ?? 0)).toBe(true);
+    else expect(Math.abs((link?.x ?? 0) - (text?.x ?? 0))).toBeLessThan(2);
+    expect((link?.height ?? 0) >= 44).toBe(true);
+    expect((link?.y ?? 0) > (primary?.y ?? 0)).toBe(true);
+    expect(
+      await request.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      ),
+    ).not.toBe(
+      await sell.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      ),
+    );
+    await expect(
+      page.getByRole("region", { name: "Looking for a specific account?" }),
+    ).toHaveCount(0);
+    expect(await noOverflow(page)).toBe(true);
+  });
+}
+
+test("neither request variant renders while the wanted read is loading", async ({
+  page,
+}) => {
+  await page.goto(
+    `${storefront}/games/mobile-legends/accounts?wanted=many&delay=wanted`,
+  );
+  await expect(page.getByText("3 accounts in this view")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Request an account" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Wanted accounts" }),
+  ).toBeVisible({ timeout: 8000 });
+  await expect(
+    page.getByRole("region", { name: "Looking for a specific account?" }),
+  ).toHaveCount(0);
+});
+
+for (const width of [390, 1440]) {
+  test(`request link opens a prefilled support start at ${String(width)}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto(`${storefront}/games/mobile-legends/accounts?wanted=none`);
+    await page.getByRole("link", { name: "Request an account" }).click();
+    await expect(page).toHaveURL(/\/support\?account_request=mobile-legends$/);
+    const subject = page.getByLabel("Conversation subject");
+    await expect(subject).toHaveValue("Account request — Mobile Legends");
+    await expect(subject).toBeFocused();
+    await expect(subject).toBeInViewport();
+    const form = page.getByRole("group", { name: "Request an account" });
+    await expect(form).toContainText(
+      "Next, describe the account you want in the chat. Don’t share passwords or codes.",
+    );
+    await expect(page.getByText(/Questions before you order/)).toHaveCount(0);
+    await expect(page.getByText(/use its Messages tab/)).toHaveCount(0);
+    expect(await noOverflow(page)).toBe(true);
+    await page.getByRole("button", { name: "Start conversation" }).click();
+    await expect(page.getByTestId("created")).toBeVisible();
+    const created = JSON.parse(
+      (await page.getByTestId("created").textContent()) ?? "{}",
+    ) as Record<string, unknown>;
+    expect(created).toMatchObject({
+      kind: "presales",
+      subject: "Account request — Mobile Legends",
+      slug: "mobile-legends",
+    });
+    expect(Object.keys(created).sort()).toEqual(
+      ["kind", "order_id", "request_key", "slug", "subject"].sort(),
+    );
+  });
+}
+
+test("request mode keeps the subject in view above a long inbox and falls back safely", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  await page.goto(
+    `${storefront}/support?account_request=mobile-legends&inbox=long`,
+  );
+  const subject = page.getByLabel("Conversation subject");
+  await expect(subject).toBeFocused();
+  await expect(subject).toBeInViewport();
+  for (const query of [
+    "account_request=unknown-game",
+    "account_request=%3Cscript%3E",
+    "account_request=mobile-legends&game=error",
+  ]) {
+    await page.goto(`${storefront}/support?${query}`);
+    // An invalid slug is the plain page: the start form stays collapsed.
+    if (query.includes("%3C"))
+      await page.getByText("New conversation", { exact: true }).click();
+    await expect(page.getByLabel("Conversation subject")).toHaveValue("");
+    await expect(
+      page.getByRole("group", { name: "Start a conversation" }),
+    ).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("script");
+  }
+});
 
 test("admin manages wanted accounts by keyboard with announcements", async ({
   page,

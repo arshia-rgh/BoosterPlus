@@ -4,12 +4,14 @@ import {
   type FieldIssue,
 } from "../ui/form-validation";
 import { uncertain } from "./chat-state";
-import { useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { useLocation, useNavigate, useSearchParams } from "../portal-router";
 import { z } from "../validation";
 import { APIError, post } from "../identity/api";
 import { Action, ErrorNotice, Issues, Text } from "../catalog/controls";
 import { conversationSchema } from "./model";
+import { releaseSchema } from "../catalog/model";
+import { useResource } from "../orders/resource";
 export function OrderSupport({
   id,
   name,
@@ -60,22 +62,74 @@ export function OrderSupport({
     </div>
   );
 }
+export const accountRequestSlug = /^[a-z][a-z0-9-]{0,79}$/;
+export function accountRequestSubject(game: string) {
+  return "Account request — " + game;
+}
 export default function NewSupport() {
   const [params] = useSearchParams();
   const listing = params.get("listing") ?? "";
+  const request = params.get("account_request") ?? "";
+  if (accountRequestSlug.test(request))
+    return <AccountRequestStart key={request} slug={request} />;
+  return (
+    <StartConversation
+      initial={
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          listing,
+        )
+          ? "Question about account " + listing
+          : ""
+      }
+      slug=""
+    />
+  );
+}
+// The subject names the published game from its public release, never raw URL text.
+function AccountRequestStart({ slug }: { slug: string }) {
+  const resource = useResource(
+    `/catalog/games/${encodeURIComponent(slug)}`,
+    releaseSchema,
+  );
+  if (resource.loading) return <p role="status">Loading…</p>;
+  if (resource.error || !resource.data)
+    return <StartConversation initial="" slug="" />;
+  return (
+    <StartConversation
+      initial={accountRequestSubject(resource.data.configuration.name)}
+      slug={slug}
+      request
+    />
+  );
+}
+function StartConversation({
+  initial,
+  slug,
+  request = false,
+}: {
+  initial: string;
+  slug: string;
+  request?: boolean;
+}) {
   const navigate = useNavigate(),
-    [subject, setSubject] = useState(() =>
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-        listing,
-      )
-        ? "Question about account " + listing
-        : "",
-    ),
+    [subject, setSubject] = useState(initial),
     [key, setKey] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
     [unknown, setUnknown] = useState(false),
     [error, setError] = useState<unknown>(null),
-    lock = useRef(false);
+    lock = useRef(false),
+    form = useRef<HTMLFormElement>(null);
+  // A request link lands directly on its prefilled subject, ready to edit.
+  useEffect(() => {
+    if (!request) return;
+    const input = form.current?.querySelector<HTMLInputElement>(
+      "input[name=subject]",
+    );
+    if (!input) return;
+    input.scrollIntoView({ block: "center" });
+    input.focus({ preventScroll: true });
+    input.setSelectionRange(input.value.length, input.value.length);
+  }, [request]);
   const [issues, setIssues] = useState<FieldIssue[]>([]);
   const validation = useFormValidation(
     issues,
@@ -109,7 +163,7 @@ export default function NewSupport() {
     try {
       const result = await post(
         "/conversations",
-        { request_key: key, kind: "presales", order_id: "", subject, slug: "" },
+        { request_key: key, kind: "presales", order_id: "", subject, slug },
         conversationSchema,
       );
       await navigate("/support/" + result.id);
@@ -125,12 +179,19 @@ export default function NewSupport() {
   return (
     <FieldValidation value={validation}>
       <form
+        ref={form}
         className="catalog-section"
         onSubmit={(event) => void submit(event)}
       >
         <fieldset disabled={busy || unknown}>
-          <legend>Start a conversation</legend>
-          <p>Questions before you order. Don’t share passwords or codes.</p>
+          <legend>
+            {request ? "Request an account" : "Start a conversation"}
+          </legend>
+          <p>
+            {request
+              ? "Next, describe the account you want in the chat. Don’t share passwords or codes."
+              : "Questions before you order. Don’t share passwords or codes."}
+          </p>
           <Text
             name="subject"
             label="Conversation subject"
@@ -140,7 +201,7 @@ export default function NewSupport() {
               setKey(crypto.randomUUID());
               setError(null);
             }}
-            help="For an existing order, use its Messages tab."
+            help={request ? "" : "For an existing order, use its Messages tab."}
           />
         </fieldset>
         {unknown && (

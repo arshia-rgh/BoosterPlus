@@ -478,3 +478,56 @@
 .wanted-accounts .wanted-actions {
   margin-top: 1.25rem;
 }
+/* WANTED174: buyer account requests beside wanted accounts. */
+.wanted-accounts .account-request-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  max-width: 64rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #2f4a3b;
+}
+.wanted-accounts .account-request-row p {
+  margin: 0;
+  color: #d3e2d7;
+}
+@media (max-width: 767px) {
+  .wanted-accounts .account-request-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (min-width: 768px) {
+  .wanted-accounts .account-request-row {
+    flex-wrap: nowrap;
+  }
+  .wanted-accounts .account-request-row p {
+    flex: 0 1 auto;
+  }
+  .wanted-accounts .account-request-row .button {
+    flex: none;
+  }
+}
+.account-request {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #355044;
+}
+.account-request h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+@media (min-width: 768px) {
+  .account-request h3 {
+    font-size: 1.5rem;
+  }
+}
+.account-request p {
+  margin: 0.25rem 0 1rem;
+}
+:is(.account-request, .account-request-row) .button.secondary {
+  min-height: 44px;
+  margin: 0;
+}

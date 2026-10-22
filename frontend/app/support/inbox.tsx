@@ -4,7 +4,7 @@ import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { conversationsSchema } from "./model";
 import Deliveries from "./deliveries";
-import NewSupport from "./new";
+import NewSupport, { accountRequestSlug } from "./new";
 import { kindLabel, stateLabel } from "./chat-state";
 import "./chat.css";
 
@@ -141,9 +141,11 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
       </div>
       {!admin && (
         <details
-          open={/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-            params.get("listing") ?? "",
-          )}
+          open={
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+              params.get("listing") ?? "",
+            ) || accountRequestSlug.test(params.get("account_request") ?? "")
+          }
         >
           <summary>New conversation</summary>
           <NewSupport />

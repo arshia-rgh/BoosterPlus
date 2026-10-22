@@ -213,6 +213,9 @@ export function portalReturn(
         )
       )
         params.set("listing", listing);
+      const request = url.searchParams.get("account_request");
+      if (request && /^[a-z][a-z0-9-]{0,79}$/.test(request))
+        params.set("account_request", request);
     }
     if (portal === "customer" && path === "/sell/new") {
       const slug = url.searchParams.get("slug");

@@ -54,3 +54,21 @@ W2-01–W2-03 verified at 1440 and 360 px: the race case shows “Check the high
 Non-blocking observations: the shared `Check` control places inline errors about 28 px below the box at the checkbox edge (site-wide behaviour, left unchanged); the shared `ErrorNotice` duplication (O1) is out of scope.
 
 Limits: public page reviewed in Chromium and WebKit at 320/390/768/1440 px; admin in Chromium at 1440/360 px; synthetic fixtures only; no physical devices or screen-reader software (accessibility verified through focus position, live-region text and accessible names); WebKit's default Tab behaviour skips links, so keyboard order was judged in Chromium; sign-in return to the sell flow relies on existing component tests.
+
+# WANTED174 — account request button
+
+Scope: an owner-requested “Request an account” action beside each game's wanted accounts, opening the existing pre-sales support start pre-scoped to that game; the `/support` start form's request mode; the sign-in return of that query. Same independent senior designer, same synthetic fixtures (`tests/fixtures/wanted-accounts` now also serves `/support`).
+
+## Round 0 — decisions
+
+| ID | Decision |
+| --- | --- |
+| E1a | With shown entries: a request row inside the wanted section after “Sell your account” — divider, lead-in “Looking for a different account? Message our team with what you want to buy.”, secondary “Request an account”; one line from 768 px, stacked and flush-left below. |
+| E1b | With no shown entries or a failed read: a separate quiet section, h3 “Looking for a specific account?”, line “Message our team with what you want to buy.”, the same secondary button; no eyebrow, no list, no teaser. |
+| E1c–d | Neither variant until the wanted read settles; shown whenever the game Accounts section renders, including with no stock; not on the global marketplace; teaser unchanged. |
+| E2 | Link to `/support?account_request=<slug>`; subject “Account request — {published game name}”, editable; request mode legend “Request an account”, single note “Next, describe the account you want in the chat. Don’t share passwords or codes.”, no order help text, panel open, Subject focused in view with caret at the end; no auto-sent message; any unresolvable game falls back to the ordinary empty form. |
+| E3 | “Sell your account” stays primary; “Request an account” is the storefront secondary outline link (44 px, shared focus ring, no motion); signed-out visitors return to the same query after sign-in. |
+
+## Round 1 — PASS
+
+Verified in Chromium and WebKit at 320/390/768/1440 px (`many`, `one`, `none`, `error`, `stock=none`), loading sampled every 250 ms with a held read (no wrong-variant flash), and support request mode at 390/1440 px with and without a long inbox (open panel, verbatim legend/note, prefilled subject, focus and caret, slug sent, no message sent). Fallbacks: unknown game and failed game read show the ordinary empty form without the slug; a crafted value is a plain `/support` visit with nothing echoed. Accepted deviation: an invalid slug leaves the start panel collapsed like a normal visit. **Verdict: PASS — no remaining actionable findings in this scope.** Observations: long prefilled subjects scroll inside the single-line field at 390 px; fallback forms take no automatic focus. Limits: no screen-reader software or physical devices; sign-in return verified by component test, not rendered; synthetic data only.
