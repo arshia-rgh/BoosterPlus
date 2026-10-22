@@ -199,6 +199,16 @@ func SubmissionIDHasSuffix(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldHasSuffix(FieldSubmissionID, v))
 }
 
+// SubmissionIDIsNil applies the IsNil predicate on the "submission_id" field.
+func SubmissionIDIsNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldIsNull(FieldSubmissionID))
+}
+
+// SubmissionIDNotNil applies the NotNil predicate on the "submission_id" field.
+func SubmissionIDNotNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldNotNull(FieldSubmissionID))
+}
+
 // SubmissionIDEqualFold applies the EqualFold predicate on the "submission_id" field.
 func SubmissionIDEqualFold(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldEqualFold(FieldSubmissionID, v))
@@ -262,6 +272,16 @@ func OfferIDHasPrefix(v string) predicate.AccountListing {
 // OfferIDHasSuffix applies the HasSuffix predicate on the "offer_id" field.
 func OfferIDHasSuffix(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldHasSuffix(FieldOfferID, v))
+}
+
+// OfferIDIsNil applies the IsNil predicate on the "offer_id" field.
+func OfferIDIsNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldIsNull(FieldOfferID))
+}
+
+// OfferIDNotNil applies the NotNil predicate on the "offer_id" field.
+func OfferIDNotNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldNotNull(FieldOfferID))
 }
 
 // OfferIDEqualFold applies the EqualFold predicate on the "offer_id" field.
@@ -329,6 +349,16 @@ func SellerIDHasSuffix(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldHasSuffix(FieldSellerID, v))
 }
 
+// SellerIDIsNil applies the IsNil predicate on the "seller_id" field.
+func SellerIDIsNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldIsNull(FieldSellerID))
+}
+
+// SellerIDNotNil applies the NotNil predicate on the "seller_id" field.
+func SellerIDNotNil() predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldNotNull(FieldSellerID))
+}
+
 // SellerIDEqualFold applies the EqualFold predicate on the "seller_id" field.
 func SellerIDEqualFold(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldEqualFold(FieldSellerID, v))
@@ -337,6 +367,26 @@ func SellerIDEqualFold(v string) predicate.AccountListing {
 // SellerIDContainsFold applies the ContainsFold predicate on the "seller_id" field.
 func SellerIDContainsFold(v string) predicate.AccountListing {
 	return predicate.AccountListing(sql.FieldContainsFold(FieldSellerID, v))
+}
+
+// OriginEQ applies the EQ predicate on the "origin" field.
+func OriginEQ(v Origin) predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldEQ(FieldOrigin, v))
+}
+
+// OriginNEQ applies the NEQ predicate on the "origin" field.
+func OriginNEQ(v Origin) predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldNEQ(FieldOrigin, v))
+}
+
+// OriginIn applies the In predicate on the "origin" field.
+func OriginIn(vs ...Origin) predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldIn(FieldOrigin, vs...))
+}
+
+// OriginNotIn applies the NotIn predicate on the "origin" field.
+func OriginNotIn(vs ...Origin) predicate.AccountListing {
+	return predicate.AccountListing(sql.FieldNotIn(FieldOrigin, vs...))
 }
 
 // GameIDEQ applies the EQ predicate on the "game_id" field.

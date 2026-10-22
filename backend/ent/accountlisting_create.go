@@ -26,15 +26,45 @@ func (_c *AccountListingCreate) SetSubmissionID(v string) *AccountListingCreate 
 	return _c
 }
 
+// SetNillableSubmissionID sets the "submission_id" field if the given value is not nil.
+func (_c *AccountListingCreate) SetNillableSubmissionID(v *string) *AccountListingCreate {
+	if v != nil {
+		_c.SetSubmissionID(*v)
+	}
+	return _c
+}
+
 // SetOfferID sets the "offer_id" field.
 func (_c *AccountListingCreate) SetOfferID(v string) *AccountListingCreate {
 	_c.mutation.SetOfferID(v)
 	return _c
 }
 
+// SetNillableOfferID sets the "offer_id" field if the given value is not nil.
+func (_c *AccountListingCreate) SetNillableOfferID(v *string) *AccountListingCreate {
+	if v != nil {
+		_c.SetOfferID(*v)
+	}
+	return _c
+}
+
 // SetSellerID sets the "seller_id" field.
 func (_c *AccountListingCreate) SetSellerID(v string) *AccountListingCreate {
 	_c.mutation.SetSellerID(v)
+	return _c
+}
+
+// SetNillableSellerID sets the "seller_id" field if the given value is not nil.
+func (_c *AccountListingCreate) SetNillableSellerID(v *string) *AccountListingCreate {
+	if v != nil {
+		_c.SetSellerID(*v)
+	}
+	return _c
+}
+
+// SetOrigin sets the "origin" field.
+func (_c *AccountListingCreate) SetOrigin(v accountlisting.Origin) *AccountListingCreate {
+	_c.mutation.SetOrigin(v)
 	return _c
 }
 
@@ -299,28 +329,27 @@ func (_c *AccountListingCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AccountListingCreate) check() error {
-	if _, ok := _c.mutation.SubmissionID(); !ok {
-		return &ValidationError{Name: "submission_id", err: errors.New(`ent: missing required field "AccountListing.submission_id"`)}
-	}
 	if v, ok := _c.mutation.SubmissionID(); ok {
 		if err := accountlisting.SubmissionIDValidator(v); err != nil {
 			return &ValidationError{Name: "submission_id", err: fmt.Errorf(`ent: validator failed for field "AccountListing.submission_id": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.OfferID(); !ok {
-		return &ValidationError{Name: "offer_id", err: errors.New(`ent: missing required field "AccountListing.offer_id"`)}
 	}
 	if v, ok := _c.mutation.OfferID(); ok {
 		if err := accountlisting.OfferIDValidator(v); err != nil {
 			return &ValidationError{Name: "offer_id", err: fmt.Errorf(`ent: validator failed for field "AccountListing.offer_id": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.SellerID(); !ok {
-		return &ValidationError{Name: "seller_id", err: errors.New(`ent: missing required field "AccountListing.seller_id"`)}
-	}
 	if v, ok := _c.mutation.SellerID(); ok {
 		if err := accountlisting.SellerIDValidator(v); err != nil {
 			return &ValidationError{Name: "seller_id", err: fmt.Errorf(`ent: validator failed for field "AccountListing.seller_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Origin(); !ok {
+		return &ValidationError{Name: "origin", err: errors.New(`ent: missing required field "AccountListing.origin"`)}
+	}
+	if v, ok := _c.mutation.Origin(); ok {
+		if err := accountlisting.OriginValidator(v); err != nil {
+			return &ValidationError{Name: "origin", err: fmt.Errorf(`ent: validator failed for field "AccountListing.origin": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.GameID(); !ok {
@@ -452,15 +481,19 @@ func (_c *AccountListingCreate) createSpec() (*AccountListing, *sqlgraph.CreateS
 	}
 	if value, ok := _c.mutation.SubmissionID(); ok {
 		_spec.SetField(accountlisting.FieldSubmissionID, field.TypeString, value)
-		_node.SubmissionID = value
+		_node.SubmissionID = &value
 	}
 	if value, ok := _c.mutation.OfferID(); ok {
 		_spec.SetField(accountlisting.FieldOfferID, field.TypeString, value)
-		_node.OfferID = value
+		_node.OfferID = &value
 	}
 	if value, ok := _c.mutation.SellerID(); ok {
 		_spec.SetField(accountlisting.FieldSellerID, field.TypeString, value)
-		_node.SellerID = value
+		_node.SellerID = &value
+	}
+	if value, ok := _c.mutation.Origin(); ok {
+		_spec.SetField(accountlisting.FieldOrigin, field.TypeEnum, value)
+		_node.Origin = value
 	}
 	if value, ok := _c.mutation.GameID(); ok {
 		_spec.SetField(accountlisting.FieldGameID, field.TypeString, value)

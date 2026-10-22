@@ -42,6 +42,9 @@ func problem(w http.ResponseWriter, err error) error {
 		return write(w, map[string]any{"code": "resale_invalid", "issues": invalid.Issues})
 	}
 	switch {
+	case errors.Is(err, ErrGameUnavailable):
+		w.WriteHeader(http.StatusConflict)
+		return write(w, map[string]string{"code": "resale_game_unavailable"})
 	case errors.Is(err, ErrInvalid), errors.Is(err, vault.ErrInvalid):
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return write(w, map[string]string{"code": "resale_invalid"})
@@ -219,11 +222,23 @@ func (s *Store) Register(mux *http.ServeMux) {
 		return s.CreateListing(ctx, p, id)
 	}))
 	register("GET /api/v1/admin/account-listings", "admin", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-		rows, next, err := s.Inventory(r.Context(), p, r.URL.Query().Get("after"), r.URL.Query().Get("state"))
+		q := r.URL.Query()
+		rows, next, counts, err := s.Inventory(r.Context(), p, InventoryFilter{After: q.Get("after"), State: q.Get("state"), Ownership: q.Get("ownership"), Origin: q.Get("origin")})
 		if err != nil {
 			return err
 		}
-		return write(w, map[string]any{"items": rows, "next": next})
+		return write(w, map[string]any{"items": rows, "next": next, "counts": counts})
+	})
+	register("POST /api/v1/admin/account-listings", "admin", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+		var input PlayoraListingInput
+		if err := read(r, &input); err != nil {
+			return err
+		}
+		value, err := s.CreatePlayoraListing(r.Context(), p, input)
+		if err != nil {
+			return err
+		}
+		return write(w, value)
 	})
 	register("GET /api/v1/admin/account-listings/{id}", "admin", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		value, err := s.Listing(r.Context(), p, r.PathValue("id"))

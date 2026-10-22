@@ -87,9 +87,12 @@ func CancelPaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.T
 	if err != nil {
 		return err
 	}
-	_, err = tx.SellerOffer.UpdateOneID(listing.OfferID).ClearControlVerifiedAt().SetControlVerifiedBy("").SetControlEvidence("").AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	if err != nil {
-		return err
+	// PLAYORA-created inventory has no seller offer whose handover could be reset.
+	if listing.OfferID != nil {
+		_, err = tx.SellerOffer.UpdateOneID(*listing.OfferID).ClearControlVerifiedAt().SetControlVerifiedBy("").SetControlEvidence("").AddVersion(1).SetUpdatedAt(now).Save(ctx)
+		if err != nil {
+			return err
+		}
 	}
 	return availabilityevents.Changed(ctx, tx, purchase.GameID)
 }

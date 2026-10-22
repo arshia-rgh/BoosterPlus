@@ -18042,6 +18042,22 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "ownership",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["playora", "seller"]
+            }
+          },
+          {
+            "name": "origin",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["playora", "buy_first", "consignment"]
+            }
           }
         ],
         "responses": {
@@ -18062,6 +18078,57 @@
                 "schema": {
                   "$ref": "#/components/schemas/ResaleProblem"
                 }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postResaleApiV1AdminAccountListings",
+        "summary": "Create a private draft for an account PLAYORA already owns; the request key is the listing ID and retries return the same draft. No seller agreement, commission or payout.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInventoryItem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayoraListingInput"
               }
             }
           }
@@ -23906,7 +23973,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["game", "cover", "product", "inline"]
+              "enum": ["game", "cover", "product", "inline", "account"]
             }
           },
           {
@@ -33031,6 +33098,23 @@
           },
           "draft": {
             "$ref": "#/components/schemas/AccountProduct"
+          },
+          "origin": {
+            "type": "string",
+            "enum": ["playora", "buy_first", "consignment"]
+          },
+          "ownership": {
+            "type": "string",
+            "enum": ["playora", "seller"]
+          },
+          "seller_payout_confirmed": {
+            "type": "boolean"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -33042,7 +33126,9 @@
           "slug",
           "release_id",
           "version",
-          "draft"
+          "draft",
+          "origin",
+          "ownership"
         ]
       },
       "AccountInventory": {
@@ -33057,9 +33143,22 @@
           },
           "next": {
             "type": "string"
+          },
+          "counts": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "playora": {
+                "type": "integer"
+              },
+              "seller": {
+                "type": "integer"
+              }
+            },
+            "required": ["playora", "seller"]
           }
         },
-        "required": ["items", "next"]
+        "required": ["items", "next", "counts"]
       },
       "AccountListingInput": {
         "type": "object",
@@ -39113,6 +39212,26 @@
           "attention",
           "repriced"
         ]
+      },
+      "PlayoraListingInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "game_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "required": ["request_key", "game_id", "title"]
       }
     },
     "securitySchemes": {

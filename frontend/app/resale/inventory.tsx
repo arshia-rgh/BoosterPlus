@@ -1,6 +1,7 @@
 import {
   ListingReadiness,
   useSellingProgress,
+  type ReadinessResource,
 } from "../submissions/selling-progress";
 import { Loading } from "../ui/loading";
 import { AgreementTemplate } from "./agreement-template";
@@ -33,10 +34,20 @@ import { sessionEventMatches } from "../identity/portal";
 import { denied } from "../support/chat-state";
 import { RecordShell } from "../ui/record-shell";
 import "../orders/admin-workspace.css";
+import { StatusBadge } from "../ui/primitives";
+import { minorDisplay } from "../catalog/price-estimate";
+import ArtworkUpload from "../artwork/upload";
+import {
+  CreatePlayoraListing,
+  OwnershipChip,
+  OwnershipPanel,
+  saleOutcome,
+  sourceLabel,
+} from "./ownership";
 import { post } from "../identity/api";
 import ListingPreview from "./listing-preview";
 import { useResource } from "../orders/resource";
-import { submissionSchema } from "../submissions/model";
+import { submissionSchema, type Submission } from "../submissions/model";
 import { messagesSchema } from "../support/model";
 import {
   inventorySchema,
@@ -142,19 +153,54 @@ function productText(product: Product, key: (typeof textFields)[number][0]) {
       return product.acknowledgement_terms;
   }
 }
+type EditorProps = {
+  row: Listing;
+  changed: () => void;
+  back: string;
+  loading: boolean;
+  suspended: boolean;
+};
+// Seller rows read their submission and selling progress; PLAYORA-created rows
+// have neither, so their readiness comes from the listing itself.
+function SellerEditor(props: EditorProps) {
+  const submission = useResource(
+    `/admin/submissions/${props.row.submission_id}`,
+    submissionSchema,
+  );
+  const progress = useSellingProgress(
+    props.row.submission_id,
+    true,
+    props.row.version,
+  );
+  return <Editor {...props} submission={submission} progress={progress} />;
+}
+function PlayoraEditor(props: EditorProps) {
+  const progress: ReadinessResource = {
+    data: {
+      blockers: props.row.blockers ?? [],
+      listing_id: props.row.id,
+      listing_state: props.row.state,
+    },
+    error: null,
+    loading: props.loading,
+    reload: props.changed,
+  };
+  return <Editor {...props} submission={null} progress={progress} />;
+}
 function Editor({
   row,
   changed,
   back,
   loading,
   suspended,
-}: {
-  row: Listing;
-  changed: () => void;
-  back: string;
-  loading: boolean;
-  suspended: boolean;
+  submission,
+  progress,
+}: EditorProps & {
+  submission: ReturnType<typeof useResource<Submission>> | null;
+  progress: ReadinessResource;
 }) {
+  const owned = row.origin === "playora",
+    playoraOwned = row.ownership === "playora";
   const [product, setProduct] = useState(row.draft),
     [reviewed, setReviewed] = useState(false),
     [baseVersion, setBaseVersion] = useState(row.version),
@@ -162,11 +208,12 @@ function Editor({
     [preview, setPreview] = useState(false),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false),
-    submission = useResource(
-      `/admin/submissions/${row.submission_id}`,
-      submissionSchema,
-    );
-  const progress = useSellingProgress(row.submission_id, true, row.version);
+    [action, setAction] = useState(""),
+    [published, setPublished] = useState(false);
+  const publishedNotice = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (published) publishedNotice.current?.focus();
+  }, [published]);
   const [params, setParams] = useSearchParams();
   const location: Location<unknown> = useLocation();
   const validation = useActionValidation((target) => {
@@ -230,7 +277,9 @@ function Editor({
       return;
     lock.current = true;
     setBusy(true);
+    setAction(action);
     setError(null);
+    const first = row.release_id === "";
     try {
       const saved = await post(
         `/admin/account-listings/${row.id}/${action}`,
@@ -238,6 +287,7 @@ function Editor({
         listingSchema,
       );
       reset(saved);
+      setPublished(action === "publish" && first);
       changed();
       progress.reload();
     } catch (cause) {
@@ -246,11 +296,12 @@ function Editor({
     } finally {
       lock.current = false;
       setBusy(false);
+      setAction("");
     }
   }
   return (
     <FieldValidation value={validation.validation}>
-      <div className="admin-order-workspace">
+      <div className="admin-order-workspace ownership-record">
         {blocker.state === "blocked" && (
           <section
             ref={leavePrompt}
@@ -286,17 +337,18 @@ function Editor({
           headingLevel={2}
           compactReference
           workspace="Admin workspace"
-          stickyStatus={row.state}
+          stickyStatus={statusLabel(row.state)}
           back={{
             to: back,
             state: location.state,
-            label: back.startsWith("/admin/submissions/")
-              ? "Account sale"
-              : "Account inventory",
+            label:
+              !owned && back.startsWith("/admin/submissions/")
+                ? "Account sale"
+                : "Account inventory",
           }}
           sections={[
             { id: "details", label: "Listing details" },
-            { id: "images", label: "Public images" },
+            { id: "images", label: owned ? "Account images" : "Public images" },
             { id: "terms", label: "Buyer terms" },
             { id: "publication", label: "Preview & publication" },
           ]}
@@ -304,8 +356,11 @@ function Editor({
             <>
               <strong>{row.draft.title || "Untitled account"}</strong>
               <span>{row.game}</span>
-              <span className="status">{row.state}</span>
-              <Action disabled={loading} onClick={changed}>
+              <OwnershipChip row={row} />
+              <StatusBadge tone={statusTone(row.state)}>
+                {statusLabel(row.state)}
+              </StatusBadge>
+              <Action variant="secondary" disabled={loading} onClick={changed}>
                 Refresh inventory item
               </Action>
             </>
@@ -313,25 +368,27 @@ function Editor({
         >
           {(section) => (
             <>
-              <p>Inventory state: {row.state}</p>
-              <Link
-                to={`/admin/submissions/${row.submission_id}?section=agreement`}
-                state={{
-                  inventorySearch:
-                    typeof location.state === "object" &&
-                    location.state !== null &&
-                    "inventorySearch" in location.state &&
-                    typeof location.state.inventorySearch === "string"
-                      ? location.state.inventorySearch.slice(0, 2048)
-                      : undefined,
-                  inventoryID: row.id,
-                  inventorySection:
-                    new URLSearchParams(location.search).get("section") ??
-                    "details",
-                }}
-              >
-                Seller agreement and sale progress
-              </Link>
+              <OwnershipPanel row={row} />
+              {!owned && (
+                <Link
+                  to={`/admin/submissions/${row.submission_id}?section=agreement`}
+                  state={{
+                    inventorySearch:
+                      typeof location.state === "object" &&
+                      location.state !== null &&
+                      "inventorySearch" in location.state &&
+                      typeof location.state.inventorySearch === "string"
+                        ? location.state.inventorySearch.slice(0, 2048)
+                        : undefined,
+                    inventoryID: row.id,
+                    inventorySection:
+                      new URLSearchParams(location.search).get("section") ??
+                      "details",
+                  }}
+                >
+                  Seller agreement and sale progress
+                </Link>
+              )}
               <ErrorNotice error={error} hideIssues />
               <ValidationSummary
                 issues={validation.validation.issues}
@@ -367,7 +424,7 @@ function Editor({
                   hidden={section !== "details"}
                   data-editor-section="details"
                 >
-                  {!product.commission && (
+                  {!product.commission && product.amount_minor !== "" && (
                     <p>
                       This saved listing uses its earlier price. Enter an
                       explicit base below to apply the new 5% buyer commission
@@ -377,6 +434,7 @@ function Editor({
                   )}
                   <BuyerPriceInput
                     key={baseVersion}
+                    consignment={row.origin === "consignment"}
                     price={product.commission}
                     change={(commission) => {
                       setProduct((p) => ({
@@ -442,8 +500,9 @@ function Editor({
                   data-editor-section="details"
                 >
                   <SummaryFields
+                    staff={owned}
                     product={product}
-                    submission={submission.data ?? undefined}
+                    submission={submission?.data ?? undefined}
                     change={(next) => {
                       setProduct(next);
                       setDirty(true);
@@ -556,6 +615,7 @@ function Editor({
                 </div>
                 <div hidden={section !== "images"} data-editor-section="images">
                   <CoverEditor
+                    uploads={owned}
                     product={product}
                     change={(patch) => {
                       setProduct((old) => ({ ...old, ...patch }));
@@ -565,7 +625,30 @@ function Editor({
                     }}
                   />
                 </div>
-                {section === "images" && (
+                {section === "images" && owned && (
+                  <div className="account-uploads">
+                    <ArtworkUpload
+                      purpose="account"
+                      value=""
+                      pathEntry={false}
+                      pathLabel="Account image"
+                      disabled={product.media_ids.length >= 8}
+                      disabledHint="8 images added. Remove one to add another."
+                      change={(asset) => {
+                        const id = /\/artwork\/([0-9a-f-]{36})\/wide$/.exec(
+                          asset,
+                        )?.[1];
+                        if (
+                          id &&
+                          !product.media_ids.includes(id) &&
+                          product.media_ids.length < 8
+                        )
+                          edit("media_ids", [...product.media_ids, id]);
+                      }}
+                    />
+                  </div>
+                )}
+                {section === "images" && submission && (
                   <>
                     <h3>Public image selection</h3>
                     <ErrorNotice error={submission.error} />
@@ -576,7 +659,7 @@ function Editor({
                     )}
                   </>
                 )}
-                {section === "images" && submission.data && (
+                {section === "images" && submission?.data && (
                   <Images
                     conversation={submission.data.conversation_id}
                     selected={product.media_ids}
@@ -595,18 +678,21 @@ function Editor({
                 <div hidden={section !== "publication"}>
                   <h3>Preview & publication</h3>
                   <ListingReadiness
+                    owned={owned}
                     resource={progress}
                     submissionID={row.submission_id}
                     dirty={dirty}
                     reviewed={reviewed}
                     preview={preview}
                   />
-                  {progress.data?.listing_state === "published" && (
-                    <p role="status">
-                      This account is live. Publishing again replaces its public
-                      version; existing orders keep their accepted terms.
-                    </p>
-                  )}
+                  {progress.data?.listing_state === "published" &&
+                    !published && (
+                      <p role="status">
+                        This account is live. Publishing again replaces its
+                        public version; existing orders keep their accepted
+                        terms.
+                      </p>
+                    )}
                   {progress.data?.listing_state === "withdrawn" && (
                     <p role="status">
                       This listing is paused. Complete the steps below to
@@ -617,8 +703,23 @@ function Editor({
                     Preview the saved listing before publishing. Draft changes
                     are private until publication.
                   </p>
+                  {published && (
+                    <p
+                      role="status"
+                      tabIndex={-1}
+                      ref={publishedNotice}
+                      className="ownership-success"
+                    >
+                      Published. Buyers can now find this account on the{" "}
+                      {row.game} Accounts page.
+                    </p>
+                  )}
                   <Check
-                    label="I reviewed every public field and selected image, with permission to publish, and removed private information"
+                    label={
+                      playoraOwned
+                        ? "I confirm PLAYORA owns this account, and I reviewed every public field and image and removed private information."
+                        : "I reviewed every public field and selected image, with permission to publish, and removed private information"
+                    }
                     value={reviewed}
                     change={setReviewed}
                   />
@@ -643,7 +744,9 @@ function Editor({
                     }
                     onClick={() => void act("publish")}
                   >
-                    Publish account listing
+                    {busy && action === "publish"
+                      ? "Publishing…"
+                      : "Publish account listing"}
                   </Action>
                   {row.state === "published" && (
                     <Action onClick={() => void act("withdraw")}>
@@ -786,7 +889,7 @@ function InventorySession() {
       )}
       {row && (
         <div hidden={suspended}>
-          <Editor
+          <EditorFor
             row={row}
             changed={reload}
             back={back}
@@ -798,77 +901,254 @@ function InventorySession() {
     </>
   );
 }
+function EditorFor(props: EditorProps) {
+  return props.row.origin === "playora" ? (
+    <PlayoraEditor {...props} />
+  ) : (
+    <SellerEditor {...props} />
+  );
+}
 export function InventoryDetail() {
   const { id } = useParams();
   return <InventorySession key={id} />;
 }
+const statusOptions = [
+  ["", "All statuses"],
+  ["draft", "Draft"],
+  ["published", "Published"],
+  ["reserved", "Reserved"],
+  ["sold", "Sold"],
+  ["withdrawn", "Paused"],
+] as const;
+const statusLabel = (state: string) =>
+  statusOptions.find(([key]) => key === state)?.[1] ?? state;
+const statusTone = (state: string) =>
+  state === "published"
+    ? "positive"
+    : state === "reserved"
+      ? "warning"
+      : state === "sold"
+        ? "info"
+        : "neutral";
+const owners = [
+  ["", "All", "listings"],
+  ["playora", "PLAYORA-owned", "PLAYORA-owned listings"],
+  ["consignment", "Seller consignment", "seller consignment listings"],
+] as const;
 export function AccountInventory() {
   const [params, setParams] = useSearchParams();
-  const state = params.get("state") ?? "",
+  const rawOwner = params.get("owner") ?? "",
+    owner =
+      rawOwner === "playora" || rawOwner === "consignment" ? rawOwner : "",
+    state = statusOptions.some(([key]) => key === params.get("state"))
+      ? (params.get("state") ?? "")
+      : "",
     after = params.get("after") ?? "";
-  const setState = (state: string) => {
-    setParams({ ...Object.fromEntries(params), state, after: "" });
+  const [creating, setCreating] = useState(false);
+  const addButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    // Unknown ownership values fall back to All without adding history.
+    if (rawOwner && !owner) {
+      const next = new URLSearchParams(params);
+      next.delete("owner");
+      setParams(next, { replace: true });
+    }
+  }, [rawOwner, owner, params, setParams]);
+  const query = (changes: Record<string, string>) => {
+    const next = new URLSearchParams(params);
+    for (const [key, value] of Object.entries({ ...changes })) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    return next;
   };
-  const setAfter = (after: string) => {
-    setParams({ ...Object.fromEntries(params), after });
+  const setState = (value: string) => {
+    setParams(query({ state: value, after: "" }), { preventScrollReset: true });
   };
+  const setAfter = (value: string) => {
+    setParams(query({ after: value }));
+  };
+  const ownership =
+    owner === "playora" ? "playora" : owner === "consignment" ? "seller" : "";
   const resource = useResource(
-    `/admin/account-listings?state=${encodeURIComponent(state)}&after=${encodeURIComponent(after)}`,
+    `/admin/account-listings?state=${encodeURIComponent(state)}&ownership=${ownership}&after=${encodeURIComponent(after)}`,
     inventorySchema,
   );
+  const counts = resource.data?.counts;
+  const count = (key: string) =>
+    !counts
+      ? undefined
+      : key === "playora"
+        ? counts.playora
+        : key === "consignment"
+          ? counts.seller
+          : counts.playora + counts.seller;
+  const current = owners.find(([key]) => key === owner) ?? owners[0];
+  const shown = count(owner);
+  const search = params.toString();
   return (
-    <section>
-      <Link to="/admin/submissions">
-        Review seller submissions and create offers
-      </Link>
-      <Select
-        label="Inventory status"
-        value={state}
-        change={(v) => {
-          setState(v);
-        }}
-        options={[
-          "",
-          "draft",
-          "published",
-          "reserved",
-          "sold",
-          "withdrawn",
-        ].map((s) => [s, s || "All states"] as const)}
-      />
-      <Action onClick={resource.reload}>Refresh inventory</Action>
-      <ErrorNotice error={resource.error} />
-      <ul>
-        {resource.data?.items.map((row) => (
-          <li key={row.id}>
-            <Link
-              to={`/admin/accounts/${row.id}?section=details`}
-              state={{ inventorySearch: params.toString() }}
-            >
-              {row.draft.title || "Untitled reviewed account"}
-            </Link>{" "}
-            · {row.game} · {row.state}
-          </li>
-        ))}
-      </ul>
-      {resource.data?.items.length === 0 && <p>No inventory in this view.</p>}
-      {resource.data?.next && (
-        <Action
+    <section className="account-inventory">
+      <p className="account-inventory-intro">
+        PLAYORA-owned accounts are sold for PLAYORA. Seller consignment accounts
+        are sold for their seller.
+      </p>
+      <div className="account-inventory-actions">
+        <button
+          ref={addButton}
+          type="button"
+          className="button"
+          disabled={creating}
           onClick={() => {
-            setAfter(resource.data?.next ?? "");
+            setCreating(true);
           }}
         >
-          More inventory
-        </Action>
+          Add a PLAYORA account
+        </button>
+        <Link className="button secondary compact" to="/admin/submissions">
+          Seller submissions
+        </Link>
+      </div>
+      {creating && (
+        <CreatePlayoraListing
+          search={search}
+          close={() => {
+            setCreating(false);
+            requestAnimationFrame(() => addButton.current?.focus());
+          }}
+        />
       )}
-      {after && (
-        <Action
-          onClick={() => {
-            setAfter("");
-          }}
-        >
-          First inventory
-        </Action>
+      <div className="account-inventory-filters">
+        <div className="ownership-filter" role="group" aria-label="Ownership">
+          {owners.map(([key, label]) => (
+            <Link
+              key={key}
+              to={`?${query({ owner: key, after: "" }).toString()}`}
+              className="ownership-pill"
+              aria-current={owner === key ? "true" : undefined}
+              preventScrollReset
+            >
+              {label}
+              {count(key) !== undefined && (
+                <span className="count">{count(key)}</span>
+              )}
+            </Link>
+          ))}
+        </div>
+        <div className="account-inventory-tools">
+          <div className="account-inventory-status">
+            <Select
+              label="Status"
+              value={state}
+              change={setState}
+              options={statusOptions}
+            />
+          </div>
+          <Action variant="secondary" onClick={resource.reload}>
+            Refresh inventory
+          </Action>
+        </div>
+      </div>
+      <p role="status" className="sr-only">
+        {resource.loading
+          ? ""
+          : shown !== undefined
+            ? `Showing ${String(shown)} ${shown === 1 ? current[2].replace(/s$/, "") : current[2]}.`
+            : "Inventory updated."}
+      </p>
+      {resource.loading && !resource.data && (
+        <p role="status">Loading inventory…</p>
+      )}
+      <ErrorNotice error={resource.error} />
+      {!!resource.error && (
+        <Action onClick={resource.reload}>Retry inventory</Action>
+      )}
+      {!!resource.data?.items.length && (
+        <ul className="account-inventory-list">
+          {resource.data.items.map((row) => (
+            <li key={row.id} className="account-inventory-row">
+              <div className="account-inventory-row-heading">
+                <Link
+                  to={`/admin/accounts/${row.id}?section=details`}
+                  state={{ inventorySearch: search }}
+                >
+                  {row.draft.title || "Untitled reviewed account"}
+                </Link>
+                <StatusBadge tone={statusTone(row.state)}>
+                  {statusLabel(row.state)}
+                </StatusBadge>
+              </div>
+              <p className="account-inventory-meta">
+                <span>{row.game}</span>
+                <OwnershipChip row={row} />
+                <span>{sourceLabel(row.origin)}</span>
+              </p>
+              <p className="account-inventory-outcome">
+                On sale:{" "}
+                {saleOutcome(row.origin).charAt(0).toLowerCase() +
+                  saleOutcome(row.origin).slice(1)}
+                {row.origin === "buy_first" &&
+                  row.seller_payout_confirmed === false &&
+                  " Seller payout not confirmed yet."}
+              </p>
+              <p className="account-inventory-price">
+                {/^[1-9][0-9]{0,11}$/.test(row.draft.amount_minor)
+                  ? `Buyer pays ${row.draft.currency} ${minorDisplay(row.draft.amount_minor)}`
+                  : "Price not set"}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+      {resource.data?.items.length === 0 && !after && (
+        <div className="account-inventory-empty">
+          <p>
+            {state
+              ? `No ${owner ? current[2] : "listings"} are ${statusLabel(state).toLowerCase()}.`
+              : owner === "playora"
+                ? "No PLAYORA-owned listings yet. Add one, or accept a buy-before-resale seller offer."
+                : owner === "consignment"
+                  ? "No seller consignment listings yet. They appear when a seller accepts a consignment offer."
+                  : "No account listings yet."}
+          </p>
+          {state ? (
+            <Action
+              onClick={() => {
+                setState("");
+              }}
+            >
+              Show all statuses
+            </Action>
+          ) : (
+            !owner && (
+              <Link to="/admin/submissions">Review seller submissions</Link>
+            )
+          )}
+        </div>
+      )}
+      {resource.data?.items.length === 0 && after && (
+        <p>No more inventory in this view.</p>
+      )}
+      {(!!resource.data?.next || after) && (
+        <div className="catalog-actions">
+          {resource.data?.next && (
+            <Action
+              onClick={() => {
+                setAfter(resource.data?.next ?? "");
+              }}
+            >
+              More inventory
+            </Action>
+          )}
+          {after && (
+            <Action
+              onClick={() => {
+                setAfter("");
+              }}
+            >
+              First inventory
+            </Action>
+          )}
+        </div>
       )}
     </section>
   );

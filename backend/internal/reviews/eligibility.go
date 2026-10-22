@@ -25,7 +25,7 @@ func eligible(ctx context.Context, c *ent.Client, row *ent.Order) (bool, error) 
 		if err != nil {
 			return false, err
 		}
-		if listing.SellerID == row.UserID {
+		if listing.SellerID != nil && *listing.SellerID == row.UserID {
 			return false, nil
 		}
 		acknowledged, err := c.AccountDelivery.Query().Where(accountdelivery.OrderIDEQ(row.ID), accountdelivery.BuyerIDEQ(row.UserID), accountdelivery.StateEQ("acknowledged")).Exist(ctx)

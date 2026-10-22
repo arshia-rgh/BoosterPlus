@@ -80,9 +80,12 @@ export function SellerBreakdown({
 export function BuyerPriceInput({
   price,
   change,
+  consignment = true,
 }: {
   price: BuyerCommission | undefined;
   change: (price: BuyerCommission) => void;
+  /** Only consignment bases are fixed by an accepted seller agreement. */
+  consignment?: boolean;
 }) {
   const [base, setBase] = useState(maximumDisplay(price?.base_minor ?? ""));
   return (
@@ -91,7 +94,11 @@ export function BuyerPriceInput({
         name="product.commission.base_minor"
         label="Account base price (USD)"
         value={base}
-        help="Enter dollars, for example 100.00. The buyer pays 5% more. A consignment base must match the accepted seller agreement."
+        help={
+          consignment
+            ? "Enter dollars, for example 100.00. The buyer pays 5% more. A consignment base must match the accepted seller agreement."
+            : "Enter dollars, for example 100.00. The buyer pays 5% more."
+        }
         change={(value) => {
           setBase(value);
           const minor = maximumMinor(value) ?? "";

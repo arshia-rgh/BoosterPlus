@@ -33,7 +33,7 @@ func pixels(t *testing.T, w, h int, transparent bool) []byte {
 	return append(b.Bytes(), []byte("private metadata")...)
 }
 func TestResponsiveRenditionsAndNoUpscaling(t *testing.T) {
-	for _, purpose := range []string{"game", "cover", "product", "inline"} {
+	for _, purpose := range []string{"game", "cover", "product", "inline", "account"} {
 		all, w, h, err := render(pixels(t, 1800, 1000, false), "image/png", purpose, 50, 50)
 		if err != nil || w != 1800 || h != 1000 {
 			t.Fatal(purpose, err)
@@ -50,7 +50,7 @@ func TestResponsiveRenditionsAndNoUpscaling(t *testing.T) {
 		if purpose == "game" && (all["wide"].Width != 1600 || all["wide"].Height != 800 || all["mobile"].Width != 768 || all["mobile"].Height != 576) {
 			t.Fatal("game shapes", all["wide"].Variant, all["mobile"].Variant)
 		}
-		if purpose == "inline" && all["wide"].Height != 889 {
+		if (purpose == "inline" || purpose == "account") && all["wide"].Height != 889 {
 			t.Fatal("inline aspect ratio changed")
 		}
 	}

@@ -21,6 +21,8 @@ const fixture: Listing = {
   id,
   submission_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
   offer_id: "offer",
+  origin: "consignment",
+  ownership: "seller",
   version: 1,
   state: "draft",
   game: "Game",

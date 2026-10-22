@@ -173,67 +173,67 @@ func init() {
 	// accountlisting.SellerIDValidator is a validator for the "seller_id" field. It is called by the builders before save.
 	accountlisting.SellerIDValidator = accountlistingDescSellerID.Validators[0].(func(string) error)
 	// accountlistingDescGameID is the schema descriptor for game_id field.
-	accountlistingDescGameID := accountlistingFields[4].Descriptor()
+	accountlistingDescGameID := accountlistingFields[5].Descriptor()
 	// accountlisting.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
 	accountlisting.GameIDValidator = accountlistingDescGameID.Validators[0].(func(string) error)
 	// accountlistingDescGameName is the schema descriptor for game_name field.
-	accountlistingDescGameName := accountlistingFields[5].Descriptor()
+	accountlistingDescGameName := accountlistingFields[6].Descriptor()
 	// accountlisting.GameNameValidator is a validator for the "game_name" field. It is called by the builders before save.
 	accountlisting.GameNameValidator = accountlistingDescGameName.Validators[0].(func(string) error)
 	// accountlistingDescSlug is the schema descriptor for slug field.
-	accountlistingDescSlug := accountlistingFields[6].Descriptor()
+	accountlistingDescSlug := accountlistingFields[7].Descriptor()
 	// accountlisting.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	accountlisting.SlugValidator = accountlistingDescSlug.Validators[0].(func(string) error)
 	// accountlistingDescVersion is the schema descriptor for version field.
-	accountlistingDescVersion := accountlistingFields[7].Descriptor()
+	accountlistingDescVersion := accountlistingFields[8].Descriptor()
 	// accountlisting.DefaultVersion holds the default value on creation for the version field.
 	accountlisting.DefaultVersion = accountlistingDescVersion.Default.(int)
 	// accountlistingDescState is the schema descriptor for state field.
-	accountlistingDescState := accountlistingFields[8].Descriptor()
+	accountlistingDescState := accountlistingFields[9].Descriptor()
 	// accountlisting.DefaultState holds the default value on creation for the state field.
 	accountlisting.DefaultState = accountlistingDescState.Default.(string)
 	// accountlisting.StateValidator is a validator for the "state" field. It is called by the builders before save.
 	accountlisting.StateValidator = accountlistingDescState.Validators[0].(func(string) error)
 	// accountlistingDescCurrentRelease is the schema descriptor for current_release field.
-	accountlistingDescCurrentRelease := accountlistingFields[10].Descriptor()
+	accountlistingDescCurrentRelease := accountlistingFields[11].Descriptor()
 	// accountlisting.DefaultCurrentRelease holds the default value on creation for the current_release field.
 	accountlisting.DefaultCurrentRelease = accountlistingDescCurrentRelease.Default.(string)
 	// accountlisting.CurrentReleaseValidator is a validator for the "current_release" field. It is called by the builders before save.
 	accountlisting.CurrentReleaseValidator = accountlistingDescCurrentRelease.Validators[0].(func(string) error)
 	// accountlistingDescPublicTitle is the schema descriptor for public_title field.
-	accountlistingDescPublicTitle := accountlistingFields[11].Descriptor()
+	accountlistingDescPublicTitle := accountlistingFields[12].Descriptor()
 	// accountlisting.DefaultPublicTitle holds the default value on creation for the public_title field.
 	accountlisting.DefaultPublicTitle = accountlistingDescPublicTitle.Default.(string)
 	// accountlisting.PublicTitleValidator is a validator for the "public_title" field. It is called by the builders before save.
 	accountlisting.PublicTitleValidator = accountlistingDescPublicTitle.Validators[0].(func(string) error)
 	// accountlistingDescPublicRegion is the schema descriptor for public_region field.
-	accountlistingDescPublicRegion := accountlistingFields[12].Descriptor()
+	accountlistingDescPublicRegion := accountlistingFields[13].Descriptor()
 	// accountlisting.DefaultPublicRegion holds the default value on creation for the public_region field.
 	accountlisting.DefaultPublicRegion = accountlistingDescPublicRegion.Default.(string)
 	// accountlisting.PublicRegionValidator is a validator for the "public_region" field. It is called by the builders before save.
 	accountlisting.PublicRegionValidator = accountlistingDescPublicRegion.Validators[0].(func(string) error)
 	// accountlistingDescPublicRank is the schema descriptor for public_rank field.
-	accountlistingDescPublicRank := accountlistingFields[13].Descriptor()
+	accountlistingDescPublicRank := accountlistingFields[14].Descriptor()
 	// accountlisting.DefaultPublicRank holds the default value on creation for the public_rank field.
 	accountlisting.DefaultPublicRank = accountlistingDescPublicRank.Default.(string)
 	// accountlisting.PublicRankValidator is a validator for the "public_rank" field. It is called by the builders before save.
 	accountlisting.PublicRankValidator = accountlistingDescPublicRank.Validators[0].(func(string) error)
 	// accountlistingDescPublicCurrency is the schema descriptor for public_currency field.
-	accountlistingDescPublicCurrency := accountlistingFields[14].Descriptor()
+	accountlistingDescPublicCurrency := accountlistingFields[15].Descriptor()
 	// accountlisting.DefaultPublicCurrency holds the default value on creation for the public_currency field.
 	accountlisting.DefaultPublicCurrency = accountlistingDescPublicCurrency.Default.(string)
 	// accountlisting.PublicCurrencyValidator is a validator for the "public_currency" field. It is called by the builders before save.
 	accountlisting.PublicCurrencyValidator = accountlistingDescPublicCurrency.Validators[0].(func(string) error)
 	// accountlistingDescPublicAmountMinor is the schema descriptor for public_amount_minor field.
-	accountlistingDescPublicAmountMinor := accountlistingFields[15].Descriptor()
+	accountlistingDescPublicAmountMinor := accountlistingFields[16].Descriptor()
 	// accountlisting.DefaultPublicAmountMinor holds the default value on creation for the public_amount_minor field.
 	accountlisting.DefaultPublicAmountMinor = accountlistingDescPublicAmountMinor.Default.(int64)
 	// accountlistingDescCreatedAt is the schema descriptor for created_at field.
-	accountlistingDescCreatedAt := accountlistingFields[16].Descriptor()
+	accountlistingDescCreatedAt := accountlistingFields[17].Descriptor()
 	// accountlisting.DefaultCreatedAt holds the default value on creation for the created_at field.
 	accountlisting.DefaultCreatedAt = accountlistingDescCreatedAt.Default.(func() time.Time)
 	// accountlistingDescUpdatedAt is the schema descriptor for updated_at field.
-	accountlistingDescUpdatedAt := accountlistingFields[17].Descriptor()
+	accountlistingDescUpdatedAt := accountlistingFields[18].Descriptor()
 	// accountlisting.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	accountlisting.DefaultUpdatedAt = accountlistingDescUpdatedAt.Default.(func() time.Time)
 	// accountlistingDescID is the schema descriptor for id field.

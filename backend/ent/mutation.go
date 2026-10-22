@@ -1370,6 +1370,7 @@ type AccountListingMutation struct {
 	submission_id          *string
 	offer_id               *string
 	seller_id              *string
+	origin                 *accountlisting.Origin
 	game_id                *string
 	game_name              *string
 	slug                   *string
@@ -1513,7 +1514,7 @@ func (m *AccountListingMutation) SubmissionID() (r string, exists bool) {
 // OldSubmissionID returns the old "submission_id" field's value of the AccountListing entity.
 // If the AccountListing object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountListingMutation) OldSubmissionID(ctx context.Context) (v string, err error) {
+func (m *AccountListingMutation) OldSubmissionID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSubmissionID is only allowed on UpdateOne operations")
 	}
@@ -1527,9 +1528,22 @@ func (m *AccountListingMutation) OldSubmissionID(ctx context.Context) (v string,
 	return oldValue.SubmissionID, nil
 }
 
+// ClearSubmissionID clears the value of the "submission_id" field.
+func (m *AccountListingMutation) ClearSubmissionID() {
+	m.submission_id = nil
+	m.clearedFields[accountlisting.FieldSubmissionID] = struct{}{}
+}
+
+// SubmissionIDCleared returns if the "submission_id" field was cleared in this mutation.
+func (m *AccountListingMutation) SubmissionIDCleared() bool {
+	_, ok := m.clearedFields[accountlisting.FieldSubmissionID]
+	return ok
+}
+
 // ResetSubmissionID resets all changes to the "submission_id" field.
 func (m *AccountListingMutation) ResetSubmissionID() {
 	m.submission_id = nil
+	delete(m.clearedFields, accountlisting.FieldSubmissionID)
 }
 
 // SetOfferID sets the "offer_id" field.
@@ -1549,7 +1563,7 @@ func (m *AccountListingMutation) OfferID() (r string, exists bool) {
 // OldOfferID returns the old "offer_id" field's value of the AccountListing entity.
 // If the AccountListing object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountListingMutation) OldOfferID(ctx context.Context) (v string, err error) {
+func (m *AccountListingMutation) OldOfferID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOfferID is only allowed on UpdateOne operations")
 	}
@@ -1563,9 +1577,22 @@ func (m *AccountListingMutation) OldOfferID(ctx context.Context) (v string, err 
 	return oldValue.OfferID, nil
 }
 
+// ClearOfferID clears the value of the "offer_id" field.
+func (m *AccountListingMutation) ClearOfferID() {
+	m.offer_id = nil
+	m.clearedFields[accountlisting.FieldOfferID] = struct{}{}
+}
+
+// OfferIDCleared returns if the "offer_id" field was cleared in this mutation.
+func (m *AccountListingMutation) OfferIDCleared() bool {
+	_, ok := m.clearedFields[accountlisting.FieldOfferID]
+	return ok
+}
+
 // ResetOfferID resets all changes to the "offer_id" field.
 func (m *AccountListingMutation) ResetOfferID() {
 	m.offer_id = nil
+	delete(m.clearedFields, accountlisting.FieldOfferID)
 }
 
 // SetSellerID sets the "seller_id" field.
@@ -1585,7 +1612,7 @@ func (m *AccountListingMutation) SellerID() (r string, exists bool) {
 // OldSellerID returns the old "seller_id" field's value of the AccountListing entity.
 // If the AccountListing object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountListingMutation) OldSellerID(ctx context.Context) (v string, err error) {
+func (m *AccountListingMutation) OldSellerID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSellerID is only allowed on UpdateOne operations")
 	}
@@ -1599,9 +1626,58 @@ func (m *AccountListingMutation) OldSellerID(ctx context.Context) (v string, err
 	return oldValue.SellerID, nil
 }
 
+// ClearSellerID clears the value of the "seller_id" field.
+func (m *AccountListingMutation) ClearSellerID() {
+	m.seller_id = nil
+	m.clearedFields[accountlisting.FieldSellerID] = struct{}{}
+}
+
+// SellerIDCleared returns if the "seller_id" field was cleared in this mutation.
+func (m *AccountListingMutation) SellerIDCleared() bool {
+	_, ok := m.clearedFields[accountlisting.FieldSellerID]
+	return ok
+}
+
 // ResetSellerID resets all changes to the "seller_id" field.
 func (m *AccountListingMutation) ResetSellerID() {
 	m.seller_id = nil
+	delete(m.clearedFields, accountlisting.FieldSellerID)
+}
+
+// SetOrigin sets the "origin" field.
+func (m *AccountListingMutation) SetOrigin(a accountlisting.Origin) {
+	m.origin = &a
+}
+
+// Origin returns the value of the "origin" field in the mutation.
+func (m *AccountListingMutation) Origin() (r accountlisting.Origin, exists bool) {
+	v := m.origin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrigin returns the old "origin" field's value of the AccountListing entity.
+// If the AccountListing object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountListingMutation) OldOrigin(ctx context.Context) (v accountlisting.Origin, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrigin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrigin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrigin: %w", err)
+	}
+	return oldValue.Origin, nil
+}
+
+// ResetOrigin resets all changes to the "origin" field.
+func (m *AccountListingMutation) ResetOrigin() {
+	m.origin = nil
 }
 
 // SetGameID sets the "game_id" field.
@@ -2182,7 +2258,7 @@ func (m *AccountListingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountListingMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.submission_id != nil {
 		fields = append(fields, accountlisting.FieldSubmissionID)
 	}
@@ -2191,6 +2267,9 @@ func (m *AccountListingMutation) Fields() []string {
 	}
 	if m.seller_id != nil {
 		fields = append(fields, accountlisting.FieldSellerID)
+	}
+	if m.origin != nil {
+		fields = append(fields, accountlisting.FieldOrigin)
 	}
 	if m.game_id != nil {
 		fields = append(fields, accountlisting.FieldGameID)
@@ -2248,6 +2327,8 @@ func (m *AccountListingMutation) Field(name string) (ent.Value, bool) {
 		return m.OfferID()
 	case accountlisting.FieldSellerID:
 		return m.SellerID()
+	case accountlisting.FieldOrigin:
+		return m.Origin()
 	case accountlisting.FieldGameID:
 		return m.GameID()
 	case accountlisting.FieldGameName:
@@ -2291,6 +2372,8 @@ func (m *AccountListingMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldOfferID(ctx)
 	case accountlisting.FieldSellerID:
 		return m.OldSellerID(ctx)
+	case accountlisting.FieldOrigin:
+		return m.OldOrigin(ctx)
 	case accountlisting.FieldGameID:
 		return m.OldGameID(ctx)
 	case accountlisting.FieldGameName:
@@ -2348,6 +2431,13 @@ func (m *AccountListingMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSellerID(v)
+		return nil
+	case accountlisting.FieldOrigin:
+		v, ok := value.(accountlisting.Origin)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrigin(v)
 		return nil
 	case accountlisting.FieldGameID:
 		v, ok := value.(string)
@@ -2503,7 +2593,17 @@ func (m *AccountListingMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AccountListingMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(accountlisting.FieldSubmissionID) {
+		fields = append(fields, accountlisting.FieldSubmissionID)
+	}
+	if m.FieldCleared(accountlisting.FieldOfferID) {
+		fields = append(fields, accountlisting.FieldOfferID)
+	}
+	if m.FieldCleared(accountlisting.FieldSellerID) {
+		fields = append(fields, accountlisting.FieldSellerID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2516,6 +2616,17 @@ func (m *AccountListingMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AccountListingMutation) ClearField(name string) error {
+	switch name {
+	case accountlisting.FieldSubmissionID:
+		m.ClearSubmissionID()
+		return nil
+	case accountlisting.FieldOfferID:
+		m.ClearOfferID()
+		return nil
+	case accountlisting.FieldSellerID:
+		m.ClearSellerID()
+		return nil
+	}
 	return fmt.Errorf("unknown AccountListing nullable field %s", name)
 }
 
@@ -2531,6 +2642,9 @@ func (m *AccountListingMutation) ResetField(name string) error {
 		return nil
 	case accountlisting.FieldSellerID:
 		m.ResetSellerID()
+		return nil
+	case accountlisting.FieldOrigin:
+		m.ResetOrigin()
 		return nil
 	case accountlisting.FieldGameID:
 		m.ResetGameID()

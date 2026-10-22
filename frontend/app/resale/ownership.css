@@ -1,0 +1,255 @@
+/* ACCOUNTS175: inventory ownership separation (designer decisions D1–D21). */
+.ownership-chip {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid #4b6b58;
+  border-radius: 999px;
+  color: #c7d8cc;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.ownership-chip[data-ownership="playora"] {
+  border-color: var(--champagne-detail, #e7c78a);
+  color: var(--champagne-detail, #e7c78a);
+}
+.account-inventory {
+  display: grid;
+  gap: 1rem;
+}
+.account-inventory > p,
+.account-inventory-intro {
+  margin: 0;
+  max-width: 70ch;
+}
+.account-inventory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+.account-inventory-actions .button {
+  margin: 0;
+}
+.account-inventory-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1.5rem;
+}
+.account-inventory-filters .ownership-filter {
+  flex: 1 1 100%;
+}
+.account-inventory-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+}
+.account-inventory-tools .button {
+  margin: 0;
+}
+@media (min-width: 1200px) {
+  .account-inventory-filters .ownership-filter {
+    flex: 0 1 auto;
+  }
+}
+.ownership-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.account-inventory .ownership-filter a.ownership-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border: 1px solid #466751;
+  border-radius: 999px;
+  color: #c5dccd;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.account-inventory .ownership-filter a.ownership-pill:hover {
+  background: #1d3828;
+}
+.account-inventory .ownership-filter a.ownership-pill[aria-current="true"] {
+  border-color: #bddf9c;
+  background: #bddf9c;
+  color: #122019;
+}
+.account-inventory .ownership-filter a.ownership-pill:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.ownership-filter .count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.account-inventory-status .catalog-label {
+  min-width: 12rem;
+  margin: 0;
+}
+.account-inventory-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.account-inventory-row {
+  display: grid;
+  gap: 0.4rem 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #2f4a3b;
+  border-radius: 0.875rem;
+  background: #13291e;
+}
+.account-inventory-row p {
+  margin: 0;
+}
+.account-inventory-row-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+}
+.account-inventory-row-heading a {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.account-inventory-row-heading a:hover {
+  text-decoration: underline;
+}
+.account-inventory-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  color: #bcd1c1;
+}
+.account-inventory-outcome {
+  color: #bcd1c1;
+  font-size: 0.92rem;
+}
+.account-inventory-price {
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 900px) {
+  .account-inventory-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .account-inventory-row > :not(.account-inventory-price) {
+    grid-column: 1;
+  }
+  .account-inventory-price {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    text-align: right;
+  }
+}
+@media (max-width: 767px) {
+  .account-inventory-actions > .button {
+    flex: 1 1 100%;
+  }
+}
+.ownership-new {
+  padding: 1rem 1.25rem;
+  border: 1px solid #2f4a3b;
+  border-radius: 0.875rem;
+  background: #13291e;
+}
+.ownership-new fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ownership-new legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.ownership-new p {
+  margin: 0 0 0.75rem;
+}
+.ownership-new-fields {
+  display: grid;
+  gap: 0.75rem 1rem;
+}
+@media (min-width: 768px) {
+  .ownership-new-fields {
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.ownership-new .button.secondary,
+.account-inventory .button.secondary,
+.ownership-record .button.secondary {
+  border: 1px solid #718562;
+  background: transparent;
+  color: var(--accent);
+}
+.ownership-panel {
+  display: grid;
+  gap: 0.5rem 2rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid #2f4a3b;
+  border-radius: 0.75rem;
+  background: #13291e;
+}
+.ownership-panel div {
+  display: grid;
+  gap: 0.15rem;
+}
+.ownership-panel dt {
+  color: #9fb7a7;
+  font-size: 0.82rem;
+}
+.ownership-panel dd {
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .ownership-panel {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+}
+.account-uploads .artwork-upload {
+  margin-top: 1rem;
+}
+.account-inventory .button.secondary:hover:not(:disabled),
+.ownership-record .button.secondary:hover:not(:disabled) {
+  background: #263d30;
+  color: #d2f3bf;
+}
+@media (max-width: 767px) {
+  .account-inventory-actions > a.button {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+.ownership-warning {
+  padding: 0.75rem 1rem;
+  border: 1px solid #5b4f2e;
+  border-radius: 0.75rem;
+  background: #2a2617;
+}
+.ownership-new legend:focus,
+.ownership-success:focus {
+  outline: none;
+}
+.ownership-new legend:focus-visible,
+.ownership-success:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}

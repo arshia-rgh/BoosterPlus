@@ -3872,7 +3872,8 @@ export interface paths {
     /** Reviewed account resale; exact accepted terms and live authorization boundaries */
     get: operations["getResaleApiV1AdminAccountListings"];
     put?: never;
-    post?: never;
+    /** Create a private draft for an account PLAYORA already owns; the request key is the listing ID and retries return the same draft. No seller agreement, commission or payout. */
+    post: operations["postResaleApiV1AdminAccountListings"];
     delete?: never;
     options?: never;
     head?: never;
@@ -7967,10 +7968,20 @@ export interface components {
       release_id: string;
       version: number;
       draft: components["schemas"]["AccountProduct"];
+      /** @enum {string} */
+      origin: "playora" | "buy_first" | "consignment";
+      /** @enum {string} */
+      ownership: "playora" | "seller";
+      seller_payout_confirmed?: boolean;
+      blockers?: string[];
     };
     AccountInventory: {
       items: components["schemas"]["AccountInventoryItem"][];
       next: string;
+      counts: {
+        playora: number;
+        seller: number;
+      };
     };
     AccountListingInput: {
       version: number;
@@ -9539,6 +9550,13 @@ export interface components {
       attention_count: number;
       attention: components["schemas"]["ShopPriceReview"][];
       repriced: components["schemas"]["ShopPriceReview"][];
+    };
+    PlayoraListingInput: {
+      /** Format: uuid */
+      request_key: string;
+      /** Format: uuid */
+      game_id: string;
+      title: string;
     };
   };
   responses: never;
@@ -21352,6 +21370,8 @@ export interface operations {
       query?: {
         after?: string;
         state?: string;
+        ownership?: "playora" | "seller";
+        origin?: "playora" | "buy_first" | "consignment";
       };
       header?: never;
       path?: never;
@@ -21366,6 +21386,41 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AccountInventory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminAccountListings: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PlayoraListingInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountInventoryItem"];
         };
       };
       /** @description Authorization, stale revision, inventory or financial evidence rejection */
@@ -25069,7 +25124,7 @@ export interface operations {
   uploadEditorialArtwork: {
     parameters: {
       query: {
-        purpose: "game" | "cover" | "product" | "inline";
+        purpose: "game" | "cover" | "product" | "inline" | "account";
         focus_x: number;
         focus_y: number;
       };

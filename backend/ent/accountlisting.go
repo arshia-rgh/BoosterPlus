@@ -19,11 +19,13 @@ type AccountListing struct {
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// SubmissionID holds the value of the "submission_id" field.
-	SubmissionID string `json:"submission_id,omitempty"`
+	SubmissionID *string `json:"submission_id,omitempty"`
 	// OfferID holds the value of the "offer_id" field.
-	OfferID string `json:"offer_id,omitempty"`
+	OfferID *string `json:"offer_id,omitempty"`
 	// SellerID holds the value of the "seller_id" field.
-	SellerID string `json:"seller_id,omitempty"`
+	SellerID *string `json:"seller_id,omitempty"`
+	// Origin holds the value of the "origin" field.
+	Origin accountlisting.Origin `json:"origin,omitempty"`
 	// GameID holds the value of the "game_id" field.
 	GameID string `json:"game_id,omitempty"`
 	// GameName holds the value of the "game_name" field.
@@ -64,7 +66,7 @@ func (*AccountListing) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case accountlisting.FieldVersion, accountlisting.FieldPublicAmountMinor:
 			values[i] = new(sql.NullInt64)
-		case accountlisting.FieldID, accountlisting.FieldSubmissionID, accountlisting.FieldOfferID, accountlisting.FieldSellerID, accountlisting.FieldGameID, accountlisting.FieldGameName, accountlisting.FieldSlug, accountlisting.FieldState, accountlisting.FieldCurrentRelease, accountlisting.FieldPublicTitle, accountlisting.FieldPublicRegion, accountlisting.FieldPublicRank, accountlisting.FieldPublicCurrency:
+		case accountlisting.FieldID, accountlisting.FieldSubmissionID, accountlisting.FieldOfferID, accountlisting.FieldSellerID, accountlisting.FieldOrigin, accountlisting.FieldGameID, accountlisting.FieldGameName, accountlisting.FieldSlug, accountlisting.FieldState, accountlisting.FieldCurrentRelease, accountlisting.FieldPublicTitle, accountlisting.FieldPublicRegion, accountlisting.FieldPublicRank, accountlisting.FieldPublicCurrency:
 			values[i] = new(sql.NullString)
 		case accountlisting.FieldCreatedAt, accountlisting.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -93,19 +95,28 @@ func (_m *AccountListing) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field submission_id", values[i])
 			} else if value.Valid {
-				_m.SubmissionID = value.String
+				_m.SubmissionID = new(string)
+				*_m.SubmissionID = value.String
 			}
 		case accountlisting.FieldOfferID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field offer_id", values[i])
 			} else if value.Valid {
-				_m.OfferID = value.String
+				_m.OfferID = new(string)
+				*_m.OfferID = value.String
 			}
 		case accountlisting.FieldSellerID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field seller_id", values[i])
 			} else if value.Valid {
-				_m.SellerID = value.String
+				_m.SellerID = new(string)
+				*_m.SellerID = value.String
+			}
+		case accountlisting.FieldOrigin:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field origin", values[i])
+			} else if value.Valid {
+				_m.Origin = accountlisting.Origin(value.String)
 			}
 		case accountlisting.FieldGameID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -229,14 +240,23 @@ func (_m *AccountListing) String() string {
 	var builder strings.Builder
 	builder.WriteString("AccountListing(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("submission_id=")
-	builder.WriteString(_m.SubmissionID)
+	if v := _m.SubmissionID; v != nil {
+		builder.WriteString("submission_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("offer_id=")
-	builder.WriteString(_m.OfferID)
+	if v := _m.OfferID; v != nil {
+		builder.WriteString("offer_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("seller_id=")
-	builder.WriteString(_m.SellerID)
+	if v := _m.SellerID; v != nil {
+		builder.WriteString("seller_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("origin=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Origin))
 	builder.WriteString(", ")
 	builder.WriteString("game_id=")
 	builder.WriteString(_m.GameID)

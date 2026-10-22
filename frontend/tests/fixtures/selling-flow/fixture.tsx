@@ -186,6 +186,11 @@ const listing: Listing = {
   id: listingID,
   submission_id: id,
   offer_id: offerID,
+  origin: stage.startsWith("buy_first") ? "buy_first" : "consignment",
+  ownership: stage.startsWith("buy_first") ? "playora" : "seller",
+  ...(stage.startsWith("buy_first")
+    ? { seller_payout_confirmed: stage !== "buy_first" }
+    : {}),
   version: 1,
   state: progress.listing_state || "draft",
   game: "Mobile Legends",

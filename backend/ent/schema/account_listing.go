@@ -16,9 +16,11 @@ type AccountListing struct{ ent.Schema }
 func (AccountListing) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
-		field.String("submission_id").MaxLen(36).Immutable(),
-		field.String("offer_id").MaxLen(36).Immutable(),
-		field.String("seller_id").MaxLen(36).Immutable(),
+		// Seller provenance is absent only for PLAYORA-created listings.
+		field.String("submission_id").MaxLen(36).Optional().Nillable().Immutable(),
+		field.String("offer_id").MaxLen(36).Optional().Nillable().Immutable(),
+		field.String("seller_id").MaxLen(36).Optional().Nillable().Immutable(),
+		field.Enum("origin").Values("playora", "buy_first", "consignment").Immutable(),
 		field.String("game_id").MaxLen(36).Immutable(),
 		field.String("game_name").MaxRuneLen(120).Immutable(),
 		field.String("slug").MaxLen(80).Immutable(),
@@ -42,6 +44,7 @@ func (AccountListing) Indexes() []ent.Index {
 		index.Fields("submission_id").Unique().StorageKey("account_single_inventory"),
 		index.Fields("offer_id").Unique().StorageKey("account_offer_inventory"),
 		index.Fields("state", "game_id", "created_at", "id").StorageKey("account_public_browse"),
+		index.Fields("origin", "state", "id").StorageKey("account_inventory_origin"),
 		index.Fields("state", "created_at", "id").StorageKey("account_market_newest"),
 		index.Fields("state", "slug", "created_at", "id").StorageKey("account_game_newest"),
 		index.Fields("state", "public_currency", "public_amount_minor", "id").StorageKey("account_market_price"),

@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 49
+const SchemaVersion = 50
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -38,6 +38,9 @@ func Ready(ctx context.Context, db *sql.DB) error {
 	if err := checkReportIndexes(ctx, db); err != nil {
 		return err
 	}
+	if err := checkNullable(ctx, db); err != nil {
+		return err
+	}
 	var controls int
 	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM auth_controls WHERE id=1").Scan(&controls); err != nil || controls != 1 {
 		return errors.New("identity security control row is missing")
@@ -47,6 +50,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"account_listings.origin":          "varchar",
 		"supplier_price_runs.window_start": "datetime", "supplier_price_runs.lease_until": "datetime", "supplier_price_runs.cursor_id": "varchar", "supplier_price_runs.batch": "int", "supplier_price_runs.state": "varchar",
 		"supplier_price_reviews.status": "varchar", "supplier_price_reviews.attention": "varchar", "supplier_price_reviews.release_id": "varchar", "supplier_price_reviews.baseline_total": "varchar", "supplier_price_reviews.supplier_total": "varchar", "supplier_price_reviews.version": "int", "supplier_price_reviews.repriced_at": "datetime",
 		"wanted_accounts.game_id": "varchar", "wanted_accounts.title": "varchar", "wanted_accounts.description": "varchar", "wanted_accounts.position": "int", "wanted_accounts.visible": "tinyint", "wanted_accounts.version": "int", "wanted_accounts.request_hash": "varchar", "wanted_accounts.updated_at": "datetime",
@@ -163,6 +167,7 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 
 func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"account_listings.account_inventory_origin":              "origin,state,id",
 		"wanted_accounts.wanted_account_order":                   "game_id,position,id",
 		"supplier_price_runs.supplier_price_run_recent":          "connection_id,created_at,id",
 		"supplier_price_reviews.supplier_price_review_attention": "attention,detected_at,shop_product_id",
@@ -194,6 +199,19 @@ func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
 	}
 	if len(expected) != 0 {
 		return errors.New("required report indexes are missing")
+	}
+	return nil
+}
+
+// checkNullable rejects drift that would pass startup but refuse PLAYORA-created
+// listings, which carry no submission, offer or seller.
+func checkNullable(ctx context.Context, db *sql.DB) error {
+	var count int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='account_listings' AND column_name IN ('submission_id','offer_id','seller_id') AND is_nullable='YES'").Scan(&count); err != nil {
+		return err
+	}
+	if count != 3 {
+		return errors.New("incompatible column nullability: account_listings provenance")
 	}
 	return nil
 }

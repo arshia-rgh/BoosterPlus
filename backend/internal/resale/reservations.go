@@ -67,7 +67,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		if row.CurrentRelease != input.ReleaseID || row.SellerID == current.User.ID {
+		if row.CurrentRelease != input.ReleaseID || row.SellerID != nil && *row.SellerID == current.User.ID {
 			return ErrConflict
 		}
 		game, e := tx.Game.Get(ctx, row.GameID)
@@ -81,18 +81,27 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if !available {
 			return ErrConflict
 		}
-		offer, e := tx.SellerOffer.Get(ctx, row.OfferID)
-		if e != nil {
-			return e
-		}
-		if offer.State != "accepted" {
-			return ErrConflict
+		if row.Origin != accountlisting.OriginPlayora {
+			if row.OfferID == nil {
+				return ErrConflict
+			}
+			offer, offerErr := tx.SellerOffer.Get(ctx, *row.OfferID)
+			if offerErr != nil {
+				return offerErr
+			}
+			if offer.State != "accepted" {
+				return ErrConflict
+			}
 		}
 		product, e := publicListing(ctx, tx.Client(), row)
 		if e != nil {
 			return e
 		}
 		if product.Product.Commission != nil && !product.Product.Commission.Valid(product.Product.Currency, product.Product.AmountMinor) {
+			return ErrConflict
+		}
+		// PLAYORA-created listings never had a legacy uncommissioned price.
+		if row.Origin == accountlisting.OriginPlayora && product.Product.Commission == nil {
 			return ErrConflict
 		}
 		if product.Product.AmountMinor != input.ExpectedAmount || product.Product.Currency != input.Currency {
@@ -126,7 +135,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 			return ErrConflict
 		}
 		expires := s.instant().Add(time.Duration(duration.WindowMinutes) * time.Minute)
-		parent, e := tx.AccountSubmission.Get(ctx, row.SubmissionID)
+		snapshot, e := orderSnapshot(ctx, tx, row, game)
 		if e != nil {
 			return e
 		}
@@ -138,7 +147,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		purchase, e := tx.Order.Create().SetUserID(current.User.ID).SetGameID(row.GameID).SetGameName(row.GameName).SetSlug(row.Slug).SetService("account_sale").SetKind(order.KindAccount).SetListingID(id).SetAccountSnapshot(publicSnapshot).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetState(order.StateAwaitingPayment).SetAnswers(map[string]any{}).SetSnapshot(parent.Snapshot).SetEstimate(estimated).SetTermsVersion(input.TermsVersion).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
+		purchase, e := tx.Order.Create().SetUserID(current.User.ID).SetGameID(row.GameID).SetGameName(row.GameName).SetSlug(row.Slug).SetService("account_sale").SetKind(order.KindAccount).SetListingID(id).SetAccountSnapshot(publicSnapshot).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetState(order.StateAwaitingPayment).SetAnswers(map[string]any{}).SetSnapshot(snapshot).SetEstimate(estimated).SetTermsVersion(input.TermsVersion).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
 		if e != nil {
 			return e
 		}
@@ -175,4 +184,32 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		return orders.Detail{}, err
 	}
 	return orders.New(s.client, s.auth, s.now).Get(ctx, p, orderID, false)
+}
+
+// orderSnapshot keeps the seller submission's reviewed catalog snapshot for
+// seller inventory. PLAYORA-created inventory has no submission, so its order
+// records the game's current published catalog release, as shop orders do.
+func orderSnapshot(ctx context.Context, tx *ent.Tx, row *ent.AccountListing, game *ent.Game) (map[string]any, error) {
+	if row.Origin != accountlisting.OriginPlayora {
+		if row.SubmissionID == nil {
+			return nil, ErrConflict
+		}
+		parent, err := tx.AccountSubmission.Get(ctx, *row.SubmissionID)
+		if err != nil {
+			return nil, err
+		}
+		return parent.Snapshot, nil
+	}
+	release, err := tx.CatalogRelease.Get(ctx, game.CurrentRelease)
+	if err != nil {
+		return nil, err
+	}
+	if release.GameID != game.ID {
+		return nil, ErrConflict
+	}
+	config, err := decode[catalog.Configuration](release.Configuration)
+	if err != nil {
+		return nil, err
+	}
+	return document(catalog.Release{ID: release.ID, GameID: game.ID, Slug: game.Slug, Version: release.Version, CreatedAt: release.CreatedAt, Configuration: config})
 }

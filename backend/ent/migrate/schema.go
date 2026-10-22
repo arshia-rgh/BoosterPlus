@@ -43,9 +43,10 @@ var (
 	// AccountListingsColumns holds the columns for the "account_listings" table.
 	AccountListingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
-		{Name: "submission_id", Type: field.TypeString, Size: 36},
-		{Name: "offer_id", Type: field.TypeString, Size: 36},
-		{Name: "seller_id", Type: field.TypeString, Size: 36},
+		{Name: "submission_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "offer_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "seller_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "origin", Type: field.TypeEnum, Enums: []string{"playora", "buy_first", "consignment"}},
 		{Name: "game_id", Type: field.TypeString, Size: 36},
 		{Name: "game_name", Type: field.TypeString, Size: 120},
 		{Name: "slug", Type: field.TypeString, Size: 80},
@@ -80,27 +81,32 @@ var (
 			{
 				Name:    "account_public_browse",
 				Unique:  false,
-				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[4], AccountListingsColumns[16], AccountListingsColumns[0]},
+				Columns: []*schema.Column{AccountListingsColumns[9], AccountListingsColumns[5], AccountListingsColumns[17], AccountListingsColumns[0]},
+			},
+			{
+				Name:    "account_inventory_origin",
+				Unique:  false,
+				Columns: []*schema.Column{AccountListingsColumns[4], AccountListingsColumns[9], AccountListingsColumns[0]},
 			},
 			{
 				Name:    "account_market_newest",
 				Unique:  false,
-				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[16], AccountListingsColumns[0]},
+				Columns: []*schema.Column{AccountListingsColumns[9], AccountListingsColumns[17], AccountListingsColumns[0]},
 			},
 			{
 				Name:    "account_game_newest",
 				Unique:  false,
-				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[6], AccountListingsColumns[16], AccountListingsColumns[0]},
+				Columns: []*schema.Column{AccountListingsColumns[9], AccountListingsColumns[7], AccountListingsColumns[17], AccountListingsColumns[0]},
 			},
 			{
 				Name:    "account_market_price",
 				Unique:  false,
-				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[14], AccountListingsColumns[15], AccountListingsColumns[0]},
+				Columns: []*schema.Column{AccountListingsColumns[9], AccountListingsColumns[15], AccountListingsColumns[16], AccountListingsColumns[0]},
 			},
 			{
 				Name:    "account_game_price",
 				Unique:  false,
-				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[6], AccountListingsColumns[14], AccountListingsColumns[15], AccountListingsColumns[0]},
+				Columns: []*schema.Column{AccountListingsColumns[9], AccountListingsColumns[7], AccountListingsColumns[15], AccountListingsColumns[16], AccountListingsColumns[0]},
 			},
 		},
 	}

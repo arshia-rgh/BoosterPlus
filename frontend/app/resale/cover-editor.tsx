@@ -66,12 +66,38 @@ export function ReviewedImage({ id, label }: { id: string; label: string }) {
     </div>
   );
 }
+// Staff uploads for PLAYORA-owned listings are previewed through the admin
+// artwork route; they are never public until a listing release references them.
+function UploadedImage({ id, label }: { id: string; label: string }) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <div className="reviewed-account-image">
+      {failed ? (
+        <p role="status">
+          This image preview could not load. The image stays in the draft.
+        </p>
+      ) : (
+        <img
+          src={`/api/v1/admin/artwork/${id}/card`}
+          alt={label}
+          loading="lazy"
+          onError={() => {
+            setFailed(true);
+          }}
+        />
+      )}
+    </div>
+  );
+}
 export default function CoverEditor({
   product,
   change,
+  uploads = false,
 }: {
   product: Product;
   change: (patch: Partial<Product>) => void;
+  /** PLAYORA-owned listings use staff uploads instead of seller chat images. */
+  uploads?: boolean;
 }) {
   const cover = product.cover_media_id ?? "";
   const root = useRef<HTMLElement>(null);
@@ -88,9 +114,9 @@ export default function CoverEditor({
     <section ref={root} className="account-cover-editor">
       <h3>Title image & gallery order</h3>
       <p>
-        Select reviewed images below, then choose the cover shown on account
-        cards. Removing the cover requires choosing a replacement before
-        publication. The gallery follows the order below, with the cover first.
+        {uploads
+          ? "Choose the cover shown on account cards. The gallery follows the order below, with the cover first."
+          : "Select reviewed images below, then choose the cover shown on account cards. Removing the cover requires choosing a replacement before publication. The gallery follows the order below, with the cover first."}
       </p>
       <Select
         name="product.cover_media_id"
@@ -116,8 +142,9 @@ export default function CoverEditor({
       />
       {product.media_ids.length === 0 && (
         <p>
-          No images are selected. The account card will use a game placeholder
-          until reviewed images are added.
+          {uploads
+            ? "No images added yet. The account card will use a game placeholder until you add one."
+            : "No images are selected. The account card will use a game placeholder until reviewed images are added."}
         </p>
       )}
       {product.media_ids.map((id, i) => (
@@ -131,7 +158,11 @@ export default function CoverEditor({
             Reviewed image {i + 1}
             {cover === id ? " · Title image" : ""}
           </legend>
-          <ReviewedImage id={id} label={`Reviewed image ${String(i + 1)}`} />
+          {uploads ? (
+            <UploadedImage id={id} label={`Reviewed image ${String(i + 1)}`} />
+          ) : (
+            <ReviewedImage id={id} label={`Reviewed image ${String(i + 1)}`} />
+          )}
           <Ordering
             index={i}
             count={product.media_ids.length}

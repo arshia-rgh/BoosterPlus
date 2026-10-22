@@ -135,3 +135,24 @@
 .artwork-upload[data-purpose="cover"] .artwork-crop.wide {
   aspect-ratio: 16/9;
 }
+
+/* ACCOUNTS175: account listing images (R1-04, R1-13). */
+.artwork-upload[data-purpose="account"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.artwork-upload[data-purpose="account"] legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+.artwork-upload[data-purpose="account"] input[type="file"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.artwork-limit {
+  display: block;
+  margin-top: 0.25rem;
+  color: #f2d9a0;
+  font-weight: 400;
+}

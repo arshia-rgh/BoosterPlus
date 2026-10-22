@@ -27,6 +27,9 @@ var ErrInvalid = errors.New("invalid account commerce input")
 // ErrConflict requires refreshing an unavailable or changed agreement.
 var ErrConflict = errors.New("account commerce changed or unavailable")
 
+// ErrGameUnavailable refuses publication while the game's account sales are off.
+var ErrGameUnavailable = errors.New("account sales unavailable for this game")
+
 const maxVersion = 2147483646
 
 var coinCode = regexp.MustCompile(`^[a-z0-9]{1,32}$`)
@@ -73,7 +76,10 @@ func decode[T any](data map[string]any) (T, error) {
 	return result, err
 }
 func (s *Store) audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, action, id string) error {
-	_, err := tx.AuthAudit.Create().SetID(uuid.NewString()).SetActorID(p.User.ID).SetAction("resale_" + action).SetTargetID(id).SetMetadata(map[string]string{}).SetCreatedAt(s.instant()).Save(ctx)
+	return s.auditWith(ctx, tx, p, action, id, map[string]string{})
+}
+func (s *Store) auditWith(ctx context.Context, tx *ent.Tx, p *identity.Principal, action, id string, metadata map[string]string) error {
+	_, err := tx.AuthAudit.Create().SetID(uuid.NewString()).SetActorID(p.User.ID).SetAction("resale_" + action).SetTargetID(id).SetMetadata(metadata).SetCreatedAt(s.instant()).Save(ctx)
 	return err
 }
 

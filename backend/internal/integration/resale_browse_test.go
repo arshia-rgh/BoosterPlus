@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 )
 
@@ -37,7 +38,7 @@ func seedBrowseListing(t *testing.T, f *resaleFixture, n int, currency, state st
 		t.Fatal(err)
 	}
 	created := time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC).Add(time.Duration(n/3) * time.Hour)
-	row, err := client.AccountListing.Create().SetSubmissionID(uuid.NewString()).SetOfferID(uuid.NewString()).SetSellerID(f.base.other.User.ID).SetGameID(f.intake.game.ID).SetGameName(f.intake.game.Configuration.Name).SetSlug(f.intake.game.Slug).SetState(state).SetDraft(data).SetPublicTitle(product.Title).SetPublicRegion(product.Region).SetPublicRank(product.Rank).SetPublicCurrency(currency).SetPublicAmountMinor(int64(1000 + (n/4)*50)).SetCreatedAt(created).SetUpdatedAt(created).Save(ctx)
+	row, err := client.AccountListing.Create().SetSubmissionID(uuid.NewString()).SetOfferID(uuid.NewString()).SetSellerID(f.base.other.User.ID).SetOrigin(accountlisting.OriginConsignment).SetGameID(f.intake.game.ID).SetGameName(f.intake.game.Configuration.Name).SetSlug(f.intake.game.Slug).SetState(state).SetDraft(data).SetPublicTitle(product.Title).SetPublicRegion(product.Region).SetPublicRank(product.Rank).SetPublicCurrency(currency).SetPublicAmountMinor(int64(1000 + (n/4)*50)).SetCreatedAt(created).SetUpdatedAt(created).Save(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

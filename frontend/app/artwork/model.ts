@@ -1,9 +1,9 @@
 import { z } from "../validation";
-export type Purpose = "game" | "cover" | "product" | "inline";
+export type Purpose = "game" | "cover" | "product" | "inline" | "account";
 export const uploadSchema = z.object({
   id: z.uuid(),
   asset: z.string(),
-  purpose: z.enum(["game", "cover", "product", "inline"]),
+  purpose: z.enum(["game", "cover", "product", "inline", "account"]),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
   focus_x: z.number(),
@@ -65,6 +65,13 @@ export const guidance: Record<
     recommendation: "Recommended: 1600 × 1600 px (square).",
     details:
       "We keep the full image and prepare smaller product and card versions. Product names, quantities and details will not be cropped out.",
+  },
+  account: {
+    label: "Add an account image",
+    recommendation:
+      "Upload screenshots for the public listing. Hide email addresses, player IDs, recovery details and private chat first.",
+    details:
+      "We keep the full screenshot and prepare smaller gallery versions. At most 8 images.",
   },
   inline: {
     label: "Article image",

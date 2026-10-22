@@ -28,6 +28,9 @@ export default function ArtworkUpload({
   defaultAsset,
   name,
   label,
+  pathEntry = true,
+  disabled = false,
+  disabledHint,
 }: {
   value: string;
   change: (asset: string) => void;
@@ -36,6 +39,11 @@ export default function ArtworkUpload({
   defaultAsset?: string | undefined;
   name?: string;
   label?: string;
+  /** Account listing images accept only checked uploads, never typed paths. */
+  pathEntry?: boolean;
+  disabled?: boolean;
+  /** Shown under the file label while `disabled` explains why. */
+  disabledHint?: string | undefined;
 }) {
   const id = useId();
   const validation = useContext(FieldValidation);
@@ -265,15 +273,26 @@ export default function ArtworkUpload({
         </p>
       )}
       <label className="catalog-label" htmlFor={id}>
-        Choose a replacement image
+        {purpose === "account"
+          ? "Choose an image"
+          : "Choose a replacement image"}
+        {disabled && disabledHint && (
+          <span id={id + "-limit"} className="artwork-limit">
+            {disabledHint}
+          </span>
+        )}
         <input
           ref={input}
           id={id}
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          disabled={busy}
+          disabled={busy || disabled}
           aria-invalid={invalid ? true : undefined}
-          aria-describedby={[guidanceID, invalid ? id + "-validation" : ""]
+          aria-describedby={[
+            disabled && disabledHint ? id + "-limit" : "",
+            guidanceID,
+            invalid ? id + "-validation" : "",
+          ]
             .filter(Boolean)
             .join(" ")}
           onChange={(e) => void select(e.target.files?.[0])}
@@ -425,7 +444,9 @@ export default function ArtworkUpload({
                   change(checked.asset);
                   reset();
                   setStatus(
-                    "Image added to this draft. Check alternative text and attribution, then save and publish when ready.",
+                    purpose === "account"
+                      ? "Image added. Save the listing to keep it."
+                      : "Image added to this draft. Check alternative text and attribution, then save and publish when ready.",
                   );
                   input.current?.focus();
                 }}
@@ -481,9 +502,9 @@ export default function ArtworkUpload({
         </p>
       )}
       <p className="quiet">
-        Uploads stay private until the page is published. Only upload artwork
-        you may use publicly; never include account credentials or personal
-        details.
+        {purpose === "account"
+          ? "Images stay private until the listing is published."
+          : "Uploads stay private until the page is published. Only upload artwork you may use publicly; never include account credentials or personal details."}
       </p>
       {defaultAsset && value !== defaultAsset && (
         <Action
@@ -500,21 +521,23 @@ export default function ArtworkUpload({
           Restore default game artwork
         </Action>
       )}
-      <details
-        open={invalid || pathOpen}
-        onToggle={(e) => {
-          setPathOpen(e.currentTarget.open);
-        }}
-      >
-        <summary>Existing artwork path</summary>
-        <Text
-          name={fieldName}
-          label={pathLabel}
-          value={value}
-          change={change}
-          help="Keep the bundled path or use a checked upload. External URLs and private order images are not supported."
-        />
-      </details>
+      {pathEntry && (
+        <details
+          open={invalid || pathOpen}
+          onToggle={(e) => {
+            setPathOpen(e.currentTarget.open);
+          }}
+        >
+          <summary>Existing artwork path</summary>
+          <Text
+            name={fieldName}
+            label={pathLabel}
+            value={value}
+            change={change}
+            help="Keep the bundled path or use a checked upload. External URLs and private order images are not supported."
+          />
+        </details>
+      )}
     </fieldset>
   );
 }

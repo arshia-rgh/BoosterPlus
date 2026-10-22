@@ -498,18 +498,33 @@ export function SaleProgress({
   );
 }
 
+/** Readiness facts from seller selling progress or, for PLAYORA-created listings, the listing itself. */
+export type ReadinessResource = {
+  data: {
+    blockers: string[];
+    payout_state?: string | undefined;
+    listing_id?: string | undefined;
+    listing_state?: string | undefined;
+  } | null;
+  error: unknown;
+  loading: boolean;
+  reload: () => void;
+};
 export function ListingReadiness({
   resource,
   submissionID,
   dirty,
   reviewed,
   preview,
+  owned = false,
 }: {
-  resource: ReturnType<typeof useSellingProgress>;
+  resource: ReadinessResource;
   submissionID: string;
   dirty: boolean;
   reviewed: boolean;
   preview: boolean;
+  /** PLAYORA-created listings upload their own images. */
+  owned?: boolean;
 }) {
   const location: Location<unknown> = useLocation();
   if (resource.error)
@@ -560,7 +575,9 @@ export function ListingReadiness({
                         : `/admin/submissions/${submissionID}?section=${b.section}`
                   }
                 >
-                  {b.label}
+                  {owned && code === "listing_images"
+                    ? "Add account images and choose a cover"
+                    : b.label}
                 </Link>
                 <small>
                   {dirty && code.startsWith("listing_")

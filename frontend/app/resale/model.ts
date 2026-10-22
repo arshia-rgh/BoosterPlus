@@ -69,10 +69,16 @@ export const publicListingsSchema = z.object({
   items: z.array(publicListingSchema),
   next: z.string(),
 });
+export const ownershipSchema = z.enum(["playora", "seller"]);
+export const originSchema = z.enum(["playora", "buy_first", "consignment"]);
 export const listingSchema = z.object({
   id: z.string(),
   submission_id: z.string(),
   offer_id: z.string(),
+  origin: originSchema,
+  ownership: ownershipSchema,
+  seller_payout_confirmed: z.boolean().optional(),
+  blockers: z.array(z.string()).optional(),
   version: z.number().int(),
   state: z.string(),
   game: z.string(),
@@ -83,6 +89,7 @@ export const listingSchema = z.object({
 export const inventorySchema = z.object({
   items: z.array(listingSchema),
   next: z.string(),
+  counts: z.object({ playora: z.number().int(), seller: z.number().int() }),
 });
 export const secretSchema = z.object({
   version: z.number().int(),
@@ -105,6 +112,7 @@ export type SellerTerms = z.infer<typeof sellerTermsSchema>;
 export type Offer = z.infer<typeof offerSchema>;
 export type Product = z.infer<typeof productSchema>;
 export type Listing = z.infer<typeof listingSchema>;
+export type Origin = z.infer<typeof originSchema>;
 export type PublicListing = z.infer<typeof publicListingSchema>;
 
 export const agreementDefaultsSchema = z.object({

@@ -146,6 +146,15 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 		if int64(steps) > current {
 			return errors.New("rollback exceeds applied migrations")
 		}
+		if current >= 50 && current-int64(steps) < 50 {
+			var owned bool
+			if err := r.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM account_listings WHERE origin='playora')").Scan(&owned); err != nil {
+				return fmt.Errorf("read account inventory origin: %w", err)
+			}
+			if owned {
+				return errors.New("PLAYORA-owned inventory is forward-only; rollback across schema 50 requires a separately verified pre-migration restore")
+			}
+		}
 		if current >= 47 && current-int64(steps) < 47 {
 			return errors.New("supplier checkout evidence is forward-only; rollback across schema 47 requires a separately verified pre-migration restore")
 		}

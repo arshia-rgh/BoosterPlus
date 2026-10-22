@@ -41,7 +41,7 @@ func TestSupplierPriceSyncMigrationStartupReadiness(t *testing.T) {
 		t.Fatal("migrated price sync must pass actual API/worker startup readiness:", err)
 	}
 	// The CLI may step back over 49: it removes only automatic check records.
-	if err := r.Down(t.Context(), 1); err != nil {
+	if err := r.Down(t.Context(), database.SchemaVersion-48); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.Ready(t.Context(), db); err == nil {

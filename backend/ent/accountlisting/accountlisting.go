@@ -3,6 +3,7 @@
 package accountlisting
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -19,6 +20,8 @@ const (
 	FieldOfferID = "offer_id"
 	// FieldSellerID holds the string denoting the seller_id field in the database.
 	FieldSellerID = "seller_id"
+	// FieldOrigin holds the string denoting the origin field in the database.
+	FieldOrigin = "origin"
 	// FieldGameID holds the string denoting the game_id field in the database.
 	FieldGameID = "game_id"
 	// FieldGameName holds the string denoting the game_name field in the database.
@@ -57,6 +60,7 @@ var Columns = []string{
 	FieldSubmissionID,
 	FieldOfferID,
 	FieldSellerID,
+	FieldOrigin,
 	FieldGameID,
 	FieldGameName,
 	FieldSlug,
@@ -134,6 +138,30 @@ var (
 	IDValidator func(string) error
 )
 
+// Origin defines the type for the "origin" enum field.
+type Origin string
+
+// Origin values.
+const (
+	OriginPlayora     Origin = "playora"
+	OriginBuyFirst    Origin = "buy_first"
+	OriginConsignment Origin = "consignment"
+)
+
+func (o Origin) String() string {
+	return string(o)
+}
+
+// OriginValidator is a validator for the "origin" field enum values. It is called by the builders before save.
+func OriginValidator(o Origin) error {
+	switch o {
+	case OriginPlayora, OriginBuyFirst, OriginConsignment:
+		return nil
+	default:
+		return fmt.Errorf("accountlisting: invalid enum value for origin field: %q", o)
+	}
+}
+
 // OrderOption defines the ordering options for the AccountListing queries.
 type OrderOption func(*sql.Selector)
 
@@ -155,6 +183,11 @@ func ByOfferID(opts ...sql.OrderTermOption) OrderOption {
 // BySellerID orders the results by the seller_id field.
 func BySellerID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSellerID, opts...).ToFunc()
+}
+
+// ByOrigin orders the results by the origin field.
+func ByOrigin(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrigin, opts...).ToFunc()
 }
 
 // ByGameID orders the results by the game_id field.

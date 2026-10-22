@@ -53,10 +53,13 @@ export default function SummaryFields({
   product,
   submission,
   change,
+  staff = false,
 }: {
   product: Product;
   submission: Submission | undefined;
   change: (value: Product) => void;
+  /** PLAYORA-created listings have no seller claims to check. */
+  staff?: boolean;
 }) {
   const claimed = submission ? sellerSummary(submission) : {};
   const config = submission?.offer.configuration ?? emptyConfiguration("");
@@ -88,8 +91,9 @@ export default function SummaryFields({
     <section className="catalog-section">
       <h3>Account card summary</h3>
       <p>
-        Customers see these facts before opening the listing. Check the seller’s
-        claims before publication.
+        {staff
+          ? "Customers see these facts before opening the listing. Check each fact against the account before publication."
+          : "Customers see these facts before opening the listing. Check the seller’s claims before publication."}
       </p>
       {Object.keys(claimed).length > 0 && (
         <Action

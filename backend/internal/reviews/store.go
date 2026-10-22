@@ -161,10 +161,13 @@ func (s *Store) Moderate(ctx context.Context, p *identity.Principal, id, action 
 			if listingErr != nil {
 				return listingErr
 			}
-			if same, sameErr := sameReviewer(ctx, tx, current.User, listing.SellerID); sameErr != nil {
-				return sameErr
-			} else if same {
-				return identity.ErrForbidden
+			// PLAYORA-created listings have no seller who could moderate their own sale.
+			if listing.SellerID != nil {
+				if same, sameErr := sameReviewer(ctx, tx, current.User, *listing.SellerID); sameErr != nil {
+					return sameErr
+				} else if same {
+					return identity.ErrForbidden
+				}
 			}
 		}
 		if row.Version != input.Version || row.State == review.StateWithdrawn {

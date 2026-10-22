@@ -38,7 +38,8 @@ func (s *Store) eligibility(ctx context.Context, tx *ent.Tx, row *ent.PrivacyReq
 		tx.AccountSubmission.Query().Where(accountsubmission.UserIDEQ(id), accountsubmission.StateIn(accountsubmission.StateDraft, accountsubmission.StateSubmitted, accountsubmission.StateNeedsInformation, accountsubmission.StateApprovedPendingTerms)).Exist,
 		tx.SellerOffer.Query().Where(selleroffer.SellerIDEQ(id), selleroffer.Or(selleroffer.StateEQ("offered"), selleroffer.And(selleroffer.StateEQ("accepted"), func(q *sql.Selector) {
 			l := sql.Table("account_listings")
-			q.Where(sql.NotIn(q.C("id"), sql.Select(l.C("offer_id")).From(l).Where(sql.In(l.C("state"), "sold", "withdrawn"))))
+			// NULL offer_id (PLAYORA-created inventory) would make NOT IN unknown for every offer.
+			q.Where(sql.NotIn(q.C("id"), sql.Select(l.C("offer_id")).From(l).Where(sql.And(sql.NotNull(l.C("offer_id")), sql.In(l.C("state"), "sold", "withdrawn")))))
 		}))).Exist,
 		tx.Conversation.Query().Where(conversation.UserIDEQ(id), conversation.StateNEQ(conversation.StateResolved)).Exist,
 	}

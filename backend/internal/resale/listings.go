@@ -24,16 +24,25 @@ type ListingInput struct {
 }
 
 // ListingView is a private editing projection; publication uses PublicListing instead.
+// Seller provenance is empty for PLAYORA-created listings.
 type ListingView struct {
 	ID           string  `json:"id"`
 	SubmissionID string  `json:"submission_id"`
 	OfferID      string  `json:"offer_id"`
+	Origin       string  `json:"origin"`
+	Ownership    string  `json:"ownership"`
 	Version      int     `json:"version"`
 	State        string  `json:"state"`
 	Game         string  `json:"game"`
 	Slug         string  `json:"slug"`
 	Draft        Product `json:"draft"`
 	ReleaseID    string  `json:"release_id"`
+	// SellerPayoutConfirmed is set only for buy-first rows: PLAYORA owns the
+	// account by agreement, but resale waits for the confirmed purchase payment.
+	SellerPayoutConfirmed *bool `json:"seller_payout_confirmed,omitempty"`
+	// Blockers are listing-scoped readiness facts for PLAYORA-created rows,
+	// which have no seller selling progress.
+	Blockers []string `json:"blockers,omitempty"`
 }
 
 func listingView(row *ent.AccountListing) (ListingView, error) {
@@ -44,7 +53,14 @@ func listingView(row *ent.AccountListing) (ListingView, error) {
 	if data.MediaIDs == nil {
 		data.MediaIDs = []string{}
 	}
-	return ListingView{row.ID, row.SubmissionID, row.OfferID, row.Version, row.State, row.GameName, row.Slug, data, row.CurrentRelease}, err
+	value := func(v *string) string {
+		if v == nil {
+			return ""
+		}
+		return *v
+	}
+	return ListingView{ID: row.ID, SubmissionID: value(row.SubmissionID), OfferID: value(row.OfferID), Origin: string(row.Origin), Ownership: Ownership(row.Origin),
+		Version: row.Version, State: row.State, Game: row.GameName, Slug: row.Slug, Draft: data, ReleaseID: row.CurrentRelease}, err
 }
 
 // CreateListing permits one reviewed inventory unit per accepted seller submission.
@@ -73,7 +89,15 @@ func (s *Store) CreateListing(ctx context.Context, p *identity.Principal, offerI
 		if e != nil {
 			return e
 		}
-		row, e := tx.AccountListing.Create().SetSubmissionID(parent.ID).SetOfferID(offer.ID).SetSellerID(offer.SellerID).SetGameID(parent.GameID).SetGameName(parent.GameName).SetSlug(parent.Slug).SetDraft(initialListing(offer.Data)).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
+		terms, e := decode[SellerTerms](offer.Data)
+		if e != nil {
+			return e
+		}
+		origin := accountlisting.Origin(terms.Model)
+		if origin != accountlisting.OriginBuyFirst && origin != accountlisting.OriginConsignment {
+			return ErrConflict
+		}
+		row, e := tx.AccountListing.Create().SetSubmissionID(parent.ID).SetOfferID(offer.ID).SetSellerID(offer.SellerID).SetOrigin(origin).SetGameID(parent.GameID).SetGameName(parent.GameName).SetSlug(parent.Slug).SetDraft(initialListing(offer.Data)).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
 		if e != nil {
 			return e
 		}
@@ -86,6 +110,9 @@ func (s *Store) CreateListing(ctx context.Context, p *identity.Principal, offerI
 	return result, err
 }
 func (s *Store) reviewedImages(ctx context.Context, tx *ent.Tx, row *ent.AccountListing, data Product) error {
+	if row.Origin == accountlisting.OriginPlayora {
+		return playoraImages(ctx, tx, data)
+	}
 	for _, id := range data.MediaIDs {
 		image, err := tx.MediaFile.Get(ctx, id)
 		if err != nil {
@@ -98,7 +125,7 @@ func (s *Store) reviewedImages(ctx context.Context, tx *ent.Tx, row *ent.Account
 		if err != nil {
 			return err
 		}
-		if thread.SubmissionID == nil || *thread.SubmissionID != row.SubmissionID {
+		if thread.SubmissionID == nil || row.SubmissionID == nil || *thread.SubmissionID != *row.SubmissionID {
 			return identity.ErrForbidden
 		}
 	}
@@ -137,17 +164,27 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 		if active {
 			return ErrConflict
 		}
-		offer, e := tx.SellerOffer.Get(ctx, row.OfferID)
-		if e != nil {
-			return e
-		}
-		if offer.State != "accepted" {
-			return ErrConflict
+		// PLAYORA-created inventory has no seller agreement; seller rows still
+		// require their accepted offer on every change.
+		var offer *ent.SellerOffer
+		var offerData map[string]any
+		if row.Origin != accountlisting.OriginPlayora {
+			if row.OfferID == nil {
+				return ErrConflict
+			}
+			offer, e = tx.SellerOffer.Get(ctx, *row.OfferID)
+			if e != nil {
+				return e
+			}
+			if offer.State != "accepted" {
+				return ErrConflict
+			}
+			offerData = offer.Data
 		}
 		update := tx.AccountListing.UpdateOneID(id).AddVersion(1).SetUpdatedAt(s.instant())
 		switch action {
 		case "save", "publish":
-			if err := listingCommission(input.Product, offer.Data); err != nil {
+			if err := listingCommission(input.Product, offerData); err != nil {
 				return err
 			}
 			data, dataErr := document(input.Product)
@@ -165,13 +202,9 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 					return gameErr
 				}
 				if !available {
-					return ErrConflict
+					return ErrGameUnavailable
 				}
-				terms, termsErr := decode[SellerTerms](offer.Data)
-				if termsErr != nil {
-					return termsErr
-				}
-				if terms.Model == "buy_first" {
+				if row.Origin == accountlisting.OriginBuyFirst {
 					paid, paidErr := tx.MoneyTransfer.Query().Where(moneytransfer.SellerOfferIDEQ(offer.ID), moneytransfer.KindEQ("seller_payout"), moneytransfer.StateEQ("confirmed")).Exist(ctx)
 					if paidErr != nil {
 						return paidErr
@@ -214,9 +247,26 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 		if e = s.audit(ctx, tx, current, "listing_"+action, id); e != nil {
 			return e
 		}
-		result, e = listingView(row)
+		result, e = s.detailView(ctx, tx, row)
 		return e
 	})
+	return result, err
+}
+
+// detailView is the one staff editing projection returned by reads and writes.
+func (s *Store) detailView(ctx context.Context, tx *ent.Tx, row *ent.AccountListing) (ListingView, error) {
+	result, err := listingView(row)
+	if err != nil {
+		return result, err
+	}
+	views := []ListingView{result}
+	if err = payoutFacts(ctx, tx, []*ent.AccountListing{row}, views); err != nil {
+		return result, err
+	}
+	result = views[0]
+	if row.Origin == accountlisting.OriginPlayora {
+		result.Blockers, err = s.playoraBlockers(ctx, tx, row)
+	}
 	return result, err
 }
 
@@ -231,26 +281,42 @@ func (s *Store) Listing(ctx context.Context, p *identity.Principal, id string) (
 		if e != nil {
 			return e
 		}
-		result, e = listingView(row)
+		result, e = s.detailView(ctx, tx, row)
 		return e
 	})
 	return result, err
 }
 
+// InventoryFilter narrows the administrative inventory by ownership or exact origin and state.
+type InventoryFilter struct {
+	After, State, Ownership, Origin string
+}
+
+// InventoryCounts are per-ownership totals for the current state filter, never page counts.
+type InventoryCounts struct {
+	Playora int `json:"playora"`
+	Seller  int `json:"seller"`
+}
+
 // Inventory provides a bounded administrative inventory cursor.
-func (s *Store) Inventory(ctx context.Context, p *identity.Principal, after, state string) ([]ListingView, string, error) {
+func (s *Store) Inventory(ctx context.Context, p *identity.Principal, filter InventoryFilter) ([]ListingView, string, InventoryCounts, error) {
 	result := []ListingView{}
 	next := ""
-	if after != "" && !validID(after) || len(state) > 32 {
-		return result, next, ErrInvalid
+	counts := InventoryCounts{}
+	origins, ok := inventoryOrigins(filter.Ownership, filter.Origin)
+	if filter.After != "" && !validID(filter.After) || len(filter.State) > 32 || !ok {
+		return result, next, counts, ErrInvalid
 	}
 	err := s.auth.AuthorizedTransaction(ctx, p, "admin", false, func(tx *ent.Tx, _ *identity.Principal) error {
 		query := tx.AccountListing.Query().Order(ent.Asc(accountlisting.FieldID)).Limit(51)
-		if after != "" {
-			query.Where(accountlisting.IDGT(after))
+		if filter.After != "" {
+			query.Where(accountlisting.IDGT(filter.After))
 		}
-		if state != "" {
-			query.Where(accountlisting.StateEQ(state))
+		if filter.State != "" {
+			query.Where(accountlisting.StateEQ(filter.State))
+		}
+		if len(origins) > 0 {
+			query.Where(accountlisting.OriginIn(origins...))
 		}
 		rows, e := query.All(ctx)
 		if e != nil {
@@ -262,15 +328,19 @@ func (s *Store) Inventory(ctx context.Context, p *identity.Principal, after, sta
 		}
 		result = []ListingView{}
 		for _, row := range rows {
-			v, e := listingView(row)
-			if e != nil {
-				return e
+			v, viewErr := listingView(row)
+			if viewErr != nil {
+				return viewErr
 			}
 			result = append(result, v)
 		}
-		return nil
+		if e = payoutFacts(ctx, tx, rows, result); e != nil {
+			return e
+		}
+		counts, e = inventoryCounts(ctx, tx, filter.State)
+		return e
 	})
-	return result, next, err
+	return result, next, counts, err
 }
 
 // PublicListing never exposes submission/seller/offer IDs or private media references.

@@ -37,6 +37,14 @@ func listingCommission(product Product, offerData map[string]any) error {
 	if product.Commission == nil || !product.Commission.Valid(product.Currency, product.AmountMinor) {
 		return commissionIssue("product.commission.base_minor", "Enter the USD account base price. The buyer total must include its independently rounded 5% commission.")
 	}
+	// PLAYORA-created inventory (no seller agreement) follows the same published
+	// buyer rule as other account sales: base + 5% and the seven-day inspection.
+	if offerData == nil {
+		if product.DisputeHours != 168 {
+			return commissionIssue("product.dispute_hours", "Use the agreed seven-day (168-hour) initial inspection period. Later buyer protection remains available.")
+		}
+		return nil
+	}
 	terms, err := decode[SellerTerms](offerData)
 	if err != nil {
 		return err

@@ -234,6 +234,10 @@ const messages = new Map([
     "This account's availability or purchase terms changed. Refresh the listing and review the current terms before continuing. If your earlier reservation was not confirmed, check that same request first.",
   ],
   [
+    "resale_game_unavailable",
+    "Account sales are off for this game. Turn on its Accounts service in the catalog, then publish.",
+  ],
+  [
     "catalog_conflict",
     "This catalog changed or is unavailable. Reload it before continuing.",
   ],

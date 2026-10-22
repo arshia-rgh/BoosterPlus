@@ -253,6 +253,15 @@ func (_u *AccountListingUpdate) sqlSave(ctx context.Context) (_node int, err err
 			}
 		}
 	}
+	if _u.mutation.SubmissionIDCleared() {
+		_spec.ClearField(accountlisting.FieldSubmissionID, field.TypeString)
+	}
+	if _u.mutation.OfferIDCleared() {
+		_spec.ClearField(accountlisting.FieldOfferID, field.TypeString)
+	}
+	if _u.mutation.SellerIDCleared() {
+		_spec.ClearField(accountlisting.FieldSellerID, field.TypeString)
+	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(accountlisting.FieldVersion, field.TypeInt, value)
 	}
@@ -563,6 +572,15 @@ func (_u *AccountListingUpdateOne) sqlSave(ctx context.Context) (_node *AccountL
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.SubmissionIDCleared() {
+		_spec.ClearField(accountlisting.FieldSubmissionID, field.TypeString)
+	}
+	if _u.mutation.OfferIDCleared() {
+		_spec.ClearField(accountlisting.FieldOfferID, field.TypeString)
+	}
+	if _u.mutation.SellerIDCleared() {
+		_spec.ClearField(accountlisting.FieldSellerID, field.TypeString)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(accountlisting.FieldVersion, field.TypeInt, value)

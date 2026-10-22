@@ -41,7 +41,7 @@ func shapes(purpose string) []shape {
 		return []shape{{"wide", 1600, 800, true}, {"wide-small", 800, 400, true}, {"mobile", 768, 576, true}, {"mobile-small", 384, 288, true}, {"card", 640, 400, true}, {"thumb", 320, 200, true}}
 	case "cover":
 		return []shape{{"wide", 1600, 900, true}, {"wide-small", 800, 450, true}, {"card", 640, 400, true}, {"thumb", 320, 200, true}}
-	case "product", "inline":
+	case "product", "inline", "account":
 		return []shape{{"wide", 1600, 1600, false}, {"wide-small", 800, 800, false}, {"card", 640, 640, false}, {"thumb", 320, 320, false}}
 	default:
 		return nil
