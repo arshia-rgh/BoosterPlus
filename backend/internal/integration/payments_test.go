@@ -30,20 +30,20 @@ import (
 
 // This provider exists only in integration builds. No runtime endpoint can activate it.
 type paymentProvider struct {
-	mu             sync.Mutex
-	verifier       *nowpayments.Client
-	rows           map[string]nowpayments.Payment
-	calls          int
-	ambiguous      bool
-	preflightError error
-	minimumCalls   int
-	minimumFiat    nowpayments.Decimal
-	legacyNative   bool
-	readError      error
-	block          chan struct{}
-	entered        chan struct{}
-	invoiceBlock   chan struct{}
-	invoiceEntered chan struct{}
+	mu              sync.Mutex
+	verifier        *nowpayments.Client
+	rows            map[string]nowpayments.Payment
+	calls           int
+	ambiguous       bool
+	requests        []nowpayments.InvoiceRequest
+	metadataNetwork string
+	metadataCalls   int
+	legacyNative    bool
+	readError       error
+	block           chan struct{}
+	entered         chan struct{}
+	invoiceBlock    chan struct{}
+	invoiceEntered  chan struct{}
 }
 
 const paymentTestSecret = "synthetic-payment-ipn-secret-for-tests"
@@ -56,24 +56,10 @@ func newPaymentProvider(t *testing.T) *paymentProvider {
 	}
 	return &paymentProvider{verifier: verifier, rows: map[string]nowpayments.Payment{}}
 }
-func (p *paymentProvider) MinimumInvoice(_ context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Minimum, error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	p.minimumCalls++
-	fiat := p.minimumFiat
-	if fiat == "" {
-		fiat = "1"
-	}
-	return nowpayments.Minimum{Crypto: fiat, Fiat: fiat}, p.preflightError
-}
-func (p *paymentProvider) CheckInvoice(_ context.Context, _ nowpayments.InvoiceRequest) error {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	return p.preflightError
-}
-func (p *paymentProvider) CreateInvoice(ctx context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Invoice, error) {
+func (p *paymentProvider) CreateInvoice(ctx context.Context, input nowpayments.InvoiceRequest) (nowpayments.Invoice, error) {
 	p.mu.Lock()
 	p.calls++
+	p.requests = append(p.requests, input)
 	id := fmt.Sprint(p.calls)
 	ambiguous, block, entered := p.ambiguous, p.invoiceBlock, p.invoiceEntered
 	p.invoiceBlock, p.invoiceEntered = nil, nil
@@ -92,6 +78,15 @@ func (p *paymentProvider) CreateInvoice(ctx context.Context, _ nowpayments.Invoi
 		return nowpayments.Invoice{}, nowpayments.ErrAmbiguous
 	}
 	return nowpayments.Invoice{ID: id, URL: "https://nowpayments.io/payment/?iid=" + id}, nil
+}
+func (p *paymentProvider) PaymentNetwork(_ context.Context, _ string) (string, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.metadataCalls++
+	if p.metadataNetwork == "" {
+		return "", nowpayments.ErrEvidence
+	}
+	return p.metadataNetwork, nil
 }
 func (p *paymentProvider) VerifyWebhook(body []byte, signature string) (nowpayments.Notice, error) {
 	return p.verifier.VerifyWebhook(body, signature)
@@ -159,10 +154,21 @@ func paymentDB(t *testing.T) *paymentFixture {
 }
 func (f *paymentFixture) start(t *testing.T, detail orders.Detail) payments.Attempt {
 	t.Helper()
-	a, err := f.store.Start(t.Context(), f.base.buyer, detail.Order.ID, payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true})
+	a, err := f.store.Start(t.Context(), f.base.buyer, detail.Order.ID, payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true})
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Historical scenarios below deliberately seed the former pinned route.
+	// New provider-selected attempts are exercised independently in hosted tests.
+	route := f.policy.Data.Routes[0]
+	raw, err := json.Marshal(route)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.base.auth.client.ExecContext(t.Context(), "UPDATE payment_attempts SET route=? WHERE id=?", string(raw), a.ID); err != nil {
+		t.Fatal(err)
+	}
+	a.Route = route
 	if f.provider.legacyNative {
 		if _, err := f.base.auth.client.ExecContext(t.Context(), "UPDATE payment_attempts SET native_checkout=TRUE, deposit_claimed=FALSE WHERE id=?", a.ID); err != nil {
 			t.Fatal(err)
@@ -234,7 +240,7 @@ func TestPaymentsConcurrentCheckoutAuthoritativeAllocationAndReversal(t *testing
 	f := paymentDB(t)
 	detail := f.base.create(t, "package")
 	ctx := t.Context()
-	input := payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true}
+	input := payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true}
 	var wg sync.WaitGroup
 	var ids sync.Map
 	for range 5 {
@@ -489,7 +495,7 @@ func TestPaymentsCancellationRaceAndConfirmationAfterDeadline(t *testing.T) {
 		var group sync.WaitGroup
 		results := make(chan error, 2)
 		group.Go(func() {
-			_, err := f.store.Start(ctx, f.base.buyer, d.Order.ID, payments.StartInput{ContractID: d.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true})
+			_, err := f.store.Start(ctx, f.base.buyer, d.Order.ID, payments.StartInput{ContractID: d.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true})
 			results <- err
 		})
 		group.Go(func() {

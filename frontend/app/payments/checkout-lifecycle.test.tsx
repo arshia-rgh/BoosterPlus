@@ -10,39 +10,6 @@ import { useResource } from "../orders/resource";
 import { continueToProvider } from "./provider-navigation";
 import { historySchema } from "./model";
 
-vi.mock("./options", () => ({
-  usePaymentOptions: vi.fn(() => ({
-    data: {
-      contract_id: "contract",
-      policy_id: "policy",
-      currency: "USD",
-      amount_minor: "1234",
-      server_time: "2026-10-22T00:00:00Z",
-      routes: [
-        {
-          code: "usdttrc20",
-          status: "available",
-          minimum_crypto: "1",
-          minimum_fiat: "1",
-          checked_at: "2026-10-22T00:00:00Z",
-          valid_until: "2026-10-23T00:00:00Z",
-        },
-        {
-          code: "usdtbsc",
-          status: "available",
-          minimum_crypto: "1",
-          minimum_fiat: "1",
-          checked_at: "2026-10-22T00:00:00Z",
-          valid_until: "2026-10-23T00:00:00Z",
-        },
-      ],
-    },
-    loading: false,
-    error: false,
-    expired: false,
-    reload: vi.fn(),
-  })),
-}));
 vi.mock("./provider-navigation", () => ({ continueToProvider: vi.fn() }));
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
@@ -160,7 +127,6 @@ it("keeps checkout continuation through the real workspace's temporary access su
     </StrictMode>
   );
   const view = render(content(false));
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*BNB/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",

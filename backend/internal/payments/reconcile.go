@@ -11,6 +11,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
@@ -47,6 +48,10 @@ func (s *Store) Reconcile(ctx context.Context, id string) error {
 	observed, remoteErr := s.provider.GetPayment(ctx, claimed.PaymentID)
 	if remoteErr == nil && observed.ID != claimed.PaymentID {
 		remoteErr = nowpayments.ErrEvidence
+	}
+	var metadataErr error
+	if remoteErr == nil {
+		metadataErr = s.resolveNetwork(ctx, &observed)
 	}
 	saveErr := s.fenced(ctx, func(tx *ent.Tx) error {
 		row, e := tx.PaymentRecord.Get(ctx, id)
@@ -89,7 +94,7 @@ func (s *Store) Reconcile(ctx context.Context, id string) error {
 		_, e = update.SetData(data).SetState(state).SetIssue(issue).SetAttemptID(attemptID).Save(ctx)
 		return e
 	})
-	return errors.Join(remoteErr, saveErr)
+	return errors.Join(remoteErr, metadataErr, saveErr)
 }
 func (s *Store) receipt(ctx context.Context, tx *ent.Tx, record *ent.PaymentRecord, observation *ent.PaymentObservation, attempt *ent.PaymentAttempt, p nowpayments.Payment) (*ent.PaymentReceipt, error) {
 	amount, err := p.ActuallyPaid.Rational()
@@ -119,17 +124,17 @@ func (s *Store) receipt(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 	if existing == nil && amount.Sign() == 0 {
 		return nil, nil
 	}
+	// Even a reversal must match the immutable received asset and network.
+	// Preserve historical network casing while comparing the same chain.
+	if existing != nil && (existing.Currency != p.PayCurrency || !strings.EqualFold(existing.Network, network)) {
+		return nil, nowpayments.ErrEvidence
+	}
 	if existing != nil && p.Status == "refunded" {
 		// Preserve the historical received amount; reversal is a separate state.
 		return tx.PaymentReceipt.UpdateOneID(existing.ID).SetState("reversed").SetObservationID(observation.ID).SetUpdatedAt(s.instant()).Save(ctx)
 	}
 	if existing == nil {
 		return tx.PaymentReceipt.Create().SetRecordID(record.ID).SetAttemptID(attempt.ID).SetOrderID(attempt.OrderID).SetUserID(attempt.UserID).SetCurrency(p.PayCurrency).SetNetwork(network).SetAmount(string(p.ActuallyPaid)).SetState(state).SetObservationID(observation.ID).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
-	}
-	// Older receipts retain the provider's original network casing. Compare the
-	// same chain case-insensitively without rewriting historical receipt data.
-	if existing.Currency != p.PayCurrency || !strings.EqualFold(existing.Network, network) {
-		return nil, nowpayments.ErrEvidence
 	}
 	previous, err := nowpayments.Decimal(existing.Amount).Rational()
 	if err != nil {
@@ -163,6 +168,20 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 	if attempt.InvoiceID != nil && *attempt.InvoiceID != p.InvoiceID {
 		return "exception", "invoice_mismatch", "", nil
 	}
+	route, routeErr := decode[Route](attempt.Route)
+	if routeErr != nil {
+		return "", "", "", routeErr
+	}
+	if route.Selection != "" && !providerSelection(attempt) {
+		return "exception", "wrong_route", attempt.ID, nil
+	}
+	// Hosted evidence must identify this invoice and exact USD agreement before
+	// binding an invoice or storing immutable asset/network receipt fields.
+	if providerSelection(attempt) {
+		if issue := commercialMatching(attempt, p); issue != "" {
+			return "exception", issue, attempt.ID, nil
+		}
+	}
 	if attempt.InvoiceID == nil {
 		attempt, err = tx.PaymentAttempt.UpdateOneID(attempt.ID).SetPostClaimed(true).SetInvoiceID(p.InvoiceID).Save(ctx)
 		if err != nil {
@@ -178,6 +197,17 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 		if err != nil {
 			return "", "", "", err
 		}
+	}
+	if providerSelection(attempt) && matching(attempt, p) != "" {
+		// Preserve authenticated GET evidence and a funds hold while network
+		// metadata is unavailable. Never issue a second pay link or create an
+		// immutable receipt with guessed/empty network information.
+		if attempt.FundsDetectedAt != nil && attempt.State != "settled" {
+			if _, err = tx.PaymentAttempt.UpdateOneID(attempt.ID).SetState("exception").SetIssue("network_review").SetCheckoutURL("").Save(ctx); err != nil {
+				return "", "", "", err
+			}
+		}
+		return "exception", "network_review", attempt.ID, nil
 	}
 	receipt, err := s.receipt(ctx, tx, record, observation, attempt, p)
 	if errors.Is(err, nowpayments.ErrEvidence) {
@@ -238,6 +268,13 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 }
 func (s *Store) decision(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAttempt, receipt *ent.PaymentReceipt, p nowpayments.Payment, paid *big.Rat) (string, string, error) {
 	if receipt != nil && receipt.State == "reversed" {
+		allocated, err := tx.PaymentAllocation.Query().Where(paymentallocation.ReceiptIDEQ(receipt.ID)).Exist(ctx)
+		if err != nil {
+			return "", "", err
+		}
+		if !allocated && attempt.State == "settled" {
+			return "settled", "", nil
+		}
 		return "exception", "payment_reversed", s.reverse(ctx, tx, attempt, receipt)
 	}
 	switch p.Status {
@@ -265,12 +302,29 @@ func (s *Store) decision(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 		if paid.Sign() > 0 {
 			return "exception", "funds_review", nil
 		}
+		if providerSelection(attempt) {
+			// One abandoned coin choice is not the whole hosted invoice. Preserve
+			// an existing funds hold or reservation until PLAYORA's local expiry.
+			if attempt.FundsDetectedAt != nil {
+				return attempt.State, attempt.Issue, nil
+			}
+			if attempt.ActiveContractID == nil {
+				return "closed", attempt.Issue, nil
+			}
+			if attempt.ExpiresAt.After(s.instant()) {
+				return "awaiting_payment", "", nil
+			}
+			return "closed", "local_expiry", s.retire(ctx, tx, attempt, "local_expiry")
+		}
 		return "closed", "provider_closed", s.retire(ctx, tx, attempt, "provider_closed")
 	case "confirming", "confirmed", "sending":
 		_, err := tx.OrderContract.Update().Where(ordercontract.IDEQ(attempt.ContractID), ordercontract.PaymentStateNEQ(ordercontract.PaymentStateSettled), ordercontract.PaymentStateNEQ(ordercontract.PaymentStateRetired)).SetPaymentState(ordercontract.PaymentStateFundsDetected).Save(ctx)
 		return "confirming", "", err
 	case "waiting":
 		if attempt.FundsDetectedAt != nil {
+			if providerSelection(attempt) {
+				return attempt.State, attempt.Issue, nil
+			}
 			return "confirming", "", nil
 		}
 		if attempt.ActiveContractID == nil {

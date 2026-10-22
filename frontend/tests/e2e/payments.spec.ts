@@ -56,11 +56,9 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   await page
     .getByLabel("Local checkout window in minutes (15–1440)")
     .fill("30");
-  await page.getByLabel("USD", { exact: true }).check();
-  await page.getByRole("button", { name: "Add asset and network" }).click();
-  await page.getByLabel("NOWPayments asset code").fill("usdttrc20");
-  await page.getByLabel("Customer label").fill("Test USDT TRON");
-  await page.getByLabel("Network identifier").fill("trx");
+  if (await page.getByLabel("Enable USD pricing").isVisible())
+    await page.getByLabel("Enable USD pricing").check();
+  await page.getByRole("checkbox", { name: "USDT · TRON (TRC20)" }).check();
   await page.getByRole("button", { name: "Save policy draft" }).click();
   await expect(
     page.getByRole("button", { name: "Preview saved payment policy" }),
@@ -100,9 +98,6 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     const id = fixture(info.project.name, "pay_order");
     await customer.goto(`/orders/${id}?section=payment`);
     await customer
-      .getByRole("radio", { name: /USDT.*TRON|USDT.*trx/i })
-      .check();
-    await customer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();
     const paymentID = await hostedCheckout(customer);
@@ -127,7 +122,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       route.abort("failed"),
     );
     await customer
-      .getByRole("button", { name: "Refresh payment", exact: true })
+      .getByRole("button", { name: "Check payment status", exact: true })
       .click();
     await expect(
       customer.getByText(/Payment status cannot be verified right now/),

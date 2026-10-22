@@ -5,39 +5,6 @@ import { useResource } from "../orders/resource";
 import type { Detail } from "../orders/model";
 import Checkout from "./checkout";
 import { continueToProvider } from "./provider-navigation";
-vi.mock("./options", () => ({
-  usePaymentOptions: vi.fn(() => ({
-    data: {
-      contract_id: "contract",
-      policy_id: "policy-one",
-      currency: "USD",
-      amount_minor: "1234",
-      server_time: "2026-10-22T00:00:00Z",
-      routes: [
-        {
-          code: "usdttrc20",
-          status: "available",
-          minimum_crypto: "1",
-          minimum_fiat: "1",
-          checked_at: "2026-10-22T00:00:00Z",
-          valid_until: "2026-10-23T00:00:00Z",
-        },
-        {
-          code: "usdtbsc",
-          status: "available",
-          minimum_crypto: "1",
-          minimum_fiat: "1",
-          checked_at: "2026-10-22T00:00:00Z",
-          valid_until: "2026-10-23T00:00:00Z",
-        },
-      ],
-    },
-    loading: false,
-    error: false,
-    expired: false,
-    reload: vi.fn(),
-  })),
-}));
 vi.mock("./provider-navigation", () => ({ continueToProvider: vi.fn() }));
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
@@ -82,13 +49,12 @@ function setup() {
   });
   return { data, reload, changed };
 }
-it("requires route and current policy consent, then binds the immutable contract", async () => {
+it("requires current policy consent without coin selection, then binds the immutable contract", async () => {
   const { reload, changed } = setup();
   vi.mocked(post).mockResolvedValue({});
   render(<Checkout detail={detail} admin={false} changed={changed} />);
   const submit = screen.getByRole("button", { name: "Go to payment" });
   expect(submit).toBeDisabled();
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   expect(submit).toBeDisabled();
   fireEvent.click(
     screen.getByLabelText(
@@ -104,7 +70,6 @@ it("requires route and current policy consent, then binds the immutable contract
     {
       contract_id: "contract",
       policy_id: "policy-one",
-      route: "usdttrc20",
       accept_policy: true,
     },
     expect.anything(),
@@ -113,10 +78,10 @@ it("requires route and current policy consent, then binds the immutable contract
 });
 it("requires fresh acceptance when the published policy changes", () => {
   const { data, reload, changed } = setup();
+  if (!detail.contract) throw new Error("Missing fixture contract");
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -182,7 +147,6 @@ it("locks repeated checkout requests while the provider request is pending", asy
       }),
   );
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -197,18 +161,27 @@ it("locks repeated checkout requests while the provider request is pending", asy
     expect(changed).toHaveBeenCalledOnce();
   });
 });
-it("withdraws consent when the selected network changes and blocks stale reads", () => {
+it("withdraws consent when the agreement changes and blocks stale reads", () => {
   const { data, reload, changed } = setup();
+  if (!detail.contract) throw new Error("Missing fixture contract");
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*BNB/ }));
+  view.rerender(
+    <Checkout
+      detail={{
+        ...detail,
+        contract: { ...detail.contract, id: "new-contract" },
+      }}
+      admin={false}
+      changed={changed}
+    />,
+  );
   expect(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -341,6 +314,7 @@ it("withholds native instructions across reconnect until a fresh response", () =
     reload,
   };
   vi.mocked(useResource).mockReturnValue(response);
+  if (!detail.contract) throw new Error("Missing fixture contract");
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
@@ -380,10 +354,10 @@ it("keeps payment uncertainty guidance when status retrieval fails", () => {
 it("continues a newly requested hosted checkout once, with a visible fallback", async () => {
   const { data, reload, changed } = setup();
   vi.mocked(post).mockResolvedValue({ id: "fresh" });
+  if (!detail.contract) throw new Error("Missing fixture contract");
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -401,7 +375,7 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
     issue: "",
     currency: "USD",
     amount_minor: "1234",
-    route: policy.data.routes[0],
+    route: { selection: "provider", code: "", label: "", network: "" },
     policy,
     checkout_url: "https://nowpayments.io/payment/?iid=123",
     created_at: new Date().toISOString(),
@@ -432,29 +406,28 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
   expect(continueToProvider).toHaveBeenCalledOnce();
 });
 
-it("brings a failed checkout into view and links minimum errors to this order's support", async () => {
+it("brings a failed checkout into view without redirecting or hiding the order", async () => {
   const { changed } = setup();
   const error = new APIError(
-    "This order is below the current minimum. No checkout was created.",
+    "Checkout is temporarily unavailable. Please try again.",
   );
-  error.code = "payment_below_minimum";
-  error.status = 422;
+  error.code = "payments_unavailable";
+  error.status = 503;
   vi.mocked(post).mockRejectedValue(error);
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.click(screen.getByRole("radio", { name: /USDT.*TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
     ),
   );
   fireEvent.click(screen.getByRole("button", { name: "Go to payment" }));
-  const help = await screen.findByRole("link", {
-    name: "Ask support about this order",
-  });
-  expect(help).toHaveAttribute("href", "/orders/order?section=messages");
-  await waitFor(() => expect(help.parentElement?.parentElement).toHaveFocus());
+  const message = await screen.findByText(
+    "Checkout is temporarily unavailable. Please try again.",
+  );
+  await waitFor(() => expect(message.closest('[tabindex="-1"]')).toHaveFocus());
   expect(changed).not.toHaveBeenCalled();
   expect(continueToProvider).not.toHaveBeenCalled();
+  expect(screen.getByRole("button", { name: "Go to payment" })).toBeDisabled();
 });
 
 it("gives missing-link recovery its own support path and honest connection feedback", () => {
@@ -486,10 +459,15 @@ it("gives missing-link recovery its own support path and honest connection feedb
     requestedAt: performance.now(),
   };
   vi.mocked(useResource).mockReturnValue(result);
+  if (!detail.contract) throw new Error("Missing fixture contract");
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  expect(screen.getByText(/We’re checking it automatically/)).toBeVisible();
+  expect(
+    screen.getByText(
+      /Your checkout is saved. We’re checking for its payment link/,
+    ),
+  ).toBeVisible();
   expect(
     screen.getByRole("link", { name: "Ask support about this checkout" }),
   ).toHaveAttribute("href", "/orders/order?section=messages");
@@ -502,7 +480,7 @@ it("gives missing-link recovery its own support path and honest connection feedb
     screen.queryByText(/We’re checking it automatically/),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByText(/Reconnect, then refresh payment information/),
+    screen.getByText(/Payment status cannot be verified right now/),
   ).toBeVisible();
   expect(
     screen.queryByRole("link", { name: "Go to payment" }),
@@ -517,4 +495,38 @@ it("gives missing-link recovery its own support path and honest connection feedb
   ).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Go to payment" })).toBeVisible();
   expect(continueToProvider).not.toHaveBeenCalled();
+});
+
+it("shows one USD review without coin fields or minimum loading", () => {
+  const { changed } = setup();
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.getByText(
+      "Choose your coin and network on the secure payment page.",
+    ),
+  ).toBeVisible();
+  expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Checking payment options/),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("Agreed price: USD 12.34")).toBeVisible();
+});
+it("blocks a non-USD agreement without hiding support context", () => {
+  if (!detail.contract) throw new Error("Missing fixture contract");
+  const { changed } = setup();
+  render(
+    <Checkout
+      detail={{
+        ...detail,
+        contract: {
+          ...detail.contract,
+          data: { ...detail.contract.data, currency: "EUR" },
+        },
+      }}
+      admin={false}
+      changed={changed}
+    />,
+  );
+  expect(screen.getByRole("alert")).toHaveTextContent("needs a USD price");
+  expect(screen.getByRole("button", { name: "Go to payment" })).toBeDisabled();
 });

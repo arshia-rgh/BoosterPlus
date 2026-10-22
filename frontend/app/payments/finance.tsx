@@ -138,7 +138,10 @@ export default function Finance() {
                   </Link>
                 </h3>
                 <p>
-                  {a.currency} {minorDisplay(a.amount_minor)} · {a.route.label}
+                  {a.currency} {minorDisplay(a.amount_minor)} ·{" "}
+                  {a.route.selection === "provider"
+                    ? "Hosted checkout"
+                    : a.route.label}
                 </p>
                 <p>{paymentMessage(a.state, a.issue)}</p>
                 <small>Attempt {a.id}</small>

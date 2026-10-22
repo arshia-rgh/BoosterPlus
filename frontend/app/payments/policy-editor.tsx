@@ -169,9 +169,8 @@ export default function PaymentPolicyEditor({
       <section hidden={!active} className="catalog-section">
         <h2>Payment policy</h2>
         <p>
-          Publishing preserves previous agreements. Enter approved fees,
-          supported assets and policy text. Recent authenticator or email
-          verification are required.
+          Publishing preserves previous agreements. Enter approved fees and
+          policy text. Recent authenticator or email verification are required.
         </p>
         <p>
           Merchant configuration:{" "}
@@ -312,25 +311,20 @@ export default function PaymentPolicyEditor({
               setData({ ...data, window_minutes });
             }}
           />
-          <fieldset>
-            <legend>Order pricing currencies</legend>
-            {["USD", "EUR", "GBP"].map((code) => (
-              <Check
-                key={code}
-                name={code === "USD" ? "currencies" : undefined}
-                label={code}
-                value={data.currencies.includes(code)}
-                change={(on) => {
-                  setData({
-                    ...data,
-                    currencies: on
-                      ? [...data.currencies, code]
-                      : data.currencies.filter((v) => v !== code),
-                  });
-                }}
-              />
-            ))}
-          </fieldset>
+          <p>
+            New checkouts are priced in USD. Manage accepted checkout coins and
+            networks in your NOWPayments dashboard.
+          </p>
+          {!data.currencies.includes("USD") && (
+            <Check
+              name="currencies"
+              label="Enable USD pricing"
+              value={false}
+              change={() => {
+                setData({ ...data, currencies: ["USD"] });
+              }}
+            />
+          )}
           <PolicyRoutes
             routes={data.routes}
             change={(routes) => {

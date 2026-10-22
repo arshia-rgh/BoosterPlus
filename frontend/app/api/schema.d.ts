@@ -3177,23 +3177,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/orders/{id}/payments/options": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Read minimum-payment eligibility for approved routes and the owned immutable contract; never creates a payment */
-    get: operations["customerPaymentOptions"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/admin/orders/{id}/payments": {
     parameters: {
       query?: never;
@@ -6124,15 +6107,6 @@ export interface components {
       /** Format: date-time */
       valid_until: string | null;
     };
-    PaymentOptions: {
-      contract_id: string;
-      policy_id: string;
-      currency: string;
-      amount_minor: string;
-      /** Format: date-time */
-      server_time: string;
-      routes: components["schemas"]["PaymentOption"][];
-    };
     Health: {
       /** @enum {string} */
       status: "ok" | "not_ready";
@@ -7675,6 +7649,11 @@ export interface components {
       code: string;
       label: string;
       network: string;
+      /**
+       * @description Only immutable new hosted attempts carry this marker. Policy routes remain seller payout configuration.
+       * @enum {string}
+       */
+      selection?: "provider";
     };
     PaymentPolicy: {
       label: string;
@@ -7764,7 +7743,6 @@ export interface components {
     PaymentStartInput: {
       contract_id: string;
       policy_id: string;
-      route: string;
       accept_policy: boolean;
     };
     PaymentPolicyInput: {
@@ -19824,37 +19802,6 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaymentHistory"];
-        };
-      };
-      /** @description Authentication, authorization or payment validation rejected */
-      default: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaymentProblem"];
-        };
-      };
-    };
-  };
-  customerPaymentOptions: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Private payment result */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["PaymentOptions"];
         };
       };
       /** @description Authentication, authorization or payment validation rejected */

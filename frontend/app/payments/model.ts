@@ -1,5 +1,6 @@
 import { z } from "../validation";
 export const routeSchema = z.object({
+  selection: z.literal("provider").optional(),
   code: z.string(),
   label: z.string(),
   network: z.string(),
@@ -191,7 +192,7 @@ const descriptions = new Map([
   ],
   [
     "awaiting_payment",
-    "Your checkout is ready. Use only the selected asset and network.",
+    "Your checkout is ready. Follow the instructions on the secure payment page.",
   ],
   [
     "confirming",
@@ -210,6 +211,10 @@ const descriptions = new Map([
   [
     "overpaid",
     "Your order is paid. The extra amount is recorded for financial review.",
+  ],
+  [
+    "network_review",
+    "Funds were reported. We’re verifying their network before completing your receipt. Do not pay again; contact support if you need help.",
   ],
   [
     "wrong_route",

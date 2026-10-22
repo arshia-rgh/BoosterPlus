@@ -19,7 +19,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/shopevents"
 )
 
-func matching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
+func commercialMatching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
 	if p.AttemptID != attempt.ID || attempt.InvoiceID != nil && *attempt.InvoiceID != p.InvoiceID {
 		return "reference_mismatch"
 	}
@@ -31,8 +31,19 @@ func matching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
 	if err != nil || price.Cmp(new(big.Rat).SetFrac(amount, big.NewInt(100))) != 0 || strings.ToUpper(p.PriceCurrency) != attempt.Currency {
 		return "price_mismatch"
 	}
+	return ""
+}
+
+func matching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
+	if issue := commercialMatching(attempt, p); issue != "" {
+		return issue
+	}
 	route, err := decode[Route](attempt.Route)
-	if err != nil || route.Code != p.PayCurrency || p.Network != "" && strings.ToLower(p.Network) != route.Network {
+	if providerSelection(attempt) {
+		if !codePattern.MatchString(p.PayCurrency) || strings.ContainsAny(p.PayCurrency, "_-") || !codePattern.MatchString(p.Network) {
+			return "wrong_route"
+		}
+	} else if err != nil || route.Selection != "" || route.Code == "" || route.Network == "" || route.Code != p.PayCurrency || p.Network != "" && strings.ToLower(p.Network) != route.Network {
 		return "wrong_route"
 	}
 	expected, err := p.PayAmount.Rational()

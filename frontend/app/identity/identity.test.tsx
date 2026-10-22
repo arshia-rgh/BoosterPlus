@@ -411,7 +411,7 @@ it("links server validation to the matching field and preserves other inputs", a
   await screen.findByText("Request completed.");
 });
 
-it("explains a provider minimum failure without exposing provider details", async () => {
+it("does not expose upstream details for an unrecognized historical payment error", async () => {
   vi.stubGlobal(
     "fetch",
     vi.fn().mockResolvedValue(
@@ -425,7 +425,7 @@ it("explains a provider minimum failure without exposing provider details", asyn
     ),
   );
   await expect(get("/orders/synthetic/payment", sessionSchema)).rejects.toThrow(
-    "No checkout was created",
+    "The service is unavailable. Please try again.",
   );
   await expect(
     get("/orders/synthetic/payment", sessionSchema),

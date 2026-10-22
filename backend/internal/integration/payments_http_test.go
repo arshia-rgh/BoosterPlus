@@ -58,7 +58,7 @@ func TestPaymentsHTTPStrictInputOwnershipCSRFAndDurableInbox(t *testing.T) {
 		handler.ServeHTTP(w, r)
 		return w
 	}
-	input := payments.StartInput{ContractID: d.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true}
+	input := payments.StartInput{ContractID: d.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true}
 	raw, err := json.Marshal(input)
 	if err != nil {
 		t.Fatal(err)

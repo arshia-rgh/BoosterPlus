@@ -1,9 +1,8 @@
-import { useState } from "react";
-import PolicyRoutes from "../../../app/payments/policy-routes";
+import PaymentPolicyEditor from "../../../app/payments/policy-editor";
 import { paymentRoutes } from "../../../app/payments/routes";
-import type { Policy } from "../../../app/payments/model";
+import { emptyRemedies, remedyLabels } from "../../../app/payments/model";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Checkout from "../../../app/payments/checkout";
 import { detailSchema } from "../../../app/orders/model";
 import { emptyConfiguration } from "../../../app/catalog/model";
@@ -70,22 +69,47 @@ const checkoutDetail = detailSchema.parse({
 });
 
 function PolicyFixture() {
-  const [routes, change] = useState<Policy["routes"]>([
-    ...paymentRoutes.filter((route) => route.code !== "usdtbsc"),
-    { code: "usdtbsc", network: "eth", label: "Old USDT" },
-    { code: "legacy", network: "old", label: "Saved legacy route" },
-  ]);
+  const routes = paymentRoutes.filter(
+    (route) => route.code === "usdtbsc" || route.code === "usdttrc20",
+  );
   return (
-    <>
-      <h2>Payment policy</h2>
-      <PolicyRoutes routes={routes} change={change} />
-    </>
+    <PaymentPolicyEditor
+      done={() => {}}
+      settings={{
+        version: 4,
+        configured: true,
+        enabled: true,
+        outgoing_enabled: false,
+        published: null,
+        draft: {
+          label: "Payment agreement",
+          text: "Orders are priced in USD and paid through our secure hosted checkout. Choose an available coin and network on that payment page. Payment is complete only after verified confirmation.",
+          routes,
+          currencies: ["USD"],
+          fee_mode: "merchant",
+          rate_mode: "fixed",
+          window_minutes: 30,
+          remedies: {
+            ...emptyRemedies,
+            ...Object.fromEntries(
+              remedyLabels.map(([key]) => [
+                key,
+                "Reviewed synthetic remedy terms. Accepted order protections remain unchanged.",
+              ]),
+            ),
+            dispute_hours: 8760,
+            appeal_hours: 720,
+            max_appeals: 3,
+          },
+        },
+      }}
+    />
   );
 }
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing fixture root");
-createRoot(root).render(
-  <BrowserRouter>
+const fixture = (
+  <>
     <main
       className="customer-workspace"
       style={{ maxWidth: "52rem", margin: "2rem auto", padding: "1rem" }}
@@ -101,5 +125,10 @@ createRoot(root).render(
         />
       )}
     </main>
-  </BrowserRouter>,
+  </>
+);
+createRoot(root).render(
+  <RouterProvider
+    router={createBrowserRouter([{ path: "*", element: fixture }])}
+  />,
 );

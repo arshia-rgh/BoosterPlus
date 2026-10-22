@@ -281,7 +281,7 @@ func TestShopPaymentsExpiredReservationAndUnissuedCancellation(t *testing.T) {
 			if mode == "other_customer" {
 				buyer = f.base.other
 			}
-			_, err := store.Start(ctx, buyer, detail.Order.ID, payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true})
+			_, err := store.Start(ctx, buyer, detail.Order.ID, payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true})
 			if mode == "expired" && !errors.Is(err, payments.ErrConflict) || mode == "paused" && !errors.Is(err, payments.ErrUnavailable) || mode == "other_customer" && !ent.IsNotFound(err) {
 				t.Fatal("checkout guard", mode, err)
 			}

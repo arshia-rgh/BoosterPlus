@@ -48,7 +48,6 @@ it.each([
   ["currencies", { currencies: [] }],
   ["currencies", { currencies: ["USD", "USD"] }],
   ["currencies", { currencies: ["BTC"] }],
-  ["routes", { routes: [] }],
   [
     "routes.0.code",
     {
@@ -130,4 +129,8 @@ it("accepts all 30 reviewed routes and rejects a mismatched chain", () => {
     path: "routes",
     message: "Choose the matching coin and network from the list.",
   });
+});
+
+it("allows checkout policies with no configured seller payout routes", () => {
+  expect(policyIssues({ ...valid, routes: [] })).toEqual([]);
 });

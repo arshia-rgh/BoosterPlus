@@ -26,7 +26,7 @@ func published(ctx context.Context, client *ent.Client) (*PolicyView, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &PolicyView{row.ID, data}, nil
+	return &PolicyView{row.ID, normalizedPolicy(data)}, nil
 }
 
 // Settings requires staff authority; it never exposes provider keys or account passwords.
@@ -49,12 +49,7 @@ func (s *Store) settings(ctx context.Context, client *ent.Client) (Settings, err
 	if err != nil {
 		return Settings{}, err
 	}
-	if draft.Routes == nil {
-		draft.Routes = []Route{}
-	}
-	if draft.Currencies == nil {
-		draft.Currencies = []string{}
-	}
+	draft = normalizedPolicy(draft)
 	return Settings{OutgoingEnabled: s.outgoing != nil && s.outgoingEnabled, Version: row.Version, Draft: draft, Published: policy, Configured: s.provider != nil, Enabled: s.enabled && s.provider != nil}, nil
 }
 
@@ -81,7 +76,7 @@ func (s *Store) SavePolicy(ctx context.Context, p *identity.Principal, input Pol
 				return ErrInvalid
 			}
 		}
-		doc, err := document(input.Data)
+		doc, err := document(normalizedPolicy(input.Data))
 		if err != nil {
 			return err
 		}
@@ -107,4 +102,16 @@ func (s *Store) SavePolicy(ctx context.Context, p *identity.Principal, input Pol
 		return err
 	})
 	return result, err
+}
+
+// normalizedPolicy keeps optional empty collections compatible with the API
+// contract without rewriting stored or previously accepted policy documents.
+func normalizedPolicy(data Policy) Policy {
+	if data.Routes == nil {
+		data.Routes = []Route{}
+	}
+	if data.Currencies == nil {
+		data.Currencies = []string{}
+	}
+	return data
 }

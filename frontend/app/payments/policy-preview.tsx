@@ -29,14 +29,7 @@ export default function PolicyPreview({ policy }: { policy: Policy }) {
           <dd>{policy.window_minutes} minutes</dd>
         </div>
       </dl>
-      <h4>Supported assets and networks</h4>
-      <ul>
-        {policy.routes.map((route) => (
-          <li key={route.code}>
-            {route.label} · {route.code} · Network {route.network}
-          </li>
-        ))}
-      </ul>
+      <p>Choose your coin and network on the secure payment page.</p>
       {remedies && (
         <>
           <h4>Service remedies and appeal terms</h4>

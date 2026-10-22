@@ -2,18 +2,11 @@ package nowpayments
 
 import (
 	"context"
-	"maps"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 )
-
-// CurrencyAvailability carries an expiry separate from daily minimum estimates.
-type CurrencyAvailability struct {
-	Routes     map[string]string
-	ValidUntil time.Time
-}
 
 type currencyEntry struct {
 	done   chan struct{}
@@ -22,82 +15,64 @@ type currencyEntry struct {
 	err    error
 }
 type currencyCache struct {
-	mu      sync.Mutex
-	entries map[bool]*currencyEntry
+	mu    sync.Mutex
+	entry *currencyEntry
 }
 
-// PaymentCurrencies intersects merchant selections with current provider payment
-// availability and the selected rate mode. It never enables a policy route itself.
-// Five-minute freshness is separate from the daily minimum cache; failed refreshes
-// fail closed and coalesce for one minute. Only two bounded cache keys exist.
-func (c *Client) PaymentCurrencies(ctx context.Context, fixed bool) (CurrencyAvailability, error) {
+// PaymentNetwork resolves an exact provider asset code for financial evidence.
+// It does not check merchant selections, availability, rates or payment minimums.
+// One bounded coalesced directory cache is shared for an hour; failures are
+// cached for one minute and never replaced by a guessed ticker/network mapping.
+func (c *Client) PaymentNetwork(ctx context.Context, code string) (string, error) {
+	if !coinPattern.MatchString(code) {
+		return "", ErrInvalid
+	}
 	cache := &c.currencies
 	cache.mu.Lock()
-	if cache.entries == nil {
-		cache.entries = make(map[bool]*currencyEntry)
-	}
-	if entry := cache.entries[fixed]; entry != nil {
+	if entry := cache.entry; entry != nil {
 		if entry.done != nil {
 			done := entry.done
 			cache.mu.Unlock()
 			select {
 			case <-done:
-				return c.PaymentCurrencies(ctx, fixed)
+				return c.PaymentNetwork(ctx, code)
 			case <-ctx.Done():
-				return CurrencyAvailability{}, ctx.Err()
+				return "", ctx.Err()
 			}
 		}
 		if time.Now().Before(entry.until) {
-			result, err := CurrencyAvailability{Routes: maps.Clone(entry.routes), ValidUntil: entry.until}, entry.err
+			network, err := entry.routes[code], entry.err
 			cache.mu.Unlock()
-			return result, err
+			if err == nil && network == "" {
+				err = ErrEvidence
+			}
+			return network, err
 		}
 	}
 	entry := &currencyEntry{done: make(chan struct{})}
-	cache.entries[fixed] = entry
+	cache.entry = entry
 	cache.mu.Unlock()
 	readCtx, cancel := context.WithTimeout(ctx, 8*time.Second)
-	routes, err := c.readPaymentCurrencies(readCtx, fixed)
+	routes, err := c.readCurrencyNetworks(readCtx)
 	cancel()
 	cache.mu.Lock()
-	entry.routes, entry.err, entry.until = routes, err, time.Now().Add(5*time.Minute)
+	entry.routes, entry.err, entry.until = routes, err, time.Now().Add(time.Hour)
 	if err != nil {
 		entry.until = time.Now().Add(time.Minute)
 	}
 	close(entry.done)
 	entry.done = nil
-	until := entry.until
 	cache.mu.Unlock()
-	return CurrencyAvailability{Routes: maps.Clone(routes), ValidUntil: until}, err
+	if err == nil && routes[code] == "" {
+		err = ErrEvidence
+	}
+	return routes[code], err
 }
 
-func (c *Client) readPaymentCurrencies(ctx context.Context, fixed bool) (map[string]string, error) {
+func (c *Client) readCurrencyNetworks(ctx context.Context) (map[string]string, error) {
 	full, err := c.request(ctx, http.MethodGet, "/full-currencies", nil)
 	if err != nil {
 		return nil, ErrUnavailable
-	}
-	merchant, err := c.request(ctx, http.MethodGet, "/merchant/coins", nil)
-	if err != nil {
-		return nil, ErrUnavailable
-	}
-	selected, err := currencyCodes(merchant["selectedCurrencies"], false)
-	if err != nil {
-		return nil, err
-	}
-	if fixed {
-		quote, readErr := c.request(ctx, http.MethodGet, "/currencies?fixed_rate=true", nil)
-		if readErr != nil {
-			return nil, ErrUnavailable
-		}
-		fixedCodes, parseErr := currencyCodes(quote["currencies"], true)
-		if parseErr != nil {
-			return nil, parseErr
-		}
-		for code := range selected {
-			if !fixedCodes[code] {
-				delete(selected, code)
-			}
-		}
 	}
 	entries, ok := full["currencies"].([]any)
 	if !ok || len(entries) > 2000 {
@@ -115,7 +90,7 @@ func (c *Client) readPaymentCurrencies(ctx context.Context, fixed bool) (map[str
 			return nil, ErrEvidence
 		}
 		seen[code] = true
-		if selected[code] && networkOK && row["enable"] == true && row["available_for_payment"] == true {
+		if networkOK {
 			routes[code] = network
 		}
 	}
@@ -126,24 +101,4 @@ func currencyCode(raw any) (string, bool) {
 	code, ok := raw.(string)
 	code = strings.ToLower(code)
 	return code, ok && coinPattern.MatchString(code)
-}
-func currencyCodes(raw any, quotes bool) (map[string]bool, error) {
-	entries, ok := raw.([]any)
-	if !ok || len(entries) > 2000 {
-		return nil, ErrEvidence
-	}
-	result := map[string]bool{}
-	for _, item := range entries {
-		if quotes {
-			if row, valid := item.(map[string]any); valid {
-				item = row["currency"]
-			}
-		}
-		code, valid := currencyCode(item)
-		if !valid || result[code] {
-			return nil, ErrEvidence
-		}
-		result[code] = true
-	}
-	return result, nil
 }

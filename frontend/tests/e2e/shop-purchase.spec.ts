@@ -54,7 +54,7 @@ async function capture(page: Page, name: string, width: number) {
                 exact: true,
               }),
               page.getByRole("button", {
-                name: "Refresh payment",
+                name: "Check payment status",
                 exact: true,
               }),
             ];
@@ -200,7 +200,6 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       .click();
     await expect(buyer).toHaveURL(/\/orders\/[^/]+\?section=payment$/);
     const order = new URL(buyer.url()).pathname.split("/").at(-1) ?? "";
-    await buyer.getByRole("radio", { name: /USDT.*TRON|USDT.*trx/i }).check();
     await buyer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();

@@ -58,6 +58,7 @@ type Payment struct {
 	OutcomeAmount   *Decimal
 	OutcomeCurrency string
 	Network         string
+	NetworkSource   string
 	PayinHash       string
 	PayoutHash      string
 }
@@ -146,6 +147,9 @@ func payment(v map[string]any) (Payment, error) {
 	p.Network = strings.ToLower(p.Network)
 	if err != nil {
 		return p, err
+	}
+	if p.Network != "" {
+		p.NetworkSource = "payment"
 	}
 	p.PayinHash, err = boundedText(v["payin_hash"], 256)
 	if err != nil {

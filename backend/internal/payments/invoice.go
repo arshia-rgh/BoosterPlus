@@ -64,6 +64,9 @@ func (s *Store) issue(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
+	if !providerSelection(claimed) && (route.Selection != "" || !codePattern.MatchString(route.Code) || !codePattern.MatchString(route.Network)) {
+		return ErrInvalid
+	}
 	invoice, remoteErr := s.provider.CreateInvoice(ctx, nowpayments.InvoiceRequest{OrderID: claimed.OrderID, AttemptID: id, AmountMinor: claimed.AmountMinor, Currency: claimed.Currency, PayCurrency: route.Code, FixedRate: policy.RateMode == "fixed", FeePaidByUser: policy.FeeMode == "customer"})
 	// The attempt remains claimed if persistence fails. Reconciliation, not a second POST, repairs it.
 	saveErr := s.fenced(ctx, func(tx *ent.Tx) error {

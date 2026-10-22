@@ -39,7 +39,6 @@ var minorPattern = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
 
 // Provider is implemented by the authenticated NOWPayments boundary. Tests inject isolated fixtures.
 type Provider interface {
-	CheckInvoice(context.Context, nowpayments.InvoiceRequest) error
 	CreateInvoice(context.Context, nowpayments.InvoiceRequest) (nowpayments.Invoice, error)
 	VerifyWebhook([]byte, string) (nowpayments.Notice, error)
 	GetPayment(context.Context, string) (nowpayments.Payment, error)
@@ -56,7 +55,6 @@ type Store struct {
 	now             func() time.Time
 	outgoing        OutgoingProvider
 	outgoingEnabled bool
-	minimums        minimumCache
 }
 
 // New creates financial services without applying schema or activating checkout by default.
@@ -128,11 +126,13 @@ func (s *Store) audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, ac
 	return err
 }
 
-// Route pins a merchant-approved asset/network identifier, not a browser address.
+// Route preserves legacy payment routes and staff payout choices. Selection is
+// set only on new immutable attempts whose coin is chosen at hosted checkout.
 type Route struct {
-	Code    string `json:"code"`
-	Label   string `json:"label"`
-	Network string `json:"network"`
+	Selection string `json:"selection,omitempty"`
+	Code      string `json:"code"`
+	Label     string `json:"label"`
+	Network   string `json:"network"`
 }
 
 // Policy records explicit fees, validity and rate choices before customer acceptance.
@@ -148,7 +148,7 @@ type Policy struct {
 }
 
 func validatePolicy(p Policy) error {
-	if !validText(p.Label, 1, 120) || !validText(p.Text, 20, 8000) || len(p.Currencies) < 1 || len(p.Currencies) > 3 || len(p.Routes) < 1 || len(p.Routes) > paymentroutes.Maximum || !slices.Contains([]string{"merchant", "customer"}, p.FeeMode) || !slices.Contains([]string{"fixed", "floating"}, p.RateMode) || p.WindowMinutes < 15 || p.WindowMinutes > 1440 {
+	if !validText(p.Label, 1, 120) || !validText(p.Text, 20, 8000) || len(p.Currencies) < 1 || len(p.Currencies) > 3 || len(p.Routes) > paymentroutes.Maximum || !slices.Contains([]string{"merchant", "customer"}, p.FeeMode) || !slices.Contains([]string{"fixed", "floating"}, p.RateMode) || p.WindowMinutes < 15 || p.WindowMinutes > 1440 {
 		return ErrInvalid
 	}
 	seen := map[string]bool{}
@@ -163,7 +163,7 @@ func validatePolicy(p Policy) error {
 		if known, ok := paymentroutes.Find(route.Code); ok && known.Network != route.Network {
 			return ErrInvalid
 		}
-		if !codePattern.MatchString(route.Code) || strings.ContainsAny(route.Code, "_-") || !codePattern.MatchString(route.Network) || !validText(route.Label, 1, 80) || seen[route.Code] {
+		if route.Selection != "" || !codePattern.MatchString(route.Code) || strings.ContainsAny(route.Code, "_-") || !codePattern.MatchString(route.Network) || !validText(route.Label, 1, 80) || seen[route.Code] {
 			return ErrInvalid
 		}
 		seen[route.Code] = true
@@ -198,7 +198,6 @@ type PolicyInput struct {
 type StartInput struct {
 	ContractID   string `json:"contract_id"`
 	PolicyID     string `json:"policy_id"`
-	Route        string `json:"route"`
 	AcceptPolicy bool   `json:"accept_policy"`
 }
 
@@ -229,7 +228,7 @@ func attemptView(row *ent.PaymentAttempt) (Attempt, error) {
 	if err != nil {
 		return Attempt{}, err
 	}
-	view := Attempt{ID: row.ID, OrderID: row.OrderID, State: row.State, Issue: row.Issue, Currency: row.Currency, AmountMinor: row.AmountMinor, Route: route, Policy: PolicyView{row.PolicyID, policy}, CheckoutURL: row.CheckoutURL, CreatedAt: row.CreatedAt, ExpiresAt: row.ExpiresAt, NativeCheckout: row.NativeCheckout, InstructionStatus: "not_applicable"}
+	view := Attempt{ID: row.ID, OrderID: row.OrderID, State: row.State, Issue: row.Issue, Currency: row.Currency, AmountMinor: row.AmountMinor, Route: route, Policy: PolicyView{row.PolicyID, normalizedPolicy(policy)}, CheckoutURL: row.CheckoutURL, CreatedAt: row.CreatedAt, ExpiresAt: row.ExpiresAt, NativeCheckout: row.NativeCheckout, InstructionStatus: "not_applicable"}
 	if row.NativeCheckout {
 		view.CheckoutURL = ""
 		view.InstructionStatus = "preparing"

@@ -35,14 +35,11 @@ func owned(ctx context.Context, client *ent.Client, p *identity.Principal, id st
 
 // Start persists one active attempt and its invoice job atomically. Repeated calls reuse it.
 func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, input StartInput) (Attempt, error) {
-	if !validID(id) || !validID(input.ContractID) || !validID(input.PolicyID) || !input.AcceptPolicy || !codePattern.MatchString(input.Route) {
+	if !validID(id) || !validID(input.ContractID) || !validID(input.PolicyID) || !input.AcceptPolicy {
 		return Attempt{}, ErrInvalid
 	}
 	if s.provider == nil || !s.enabled || s.account == "" {
 		return Attempt{}, ErrUnavailable
-	}
-	if err := s.preflight(ctx, p, id, input); err != nil {
-		return Attempt{}, err
 	}
 	var result Attempt
 	err := s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
@@ -61,13 +58,7 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 			if existing.PolicyID != input.PolicyID || !existing.ExpiresAt.After(s.instant()) {
 				return ErrConflict
 			}
-			route, e := decode[Route](existing.Route)
-			if e != nil {
-				return e
-			}
-			if route.Code != input.Route {
-				return ErrConflict
-			}
+			var e error
 			result, e = attemptView(existing)
 			return e
 		}
@@ -82,25 +73,21 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 		if err != nil {
 			return err
 		}
-		if policy == nil || policy.ID != input.PolicyID || validatePolicy(policy.Data) != nil || validateRemedies(policy.Data.Remedies) != nil {
+		if policy == nil || policy.ID != input.PolicyID || validateCheckoutPolicy(policy.Data) != nil || validateRemedies(policy.Data.Remedies) != nil {
 			return ErrConflict
 		}
 		commercial, err := decode[orders.Commercial](contract.Data)
 		if err != nil {
 			return err
 		}
-		if !minorPattern.MatchString(commercial.AmountMinor) || !slices.Contains(policy.Data.Currencies, commercial.Currency) {
+		if !minorPattern.MatchString(commercial.AmountMinor) || commercial.Currency != "USD" || !slices.Contains(policy.Data.Currencies, commercial.Currency) {
 			return ErrConflict
-		}
-		index := slices.IndexFunc(policy.Data.Routes, func(route Route) bool { return route.Code == input.Route })
-		if index < 0 {
-			return ErrInvalid
 		}
 		policyDoc, err := document(policy.Data)
 		if err != nil {
 			return err
 		}
-		routeDoc, err := document(policy.Data.Routes[index])
+		routeDoc, err := document(Route{Selection: "provider"})
 		if err != nil {
 			return err
 		}

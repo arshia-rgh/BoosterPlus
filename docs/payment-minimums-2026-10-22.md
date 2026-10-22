@@ -1,5 +1,7 @@
 # MINIMUM176 — payment network eligibility before checkout
 
+**Superseded before deployment by HOSTED177 on 23 October 2026.** This document records the earlier implementation and its retained evidence. Incoming coin selection, minimum checks and the refresher are removed in favor of USD hosted checkout; only reusable outgoing-route mappings/selectors remain. See [HOSTED177](hosted-checkout-2026-10-23.md).
+
 Owner request, 22 October 2026: show the approved payment networks before checkout, disable networks whose NOWPayments minimum exceeds the order total, and keep all networks disabled when none qualifies. Cache minimums in memory with daily refresh. Use focused checks and deploy; do not run the full gate.
 
 ## Implementation

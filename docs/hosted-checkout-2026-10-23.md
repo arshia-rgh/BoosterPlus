@@ -1,0 +1,35 @@
+# HOSTED177 — USD hosted checkout
+
+Status: implementation and focused qualification complete; signed-release preparation in progress. Not deployed.
+
+The owner explicitly replaced the unreleased MINIMUM176 coin-selection/minimum-cache work with NOWPayments hosted checkout. Create one invoice using the accepted USD amount, omit pay_currency, and let the customer choose a coin/network on the hosted page. PLAYORA does not promise that provider minimums disappear or every coin can pay every order.
+
+Keep required consent, fee/rate terms, PLAYORA reservation window, uncertain-create recovery, signature verification and authenticated status re-reads. Never treat a browser return as payment. Coin/network receipt evidence remains available for history/refunds; staff payout choices remain separate from incoming checkout. Existing accepted agreements and legacy pinned/native attempts remain immutable.
+
+Use an explicit provider-selection marker in immutable attempt route JSON at existing schema50. Missing/corrupt legacy route data is never interpreted as hosted selection. Bind exact invoice, attempt, USD amount and complete verified asset/network evidence before settlement. Different payment IDs for one invoice must not retire the entire order merely because an abandoned zero-funds choice expired. Allocate each contract once; preserve partial, duplicate, reversed and late funds for review.
+
+## Qualification and release
+
+Server-only focused tests; no full gate, real invoice, payment, message or publication test. Independent senior reviews: `redesign/reviews/HOSTED177_ENGINEERING.md` and `redesign/reviews/HOSTED177_DESIGN.md`. Normal focused hook, exact CI, scanned/signed images and server preflight precede fresh exact recovery consent. No off-host backup exists; old binaries do not understand new hosted markers, so a forward fix may be required even without a SQL migration.
+
+Superseded MINIMUM176 hook3 passed at0435b7f; its bundle/logs and owned-source archive are retained privately under `.cache/minimum176/` and `.cache/hosted177/`. They do not qualify HOSTED177. Preserve all original failures and other-person prototype/cameo/account-ownership notes.
+
+## Policy and activation sequence
+
+The owner authenticated to Finance. Current published policy `e1957da6-a9dd-4e66-b78b-4cd2ed4df190` explicitly restricts incoming payments to USDTBSC. Private revision4 is saved with only its title and first two payment paragraphs revised: USD hosted coin/network choice, provider conversion/minimums, and a precise PLAYORA reservation window distinct from provider quote validity. Fee mode merchant, fixed rate, 30-minute window, outgoing USDTBSC route, all remedies/refund/compensation wording and 365-day /30-day /3-appeal settings remain unchanged. Existing accepted copies remain immutable.
+
+After a signed candidate, preflight and fresh exact owner recovery approval, publish this compatible wording through the normal owner session/MFA **before** activating hosted-selection code; verify and bind the published revision/hash in the activation evidence. The previous application may offer only USDTBSC during that short interval, a compatible subset of the new nonexclusive wording. If publication is blocked, do not activate the new code. No checkout-setting bypass is required.
+
+## Review corrections and retained failures
+
+Engineering rounds corrected missing-network funds handling, immutable route checks on reversals, and refund handling for a separate unallocated duplicate payment. The invoice writer rejects malformed selection markers before its single POST. Design rounds corrected missing-link recovery copy, action hierarchy, settled-state prompts, readable receipt coin/network labels with raw detail fallbacks, and unavailable-state support links; the actual policy editor/customer preview is rendered at mobile and desktop widths.
+
+Original server round1 failures were stale source-sync/test expectations and missing fixture CSRF/session setup; round2 passed all20 browser cases and88 component cases, with two narrow linter corrections outstanding. Round3 passed Go race/lint/compile, types/lint and all20 browser cases, with one obsolete recovery-copy component assertion. Frontend-only round4 passed all20 browser cases but exposed a second obsolete offline-message assertion; the original failure is retained and its correction is included in the next focused pass. The engineer additionally identified and corrected null optional payout-route arrays in policy responses, with historical-snapshot and persisted serialization regressions. Private evidence is retained under `.cache/hosted177/` and `/srv/playora-qualification/hosted177/`; the final isolated database evidence and normal focused hook remain separate requirements.
+
+## Focused qualification results
+
+Server round5 passed formatting, canonical contract generation, affected Go unit/race tests, integration compilation, golangci/security rules, TypeScript, ESLint and all88 scoped component cases. Round4 passed all20 isolated browser/a11y cases; the later changes do not alter the rendered layout. Round6 passed declaration-only formatting, contract equality, TypeScript and lint after regenerating the mirrored OpenAPI from the corrected backend contract; no removed options endpoint or route-selection request field remains.
+
+Isolated TiDB run1 passed10 actual top-level scenarios (including two legacy native outcome subcases), in363 seconds. Its launcher incorrectly listed11 because a historical-network regression had lived in the removed options test file; retain that original receipt and the corrected enumerated `database-verified1.json`. The regression is restored in its own maintained file. Run2 passed the updated empty-payout JSON scenario and the restored historical-network scenario in59 seconds:11 distinct scenarios total. Both exact isolated containers and tmpfs data were removed. Provider responses were synthetic; no live invoice/funds/customer-data test occurred. First-run scenarios are retained rather than unnecessarily rerun after the projection-only correction.
+
+The independent designer approved18 mobile/desktop renders, the actual staff editor/customer preview and the final recovery/network-review states. Engineering review covers source, persisted evidence, legacy compatibility and the coordinated policy-publication sequence. Normal focused tracked hook, exact CI/image scans/signature, preflight and exact owner recovery consent still precede activation.

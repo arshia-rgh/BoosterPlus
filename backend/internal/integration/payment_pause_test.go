@@ -19,7 +19,7 @@ func TestPausedCheckoutNeverGrantsPaymentButReconcilesExistingFunds(t *testing.T
 	attempt := f.start(t, outstanding)
 	f.issue(t, attempt)
 	f.store = payments.New(f.base.auth.client, f.base.auth.service, f.provider, "fixture:synthetic-merchant", false, func() time.Time { return time.Unix(f.base.auth.clock.Load(), 0) })
-	if _, err := f.store.Start(ctx, f.base.buyer, unpaid.Order.ID, payments.StartInput{ContractID: unpaid.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true}); !errors.Is(err, payments.ErrUnavailable) {
+	if _, err := f.store.Start(ctx, f.base.buyer, unpaid.Order.ID, payments.StartInput{ContractID: unpaid.Contract.ID, PolicyID: f.policy.ID, AcceptPolicy: true}); !errors.Is(err, payments.ErrUnavailable) {
 		t.Fatal("paused checkout accepted", err)
 	}
 	for _, action := range []string{"bypass_payment", "mark_paid"} {

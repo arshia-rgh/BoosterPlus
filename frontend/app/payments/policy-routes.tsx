@@ -3,6 +3,7 @@ import { Action, Check, Text } from "../catalog/controls";
 import type { Policy } from "./model";
 import {
   knownRoute,
+  manualPayoutNetwork,
   maximumRoutes,
   paymentRoutes,
   routeGroups,
@@ -28,17 +29,22 @@ export default function PolicyRoutes({
     );
   const visible = paymentRoutes.filter(
     (route) =>
-      routeMatches(route, search) && (!selectedOnly || selected(route)),
+      manualPayoutNetwork(route.network) &&
+      routeMatches(route, search) &&
+      (!selectedOnly || selected(route)),
   );
   const legacy = routes.filter(
-    (route) => !knownRoute(route.code, route.network),
+    (route) =>
+      !knownRoute(route.code, route.network) ||
+      !manualPayoutNetwork(route.network),
   );
   return (
     <fieldset className="payment-route-editor">
-      <legend>Accepted payment options</legend>
+      <legend>Seller payout assets and networks</legend>
       <p>
-        Choose coins and their exact networks. Existing payments keep their
-        original asset and network.
+        Choose the networks staff can use for manual seller payouts. These
+        choices do not limit customer checkout coins. Existing agreements keep
+        their original asset and network.
       </p>
       <Text
         name="routes"
@@ -59,7 +65,7 @@ export default function PolicyRoutes({
       <div
         className="payment-route-scroll"
         role="region"
-        aria-label="Accepted payment options list"
+        aria-label="Seller payout assets and networks list"
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- The named bounded list needs keyboard scrolling independently of checkbox selection.
         tabIndex={0}
       >

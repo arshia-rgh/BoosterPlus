@@ -2,7 +2,7 @@ import { useState } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import PolicyRoutes from "./policy-routes";
-import { paymentRoutes } from "./routes";
+import { paymentRoutes, manualPayoutNetwork } from "./routes";
 import type { Policy } from "./model";
 
 function Form({ initial = [] }: { initial?: Policy["routes"] }) {
@@ -16,16 +16,18 @@ function Form({ initial = [] }: { initial?: Policy["routes"] }) {
 }
 it("selects exact coin/network pairs from the reviewed list without free typing", () => {
   render(<Form />);
-  expect(screen.getAllByRole("checkbox")).toHaveLength(31);
+  expect(screen.getAllByRole("checkbox")).toHaveLength(
+    paymentRoutes.filter((r) => manualPayoutNetwork(r.network)).length + 1,
+  );
   expect(screen.queryByLabelText("Network identifier")).not.toBeInTheDocument();
   fireEvent.click(
-    screen.getByRole("checkbox", { name: "USDC · Avalanche C-Chain" }),
+    screen.getByRole("checkbox", { name: "USDC · BNB Smart Chain (BEP20)" }),
   );
   expect(screen.getByLabelText("Saved route values")).toHaveTextContent(
-    '"code":"usdcarc20"',
+    '"code":"usdcbsc"',
   );
   expect(screen.getByLabelText("Saved route values")).toHaveTextContent(
-    '"network":"avaxc"',
+    '"network":"bsc"',
   );
   fireEvent.click(screen.getByRole("checkbox", { name: "Selected only" }));
   expect(screen.getAllByRole("checkbox")).toHaveLength(2);
@@ -34,10 +36,10 @@ it("selects exact coin/network pairs from the reviewed list without free typing"
   });
   expect(screen.getByText("No matching coin or network.")).toBeVisible();
   expect(screen.getByLabelText("Saved route values")).toHaveTextContent(
-    "usdcarc20",
+    "usdcbsc",
   );
 });
-it("shows all 30 saved routes and preserves legacy entries until explicitly removed", () => {
+it("preserves unsupported saved routes and preserves legacy entries until explicitly removed", () => {
   render(
     <Form
       initial={[

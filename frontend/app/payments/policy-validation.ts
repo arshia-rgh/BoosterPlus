@@ -65,10 +65,10 @@ export function policyIssues(value: Policy): FieldIssue[] {
       "currencies",
       "Choose at least one supported pricing currency, without duplicates.",
     );
-  if (value.routes.length < 1 || value.routes.length > maximumRoutes)
+  if (value.routes.length > maximumRoutes)
     add(
       "routes",
-      "Choose between 1 and 40 approved coin and network combinations.",
+      "Choose up to 40 seller payout coin and network combinations.",
     );
   const seen = new Set<string>();
   value.routes.forEach((route, index) => {

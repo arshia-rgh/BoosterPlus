@@ -1,6 +1,7 @@
 package nowpayments
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"sync"
@@ -9,85 +10,94 @@ import (
 	"time"
 )
 
-func TestPaymentCurrenciesCoalesceAndRejectUnavailableOrWrongRate(t *testing.T) {
+func TestPaymentNetworkCoalescesWithoutMerchantAvailability(t *testing.T) {
 	c := testClient(t)
 	var calls atomic.Int32
 	var fail atomic.Bool
 	attach(t, c, func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
-		if r.Method != http.MethodGet {
-			t.Error("currency lookup wrote provider")
+		if r.Method != http.MethodGet || r.URL.Path != "/v1/full-currencies" {
+			t.Error("unexpected metadata endpoint")
 		}
 		if fail.Load() {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
-		switch r.URL.Path {
-		case "/v1/full-currencies":
-			respond(t, w, map[string]any{"currencies": []any{
-				map[string]any{"code": "USDTBSC", "network": "bsc", "enable": true, "available_for_payment": true},
-				map[string]any{"code": "USDTOP", "network": "op", "enable": true, "available_for_payment": false},
-				map[string]any{"code": "BTC", "network": "btc", "enable": true, "available_for_payment": true},
-				map[string]any{"code": "ETH", "network": "eth", "enable": true, "available_for_payment": true},
-				map[string]any{"code": "AE", "network": nil, "enable": false, "available_for_payment": false},
-			}})
-		case "/v1/merchant/coins":
-			respond(t, w, map[string]any{"selectedCurrencies": []string{"USDTBSC", "USDTOP", "BTC"}})
-		case "/v1/currencies":
-			if r.URL.Query().Get("fixed_rate") != "true" {
-				t.Error("wrong rate policy")
-			}
-			respond(t, w, map[string]any{"currencies": []any{map[string]any{"currency": "usdtbsc"}, map[string]any{"currency": "usdtop"}}})
-		default:
-			t.Error("unexpected endpoint")
-			w.WriteHeader(http.StatusNotFound)
-		}
+		respond(t, w, map[string]any{"currencies": []any{
+			map[string]any{"code": "USDTBSC", "network": "BSC", "enable": false, "available_for_payment": false},
+			map[string]any{"code": "OUTSIDELOCALREGISTRY", "network": "newchain"},
+			map[string]any{"code": "AE", "network": nil},
+		}})
 	})
 	var group sync.WaitGroup
 	for range 20 {
 		group.Go(func() {
-			value, err := c.PaymentCurrencies(t.Context(), true)
-			if err != nil || len(value.Routes) != 1 || value.Routes["usdtbsc"] != "bsc" || !time.Now().Before(value.ValidUntil) {
-				t.Error("incorrect availability", value, err)
+			network, err := c.PaymentNetwork(t.Context(), "usdtbsc")
+			if err != nil || network != "bsc" {
+				t.Error(network, err)
 			}
-			value.Routes["mutated"] = "wrong"
 		})
 	}
 	group.Wait()
-	if calls.Load() != 3 {
-		t.Fatal("uncoalesced currency reads", calls.Load())
+	if calls.Load() != 1 {
+		t.Fatal("metadata calls not coalesced", calls.Load())
 	}
-	floating, err := c.PaymentCurrencies(t.Context(), false)
-	if err != nil || len(floating.Routes) != 2 || floating.Routes["btc"] != "btc" {
-		t.Fatal("rate/merchant filters", floating, err)
+	if network, err := c.PaymentNetwork(t.Context(), "outsidelocalregistry"); err != nil || network != "newchain" {
+		t.Fatal("incoming constrained by local registry", err)
+	}
+	for _, code := range []string{"missing", "ae"} {
+		if _, err := c.PaymentNetwork(t.Context(), code); !errors.Is(err, ErrEvidence) {
+			t.Fatal("guessed absent network", err)
+		}
 	}
 	c.currencies.mu.Lock()
-	c.currencies.entries[true].until = time.Now().Add(-time.Minute)
+	c.currencies.entry.until = time.Now().Add(-time.Minute)
 	c.currencies.mu.Unlock()
 	fail.Store(true)
 	for range 2 {
-		if value, e := c.PaymentCurrencies(t.Context(), true); !errors.Is(e, ErrUnavailable) || len(value.Routes) != 0 {
-			t.Fatal("stale success on failed refresh", value, e)
+		if _, err := c.PaymentNetwork(t.Context(), "usdtbsc"); !errors.Is(err, ErrUnavailable) {
+			t.Fatal("stale success", err)
 		}
 	}
-	if calls.Load() != 6 {
-		t.Fatal("failed lookup not bounded", calls.Load())
+	if calls.Load() != 2 {
+		t.Fatal("failed metadata read not bounded", calls.Load())
 	}
 }
-
-func TestCurrencyDirectoryMalformedAndResponseLimits(t *testing.T) {
-	for _, raw := range []any{nil, "btc", []any{"btc", "BTC"}, []any{false}, []any{"btc&next=bad"}} {
-		if _, err := currencyCodes(raw, false); err == nil {
-			t.Fatal("malformed/duplicate coin accepted")
-		}
-	}
-	for _, raw := range []any{[]any{"btc"}, []any{map[string]any{"currency": "BTC"}}} {
-		codes, err := currencyCodes(raw, true)
-		if err != nil || !codes["btc"] {
-			t.Fatal(err)
+func TestCurrencyDirectoryRejectsAmbiguity(t *testing.T) {
+	for _, value := range []any{nil, "btc", []any{false}, []any{map[string]any{"code": "BTC", "network": "btc"}, map[string]any{"code": "btc", "network": "other"}}} {
+		c := testClient(t)
+		attach(t, c, func(w http.ResponseWriter, _ *http.Request) { respond(t, w, map[string]any{"currencies": value}) })
+		if _, err := c.PaymentNetwork(t.Context(), "btc"); !errors.Is(err, ErrEvidence) {
+			t.Fatal("ambiguous directory", err)
 		}
 	}
 	if responseLimit(http.MethodGet, "/full-currencies") != 2*1024*1024 || responseLimit(http.MethodPost, "/full-currencies") != maxBody || responseLimit(http.MethodGet, "/payment/1") != maxBody {
 		t.Fatal("relaxed financial response boundary")
+	}
+}
+func TestHostedInvoiceOmitsCurrencyAndDoesNoPreflight(t *testing.T) {
+	c := testClient(t)
+	input := sampleRequest()
+	input.PayCurrency = ""
+	calls := 0
+	attach(t, c, func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if r.Method != http.MethodPost || r.URL.Path != "/v1/invoice" {
+			t.Error("unexpected preflight")
+		}
+		var body map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Error(err)
+		}
+		if _, exists := body["pay_currency"]; exists {
+			t.Error("hosted invoice pinned asset")
+		}
+		if body["price_currency"] != "usd" || body["price_amount"] != 123.45 || body["order_id"] != input.AttemptID {
+			t.Error("lost USD binding")
+		}
+		respond(t, w, map[string]any{"id": "1", "invoice_url": "https://nowpayments.io/payment/?iid=1"})
+	})
+	if _, err := c.CreateInvoice(t.Context(), input); err != nil || calls != 1 {
+		t.Fatal("invoice failed", err, calls)
 	}
 }

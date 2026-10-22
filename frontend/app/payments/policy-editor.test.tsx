@@ -223,30 +223,17 @@ it("explains invalid fields before posting, focuses the first error and preserve
     expect(screen.getByLabelText("Policy title")).toHaveFocus();
   });
   expect(post).not.toHaveBeenCalled();
-  expect(screen.getByLabelText("Find a coin or network")).toHaveAttribute(
+  expect(screen.getByLabelText("Find a coin or network")).not.toHaveAttribute(
     "aria-invalid",
-    "true",
   );
-  expect(
-    screen.getByLabelText("Find a coin or network"),
-  ).toHaveAccessibleDescription(/Choose between 1 and 40/);
   expect(screen.getByLabelText("Customer payment policy")).toHaveValue(
     "Retain these full customer-facing policy terms.",
   );
-  expect(
-    screen.getByRole("link", {
-      name: /Find a coin or network: Choose between/,
-    }),
-  ).toBeVisible();
   fireEvent.change(screen.getByLabelText("Policy title"), {
     target: { value: "Corrected policy" },
   });
   expect(screen.getByLabelText("Policy title")).not.toHaveAttribute(
     "aria-invalid",
-  );
-  expect(screen.getByLabelText("Find a coin or network")).toHaveAttribute(
-    "aria-invalid",
-    "true",
   );
   fireEvent.click(
     screen.getByRole("checkbox", { name: "USDT · BNB Smart Chain (BEP20)" }),

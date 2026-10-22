@@ -98,10 +98,6 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if supplierErr != nil {
 		return supplierErr
 	}
-	minimumCtx, stopMinimums := context.WithCancel(ctx)
-	minimumDone := make(chan struct{})
-	go func() { defer close(minimumDone); finance.RunMinimumRefresh(minimumCtx) }()
-	defer func() { stopMinimums(); <-minimumDone }()
 	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, supplierStore.Register, supplierPurchaser.RegisterCallbacks, news.New(client, auth, nil).Register, shop.New(client, auth, nil).WithSupplier(supplierPurchaser).WithPriceSync(cfg.PriceSync).Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.NewWithVault(client, auth, cfg.Vault, nil).Register, notices.Register, files.Register, artwork.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress}).Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacyStore(client, auth, cfg).Register, sitecontent.New(client, auth, nil).Register, wanted.New(client, auth, nil).Register))
 }
 

@@ -111,10 +111,6 @@ const messages = new Map([
     "This supplier record is no longer available. Refresh the private catalog.",
   ],
   [
-    "payment_below_minimum",
-    "This order is below NOWPayments’ current minimum for the selected network. No checkout was created. Contact support to review the order amount or choose another available network.",
-  ],
-  [
     "article_invalid",
     "Review the article fields and publication requirements.",
   ],

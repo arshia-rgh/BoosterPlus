@@ -15,10 +15,8 @@ import {
   remedyText,
 } from "./model";
 import { continueToProvider } from "./provider-navigation";
-import { paymentTitle } from "./presentation";
-import { usePaymentOptions } from "./options";
-import PaymentChoices from "./payment-choices";
 import { knownRoute } from "./routes";
+import { paymentTitle } from "./presentation";
 import DepositInstructions from "./deposit-instructions";
 import {
   effectiveInstructionStatus,
@@ -48,8 +46,7 @@ export default function Checkout({
     blocked: false,
     after: -Infinity,
   });
-  const [route, setRoute] = useState(""),
-    [acceptedPolicy, setAcceptedPolicy] = useState(""),
+  const [acceptedPolicy, setAcceptedPolicy] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
   const data = resource.data,
@@ -71,7 +68,7 @@ export default function Checkout({
     : "not_applicable";
   const nativeWaiting =
     latest?.native_checkout && latest.state === "awaiting_payment";
-  const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}:${route}`;
+  const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}`;
   const accepted = !!policy && acceptedPolicy === consentKey;
   const lock = useRef(false);
   const [localRedirect, setLocalRedirect] = useState<string | null>(null);
@@ -93,40 +90,15 @@ export default function Checkout({
       focusValidationTarget(paymentHeading.current);
     }
   }, [latest]);
-  const optionsBinding =
-    !admin &&
-    data?.enabled &&
-    !latest &&
-    policy &&
-    detail.contract &&
-    detail.order.state === "awaiting_payment"
-      ? `${policy.id}:${detail.contract.id}`
-      : null;
-  const options = usePaymentOptions(base, optionsBinding);
-  const optionsMatch =
-    !!options.data &&
-    options.data.policy_id === policy?.id &&
-    options.data.contract_id === detail.contract?.id &&
-    options.data.currency === detail.contract.data.currency &&
-    options.data.amount_minor === detail.contract.data.amount_minor;
-  const optionsReady =
-    optionsMatch && !options.loading && !options.error && !options.expired;
-  const selectedRoute =
-    optionsReady &&
-    options.data?.routes.some(
-      (v) => v.code === route && v.status === "available",
-    )
-      ? policy.data.routes.find((v) => v.code === route)
-      : undefined;
-  const [selectionNotice, setSelectionNotice] = useState("");
-  // Adjust this component's selection before rendering stale consent/choices.
-  if (route && !options.loading && !selectedRoute) {
-    setRoute("");
-    setAcceptedPolicy("");
-    setSelectionNotice("Your previous payment option is no longer available.");
-  }
   const deadline = latest ? Date.parse(latest.expires_at) : NaN;
   const expired = !!latest && (!Number.isFinite(deadline) || deadline <= now);
+  const recoveringLink =
+    !!latest &&
+    !latest.native_checkout &&
+    !latest.checkout_url &&
+    latest.state === "awaiting_payment" &&
+    !latest.issue &&
+    !expired;
   const polling =
     !!latest &&
     ["new", "creating", "uncertain", "awaiting_payment", "confirming"].includes(
@@ -205,7 +177,7 @@ export default function Checkout({
       !policy ||
       !detail.contract ||
       !accepted ||
-      !selectedRoute ||
+      detail.contract.data.currency !== "USD" ||
       detail.order.state !== "awaiting_payment"
     )
       return;
@@ -218,7 +190,6 @@ export default function Checkout({
         {
           contract_id: detail.contract.id,
           policy_id: policy.id,
-          route,
           accept_policy: accepted,
         },
         attemptSchema,
@@ -231,15 +202,9 @@ export default function Checkout({
       setError(cause);
       if (
         cause instanceof APIError &&
-        [
-          "payment_below_minimum",
-          "payments_unavailable",
-          "payment_conflict",
-        ].includes(cause.code)
+        ["payments_unavailable", "payment_conflict"].includes(cause.code)
       ) {
-        setRoute("");
         setAcceptedPolicy("");
-        options.reload();
         if (cause.code === "payment_conflict") {
           resource.reload();
           changed();
@@ -262,14 +227,6 @@ export default function Checkout({
         </h2>
         <div ref={feedback} tabIndex={-1}>
           <ErrorNotice error={resource.error ?? error} />
-          {error instanceof APIError &&
-            error.code === "payment_below_minimum" && (
-              <p>
-                <Anchor href={base + "?section=messages"}>
-                  Ask support about this order
-                </Anchor>
-              </p>
-            )}
         </div>
         {!data && resource.loading && (
           <p role="status">Loading payment information…</p>
@@ -284,13 +241,14 @@ export default function Checkout({
             <Action disabled={resource.loading} onClick={reload}>
               Try payment information again
             </Action>
+            <Anchor className="text-link" href={base + "?section=messages"}>
+              Contact order support
+            </Anchor>
           </div>
         )}
         {data && (
           <ol className="payment-steps" aria-label="Payment progress">
-            <li aria-current={!latest ? "step" : undefined}>
-              1. Choose payment
-            </li>
+            <li aria-current={!latest ? "step" : undefined}>1. Review order</li>
             <li
               aria-current={
                 latest &&
@@ -307,11 +265,17 @@ export default function Checkout({
           </ol>
         )}
         {data && !data.enabled && (
-          <p>
-            Checkout is currently unavailable. Your order remains unpaid until
-            funds are verified. If you already paid, do not pay again. Existing
-            payments continue to be reconciled; contact support for updates.
-          </p>
+          <div>
+            <p>
+              Checkout is currently unavailable. Your order remains unpaid until
+              funds are verified. If you already paid, do not pay again.
+              Existing payments continue to be reconciled; contact support for
+              updates.
+            </p>
+            <Anchor className="text-link" href={base + "?section=messages"}>
+              Contact order support
+            </Anchor>
+          </div>
         )}
         {!admin &&
           data?.enabled &&
@@ -319,45 +283,18 @@ export default function Checkout({
           detail.order.state === "awaiting_payment" &&
           policy && (
             <fieldset disabled={busy || resource.loading} key={policy.id}>
-              <legend>Choose how to pay</legend>
+              <legend>Review payment</legend>
               {detail.contract?.data && (
                 <p className="payment-total">
                   Agreed price: {detail.contract.data.currency}{" "}
                   {minorDisplay(detail.contract.data.amount_minor)}
                 </p>
               )}
-              <PaymentChoices
-                routes={policy.data.routes}
-                data={optionsMatch ? options.data : null}
-                loading={options.loading}
-                error={
-                  options.error ||
-                  (!options.loading && !optionsMatch) ||
-                  options.expired
-                }
-                route={route}
-                change={(value) => {
-                  setRoute(value);
-                  setAcceptedPolicy("");
-                  setSelectionNotice("");
-                }}
-                retry={() => {
-                  resource.reload();
-                  options.reload();
-                }}
-                support={`/orders/${detail.order.id}?section=help`}
-              />
-              {selectionNotice && <p role="status">{selectionNotice}</p>}
-              {selectedRoute && (
-                <p className="payment-route-note">
-                  Use{" "}
-                  {knownRoute(selectedRoute.code, selectedRoute.network)
-                    ?.symbol ?? selectedRoute.label}{" "}
-                  on{" "}
-                  {knownRoute(selectedRoute.code, selectedRoute.network)
-                    ?.network_label ?? selectedRoute.network}{" "}
-                  only. The provider displays the exact crypto amount and
-                  destination before you send.
+              <p>Choose your coin and network on the secure payment page.</p>
+              {detail.contract?.data.currency !== "USD" && (
+                <p role="alert">
+                  This agreement needs a USD price before checkout. Contact
+                  support from this order.
                 </p>
               )}
               <dl className="payment-facts">
@@ -374,11 +311,8 @@ export default function Checkout({
                   <dd>{policy.data.rate_mode}</dd>
                 </div>
                 <div>
-                  <dt>Checkout window</dt>
-                  <dd>
-                    {policy.data.window_minutes} minutes (the provider’s may be
-                    shorter)
-                  </dd>
+                  <dt>PLAYORA checkout window</dt>
+                  <dd>{policy.data.window_minutes} minutes</dd>
                 </div>
               </dl>
               <h3>{policy.data.label}</h3>
@@ -404,7 +338,7 @@ export default function Checkout({
               )}
               <Check
                 name="accept_policy"
-                disabled={!selectedRoute || busy}
+                disabled={busy || detail.contract?.data.currency !== "USD"}
                 label="I accept this payment policy and the agreed order price"
                 value={accepted}
                 change={(value) => {
@@ -413,7 +347,9 @@ export default function Checkout({
               />
               <div className="form-actions">
                 <Action
-                  disabled={!accepted || !selectedRoute}
+                  disabled={
+                    !accepted || detail.contract?.data.currency !== "USD"
+                  }
                   onClick={() => void start()}
                 >
                   {busy ? "Preparing checkout…" : "Go to payment"}
@@ -434,18 +370,22 @@ export default function Checkout({
           <div className="payment-current">
             <p className="eyebrow">Current payment</p>
             <h3>
-              {nativeWaiting
-                ? instructionTitle(effectiveInstructions, expired)
-                : paymentTitle(latest.state, latest.issue, expired)}
+              {recoveringLink
+                ? "Recovering your payment link"
+                : nativeWaiting
+                  ? instructionTitle(effectiveInstructions, expired)
+                  : paymentTitle(latest.state, latest.issue, expired)}
             </h3>
             <p role="status">
-              {nativeWaiting
-                ? instructionMessage(effectiveInstructions, expired)
-                : expired &&
-                    latest.state === "awaiting_payment" &&
-                    !latest.issue
-                  ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
-                  : paymentMessage(latest.state, latest.issue)}
+              {recoveringLink
+                ? "Your checkout is saved. We’re checking for its payment link; do not start another payment."
+                : nativeWaiting
+                  ? instructionMessage(effectiveInstructions, expired)
+                  : expired &&
+                      latest.state === "awaiting_payment" &&
+                      !latest.issue
+                    ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
+                    : paymentMessage(latest.state, latest.issue)}
             </p>
             <dl className="payment-facts">
               <div>
@@ -454,17 +394,21 @@ export default function Checkout({
                   {latest.currency} {minorDisplay(latest.amount_minor)}
                 </dd>
               </div>
-              <div>
-                <dt>Payment asset</dt>
-                <dd>{latest.route.label}</dd>
-              </div>
-              <div>
-                <dt>Network</dt>
-                <dd>{latest.route.network}</dd>
-              </div>
-              {!latest.native_checkout && (
+              {latest.route.selection !== "provider" && (
+                <>
+                  <div>
+                    <dt>Payment asset</dt>
+                    <dd>{latest.route.label}</dd>
+                  </div>
+                  <div>
+                    <dt>Network</dt>
+                    <dd>{latest.route.network}</dd>
+                  </div>
+                </>
+              )}
+              {!latest.native_checkout && latest.state !== "settled" && (
                 <div>
-                  <dt>Checkout deadline</dt>
+                  <dt>PLAYORA checkout deadline</dt>
                   <dd>
                     <time dateTime={latest.expires_at}>
                       {new Date(latest.expires_at).toLocaleString()}
@@ -509,39 +453,28 @@ export default function Checkout({
                   Go to payment
                 </a>
               )}
-            {!latest.native_checkout &&
-              !latest.checkout_url &&
-              latest.state === "awaiting_payment" &&
-              !latest.issue &&
-              !expired && (
-                <div>
-                  <p role="status">
-                    Your checkout exists, but its payment link is still being
-                    recovered.{" "}
-                    {unavailable || resource.error
-                      ? "Reconnect, then refresh payment information."
-                      : "We’re checking it automatically."}{" "}
-                    Do not create another payment.
-                  </p>
-                  <Anchor
-                    className="text-link"
-                    href={base + "?section=messages"}
-                  >
-                    Ask support about this checkout
-                  </Anchor>
-                </div>
-              )}
+            {recoveringLink && (
+              <Anchor className="text-link" href={base + "?section=messages"}>
+                Ask support about this checkout
+              </Anchor>
+            )}
             {latest.issue && (
               <Anchor className="text-link" href={base + "?section=messages"}>
                 Ask support about this payment
               </Anchor>
             )}
-            <p>
-              Returning from the provider does not confirm payment. This page
-              updates from verified provider evidence.
-            </p>
-            <Action disabled={resource.loading} onClick={resource.reload}>
-              {resource.loading ? "Checking payment…" : "Refresh payment"}
+            {latest.state !== "settled" && (
+              <p>
+                Returning from the provider does not confirm payment. This page
+                updates from verified provider evidence.
+              </p>
+            )}
+            <Action
+              variant="secondary"
+              disabled={resource.loading}
+              onClick={resource.reload}
+            >
+              {resource.loading ? "Checking payment…" : "Check payment status"}
             </Action>
           </div>
         )}
@@ -556,7 +489,11 @@ export default function Checkout({
                   Checkout {new Date(a.created_at).toLocaleString()} ·{" "}
                   {a.state.replaceAll("_", " ")}
                 </summary>
-                <p>{paymentMessage(a.state, a.issue)}</p>
+                <p>
+                  {a.id === latest?.id && recoveringLink
+                    ? "Payment link recovery in progress."
+                    : paymentMessage(a.state, a.issue)}
+                </p>
                 <p className="payment-policy">{a.policy.data.text}</p>
                 <p>
                   Local window ends{" "}
@@ -580,10 +517,18 @@ export default function Checkout({
             {data.receipts.map((receipt) => (
               <article key={receipt.id} className="payment-receipt">
                 <strong>
-                  {receipt.amount} {receipt.currency.toUpperCase()}
+                  {receipt.amount}{" "}
+                  {knownRoute(
+                    receipt.currency.toLowerCase(),
+                    receipt.network.toLowerCase(),
+                  )?.symbol ?? receipt.currency.toUpperCase()}
                 </strong>
                 <p>
-                  {receipt.network} · {receipt.state}
+                  {knownRoute(
+                    receipt.currency.toLowerCase(),
+                    receipt.network.toLowerCase(),
+                  )?.network_label ?? receipt.network}{" "}
+                  · {receipt.state}
                 </p>
                 <p>
                   {receipt.allocated_minor
@@ -591,7 +536,11 @@ export default function Checkout({
                     : "No amount allocated to this agreement."}
                 </p>
                 <details>
-                  <summary>Receipt reference</summary>
+                  <summary>Receipt details</summary>
+                  <p>
+                    Asset code: {receipt.currency} · Network code:{" "}
+                    {receipt.network}
+                  </p>
                   <small>{receipt.id}</small>
                   <p>
                     <time dateTime={receipt.created_at}>

@@ -36,8 +36,6 @@ func write(w http.ResponseWriter, value any) error {
 func problem(w http.ResponseWriter, err error) error {
 	status, code := 0, ""
 	switch {
-	case errors.Is(err, nowpayments.ErrBelowMinimum):
-		status, code = http.StatusUnprocessableEntity, "payment_below_minimum"
 	case errors.Is(err, ErrInvalid):
 		status, code = http.StatusUnprocessableEntity, "payment_invalid"
 	case errors.Is(err, ErrConflict):
@@ -63,14 +61,6 @@ func (s *Store) Register(mux *http.ServeMux) {
 		handle     func(http.ResponseWriter, *http.Request, *identity.Principal) error
 	}{
 		"GET /api/v1/orders/{id}/payments": {"account", s.history(false)}, "GET /api/v1/admin/orders/{id}/payments": {"admin", s.history(true)},
-		"GET /api/v1/orders/{id}/payments/options": {"account", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-			w.Header().Set("Cache-Control", "no-store")
-			result, err := s.PaymentOptions(r.Context(), p, r.PathValue("id"))
-			if err != nil {
-				return err
-			}
-			return write(w, result)
-		}},
 		"POST /api/v1/orders/{id}/checkout": {"account", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			var input StartInput
 			if err := read(r, &input); err != nil {
