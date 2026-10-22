@@ -34,6 +34,126 @@
   font-weight: 700;
   color: #d7efdf;
 }
+.payment-panel .payment-policy-disclosure {
+  margin-block: 0.75rem;
+  padding: 0;
+  border: 1px solid #496852;
+  border-radius: 0.8rem;
+  background: #132b20;
+  overflow: clip;
+}
+.payment-policy-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.1rem;
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.payment-policy-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.payment-policy-disclosure > summary::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid #d9c5a1;
+  border-bottom: 2px solid #d9c5a1;
+  transform: rotate(45deg);
+  flex: 0 0 auto;
+  margin: 0 0.15rem 0.25rem 0;
+}
+.payment-policy-disclosure[open] > summary::after {
+  transform: rotate(225deg);
+  margin-block: 0.25rem 0;
+}
+.payment-policy-disclosure > summary:hover {
+  background: #1c3629;
+}
+.payment-policy-disclosure > summary:focus-visible {
+  outline: 2px solid #d9c5a1;
+  outline-offset: -4px;
+  border-radius: 0.8rem;
+}
+.payment-policy-disclosure-body {
+  padding: 0 1.1rem 1.1rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.payment-policy-disclosure-body > :last-child {
+  margin-bottom: 0;
+}
+.payment-preparation-dialog {
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid #54705f;
+  border-radius: 1.5rem;
+  background: #10251e;
+  color: #edf7f0;
+  box-shadow: 0 1.5rem 5rem #0008;
+  text-align: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.payment-preparation-dialog::backdrop {
+  background: #04110bbd;
+  backdrop-filter: blur(8px);
+}
+.payment-preparation-dialog .playora-loading {
+  min-height: 0;
+  padding: 0;
+  margin: 0.5rem 0 1.5rem;
+  border: 0;
+  background: none;
+}
+.payment-preparation-dialog h2 {
+  font-size: clamp(1.2rem, 4vw, 1.45rem);
+  line-height: 1.4;
+  margin: 0 auto 1rem;
+  max-width: 20ch;
+}
+.payment-preparation-dialog h2:focus {
+  outline: none;
+}
+.payment-preparation-delay {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #c5d4c9;
+}
+.payment-preparation-delay .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.payment-preparation-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #54705f;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: #e2cfaf;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.payment-preparation-dismiss:hover {
+  background: #20382c;
+}
+.payment-preparation-dismiss:focus-visible {
+  outline: 2px solid #e2cfaf;
+  outline-offset: 3px;
+}
 .payment-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

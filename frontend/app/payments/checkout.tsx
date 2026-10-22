@@ -23,6 +23,7 @@ import {
   instructionMessage,
   instructionTitle,
 } from "./presentation";
+import { PreparationDialog } from "./preparation-dialog";
 import "./workspace.css";
 export default function Checkout({
   detail,
@@ -71,6 +72,7 @@ export default function Checkout({
   const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}`;
   const accepted = !!policy && acceptedPolicy === consentKey;
   const lock = useRef(false);
+  const [preparationSequence, setPreparationSequence] = useState(0);
   const [localRedirect, setLocalRedirect] = useState<string | null>(null);
   const pendingRedirect = redirectIntent ? redirectIntent.id : localRedirect;
   const setPendingRedirect = redirectIntent?.set ?? setLocalRedirect;
@@ -82,16 +84,31 @@ export default function Checkout({
     if (error && !(error instanceof APIError && error.issues.length))
       focusValidationTarget(feedback.current);
   }, [error]);
+  const deadline = latest ? Date.parse(latest.expires_at) : NaN;
+  const expired = !!latest && (!Number.isFinite(deadline) || deadline <= now);
+  const preparing =
+    !admin &&
+    data?.enabled !== false &&
+    !error &&
+    !resource.error &&
+    !unavailable &&
+    !expired &&
+    (!latest || (!latest.native_checkout && !latest.issue)) &&
+    (busy ||
+      (!!latest && ["new", "creating"].includes(latest.state)) ||
+      (!!pendingRedirect && !latest));
   useEffect(() => {
     // Only the customer's own newly-created attempt moves focus. Polling and
     // payment reconciliation updates must not interrupt reading or typing.
-    if (pendingFocus.current && pendingFocus.current === latest?.id) {
+    if (
+      !preparing &&
+      pendingFocus.current &&
+      pendingFocus.current === latest?.id
+    ) {
       pendingFocus.current = null;
       focusValidationTarget(paymentHeading.current);
     }
-  }, [latest]);
-  const deadline = latest ? Date.parse(latest.expires_at) : NaN;
-  const expired = !!latest && (!Number.isFinite(deadline) || deadline <= now);
+  }, [latest, preparing]);
   const recoveringLink =
     !!latest &&
     !latest.native_checkout &&
@@ -182,6 +199,7 @@ export default function Checkout({
     )
       return;
     lock.current = true;
+    setPreparationSequence((value) => value + 1);
     setBusy(true);
     setError(null);
     try {
@@ -217,6 +235,12 @@ export default function Checkout({
   }
   return (
     <ActionFields error={error} busy={busy}>
+      <PreparationDialog
+        key={`${detail.order.id}:${String(preparationSequence)}`}
+        active={preparing}
+        returnFocus={error || resource.error ? feedback : paymentHeading}
+        supportHref={base + "?section=messages"}
+      />
       <section
         className="catalog-section payment-panel"
         aria-label="Payment and receipts"
@@ -299,41 +323,35 @@ export default function Checkout({
               )}
               <dl className="payment-facts">
                 <div>
-                  <dt>Processing fees</dt>
-                  <dd>
-                    {policy.data.fee_mode === "customer"
-                      ? "Paid by you"
-                      : "Paid by PLAYORA"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Exchange rate</dt>
-                  <dd>{policy.data.rate_mode}</dd>
-                </div>
-                <div>
                   <dt>PLAYORA checkout window</dt>
                   <dd>{policy.data.window_minutes} minutes</dd>
                 </div>
               </dl>
-              <h3>{policy.data.label}</h3>
-              <p className="payment-policy">{policy.data.text}</p>
+              <details className="payment-policy-disclosure">
+                <summary>{policy.data.label}</summary>
+                <div className="payment-policy-disclosure-body">
+                  <p className="payment-policy">{policy.data.text}</p>
+                </div>
+              </details>
               {policy.data.remedies && (
-                <details>
+                <details className="payment-policy-disclosure">
                   <summary>Cancellation, disputes and refunds</summary>
-                  {remedyLabels.map(([key, label]) => (
-                    <div key={key}>
-                      <h4>{label}</h4>
-                      <p>
-                        {policy.data.remedies &&
-                          remedyText(policy.data.remedies, key)}
-                      </p>
-                    </div>
-                  ))}
-                  <p>
-                    Dispute window: {policy.data.remedies.dispute_hours} hours.
-                    Appeal window: {policy.data.remedies.appeal_hours} hours; up
-                    to {policy.data.remedies.max_appeals} appeals.
-                  </p>
+                  <div className="payment-policy-disclosure-body">
+                    {remedyLabels.map(([key, label]) => (
+                      <div key={key}>
+                        <h4>{label}</h4>
+                        <p>
+                          {policy.data.remedies &&
+                            remedyText(policy.data.remedies, key)}
+                        </p>
+                      </div>
+                    ))}
+                    <p>
+                      Dispute window: {policy.data.remedies.dispute_hours}{" "}
+                      hours. Appeal window: {policy.data.remedies.appeal_hours}{" "}
+                      hours; up to {policy.data.remedies.max_appeals} appeals.
+                    </p>
+                  </div>
                 </details>
               )}
               <Check

@@ -1,3 +1,4 @@
+import "../../tests/dialog";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { APIError, post } from "../identity/api";
@@ -49,6 +50,51 @@ function setup() {
   });
   return { data, reload, changed };
 }
+it("keeps agreed USD price and consent visible while hiding operational facts and collapsing full terms", () => {
+  const { changed } = setup();
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(screen.getByText("Agreed price: USD 12.34")).toBeVisible();
+  expect(screen.queryByText("Processing fees")).not.toBeInTheDocument();
+  expect(screen.queryByText("Exchange rate")).not.toBeInTheDocument();
+  const policyText = screen.getByText(policy.data.text);
+  expect(policyText).not.toBeVisible();
+  const disclosure = screen.getByText(policy.data.label).closest("details");
+  expect(disclosure).not.toHaveAttribute("open");
+  fireEvent.click(screen.getByText(policy.data.label));
+  expect(policyText).toBeVisible();
+  expect(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  ).toBeVisible();
+  expect(screen.getByRole("button", { name: "Go to payment" })).toBeDisabled();
+});
+it("shows preparation during the create request and exposes its failure without another request", async () => {
+  const { changed } = setup();
+  let reject: (cause: unknown) => void = () => {};
+  vi.mocked(post).mockImplementation(
+    () =>
+      new Promise((_, fail) => {
+        reject = fail;
+      }),
+  );
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  fireEvent.click(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Go to payment" }));
+  expect(
+    screen.getByRole("dialog", { name: "Preparing your secure checkout." }),
+  ).toBeVisible();
+  reject(new Error("Payment connection failed"));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(post).toHaveBeenCalledOnce();
+  expect(changed).not.toHaveBeenCalled();
+});
 it("requires current policy consent without coin selection, then binds the immutable contract", async () => {
   const { reload, changed } = setup();
   vi.mocked(post).mockResolvedValue({});

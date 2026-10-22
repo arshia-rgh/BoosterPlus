@@ -192,7 +192,9 @@ for (const width of [390, 1440]) {
         ).toBeVisible();
       else
         await expect(
-          page.getByRole("heading", { name: /Preparing/i }),
+          page
+            .locator(".payment-current")
+            .getByRole("heading", { name: /Preparing/i }),
         ).toBeVisible();
       await expect(
         page.getByText("Payment asset", { exact: true }),

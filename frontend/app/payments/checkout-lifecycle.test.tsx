@@ -1,3 +1,4 @@
+import "../../tests/dialog";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { StrictMode } from "react";
 import { MemoryRouter } from "react-router";
