@@ -5,6 +5,39 @@ import { useResource } from "../orders/resource";
 import type { Detail } from "../orders/model";
 import Checkout from "./checkout";
 import { continueToProvider } from "./provider-navigation";
+vi.mock("./options", () => ({
+  usePaymentOptions: vi.fn(() => ({
+    data: {
+      contract_id: "contract",
+      policy_id: "policy-one",
+      currency: "USD",
+      amount_minor: "1234",
+      server_time: "2026-10-22T00:00:00Z",
+      routes: [
+        {
+          code: "usdttrc20",
+          status: "available",
+          minimum_crypto: "1",
+          minimum_fiat: "1",
+          checked_at: "2026-10-22T00:00:00Z",
+          valid_until: "2026-10-23T00:00:00Z",
+        },
+        {
+          code: "usdtbsc",
+          status: "available",
+          minimum_crypto: "1",
+          minimum_fiat: "1",
+          checked_at: "2026-10-22T00:00:00Z",
+          valid_until: "2026-10-23T00:00:00Z",
+        },
+      ],
+    },
+    loading: false,
+    error: false,
+    expired: false,
+    reload: vi.fn(),
+  })),
+}));
 vi.mock("./provider-navigation", () => ({ continueToProvider: vi.fn() }));
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
@@ -19,7 +52,10 @@ const policy = {
     label: "Test agreement",
     text: "Synthetic checkout policy for this purchase.",
     currencies: ["USD"],
-    routes: [{ code: "usdttrc20", network: "trx", label: "USDT TRON" }],
+    routes: [
+      { code: "usdttrc20", network: "trx", label: "USDT TRON" },
+      { code: "usdtbsc", network: "bsc", label: "USDT BNB" },
+    ],
     fee_mode: "merchant",
     rate_mode: "fixed",
     window_minutes: 30,
@@ -28,7 +64,11 @@ const policy = {
 // Checkout consumes only these order fields; the full order parser is tested separately.
 const detail = {
   order: { id: "order", state: "awaiting_payment" },
-  contract: { id: "contract", payment_state: "unissued" },
+  contract: {
+    id: "contract",
+    payment_state: "unissued",
+    data: { currency: "USD", amount_minor: "1234" },
+  },
 } as Detail;
 function setup() {
   const reload = vi.fn(),
@@ -48,9 +88,7 @@ it("requires route and current policy consent, then binds the immutable contract
   render(<Checkout detail={detail} admin={false} changed={changed} />);
   const submit = screen.getByRole("button", { name: "Go to payment" });
   expect(submit).toBeDisabled();
-  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
-    target: { value: "usdttrc20" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   expect(submit).toBeDisabled();
   fireEvent.click(
     screen.getByLabelText(
@@ -78,9 +116,7 @@ it("requires fresh acceptance when the published policy changes", () => {
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
-    target: { value: "usdttrc20" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -146,9 +182,7 @@ it("locks repeated checkout requests while the provider request is pending", asy
       }),
   );
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
-    target: { value: "usdttrc20" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -168,14 +202,13 @@ it("withdraws consent when the selected network changes and blocks stale reads",
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  const route = screen.getByLabelText("Payment asset and network");
-  fireEvent.change(route, { target: { value: "usdttrc20" } });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
     ),
   );
-  fireEvent.change(route, { target: { value: "" } });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT BNB/ }));
   expect(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -350,9 +383,7 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
   const view = render(
     <Checkout detail={detail} admin={false} changed={changed} />,
   );
-  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
-    target: { value: "usdttrc20" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",
@@ -410,9 +441,7 @@ it("brings a failed checkout into view and links minimum errors to this order's 
   error.status = 422;
   vi.mocked(post).mockRejectedValue(error);
   render(<Checkout detail={detail} admin={false} changed={changed} />);
-  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
-    target: { value: "usdttrc20" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: /USDT TRON/ }));
   fireEvent.click(
     screen.getByLabelText(
       "I accept this payment policy and the agreed order price",

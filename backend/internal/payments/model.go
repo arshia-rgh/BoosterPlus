@@ -55,6 +55,7 @@ type Store struct {
 	now             func() time.Time
 	outgoing        OutgoingProvider
 	outgoingEnabled bool
+	minimums        minimumCache
 }
 
 // New creates financial services without applying schema or activating checkout by default.

@@ -65,3 +65,21 @@ func TestInvoiceMinimumFailClosedAndNeverPosts(t *testing.T) {
 		}
 	}
 }
+
+func TestMinimumComparisonPreservesExactBoundary(t *testing.T) {
+	for _, tc := range []struct {
+		minimum Decimal
+		amount  string
+		below   bool
+	}{{"1", "100", false}, {"1.00000000000000000001", "100", true}, {"0.99999999999999999999", "100", false}} {
+		err := (Minimum{Fiat: tc.minimum, Crypto: "1"}).Check(tc.amount)
+		if tc.below != errors.Is(err, ErrBelowMinimum) || (!tc.below && err != nil) {
+			t.Fatal("rounded minimum boundary", err)
+		}
+	}
+	for _, value := range []Minimum{{}, {Fiat: "1", Crypto: "0"}, {Fiat: "NaN", Crypto: "1"}} {
+		if value.Check("100") == nil {
+			t.Fatal("invalid minimum accepted")
+		}
+	}
+}

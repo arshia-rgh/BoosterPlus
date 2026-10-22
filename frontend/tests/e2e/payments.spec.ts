@@ -100,8 +100,8 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     const id = fixture(info.project.name, "pay_order");
     await customer.goto(`/orders/${id}?section=payment`);
     await customer
-      .getByLabel("Payment asset and network")
-      .selectOption("usdttrc20");
+      .getByRole("radio", { name: /USDT.*TRON|USDT.*trx/i })
+      .check();
     await customer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();

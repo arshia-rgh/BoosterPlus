@@ -13,39 +13,73 @@ import (
 // ErrBelowMinimum is a read-only preflight result; no invoice was requested.
 var ErrBelowMinimum = errors.New("order below current provider minimum")
 
-// CheckInvoice checks the merchant-configured settlement route without changing
-// wallets or creating an invoice. Minimums are dynamic, never a price increase.
-func (c *Client) CheckInvoice(ctx context.Context, input InvoiceRequest) error {
-	if !minorPattern.MatchString(input.AmountMinor) || !coinPattern.MatchString(input.PayCurrency) || (input.Currency != "USD" && input.Currency != "EUR" && input.Currency != "GBP") {
-		return ErrInvalid
+// Minimum is a validated exact minimum for the requested asset and fiat currency.
+// Fiat is the provider's conversion at observation time, not a guaranteed quote.
+type Minimum struct {
+	Crypto Decimal
+	Fiat   Decimal
+}
+
+// MinimumInvoice reads the merchant's configured settlement route without creating a payment.
+func (c *Client) MinimumInvoice(ctx context.Context, input InvoiceRequest) (Minimum, error) {
+	if !coinPattern.MatchString(input.PayCurrency) || (input.Currency != "USD" && input.Currency != "EUR" && input.Currency != "GBP") {
+		return Minimum{}, ErrInvalid
 	}
 	query := url.Values{"currency_from": {input.PayCurrency}, "fiat_equivalent": {strings.ToLower(input.Currency)}, "is_fixed_rate": {strconv.FormatBool(input.FixedRate)}, "is_fee_paid_by_user": {strconv.FormatBool(input.FeePaidByUser)}}
 	// Omit currency_to, as in the provider SDK, to use the merchant's configured
 	// settlement route rather than inventing or changing its receiving currency.
 	value, err := c.request(ctx, http.MethodGet, "/min-amount?"+query.Encode(), nil)
 	if err != nil {
-		return ErrUnavailable
+		return Minimum{}, ErrUnavailable
 	}
 	if value["currency_from"] != input.PayCurrency {
-		return ErrEvidence
+		return Minimum{}, ErrEvidence
 	}
 	crypto, err := decimal(value["min_amount"])
 	if err != nil {
-		return ErrEvidence
+		return Minimum{}, ErrEvidence
 	}
 	cryptoMinimum, err := crypto.Rational()
 	if err != nil || cryptoMinimum.Sign() <= 0 {
-		return ErrEvidence
+		return Minimum{}, ErrEvidence
 	}
 	fiat, err := decimal(value["fiat_equivalent"])
 	if err != nil {
-		return ErrEvidence
+		return Minimum{}, ErrEvidence
 	}
 	minimum, err := fiat.Rational()
 	if err != nil || minimum.Sign() <= 0 {
+		return Minimum{}, ErrEvidence
+	}
+	return Minimum{Crypto: crypto, Fiat: fiat}, nil
+}
+
+// CheckInvoice always performs a fresh check; selector caches cannot authorize a payment.
+func (c *Client) CheckInvoice(ctx context.Context, input InvoiceRequest) error {
+	if !minorPattern.MatchString(input.AmountMinor) {
+		return ErrInvalid
+	}
+	minimum, err := c.MinimumInvoice(ctx, input)
+	if err != nil {
+		return err
+	}
+	return minimum.Check(input.AmountMinor)
+}
+
+// Check compares exact fiat values without rounding down a provider minimum.
+func (m Minimum) Check(amountMinor string) error {
+	if !minorPattern.MatchString(amountMinor) {
+		return ErrInvalid
+	}
+	minimum, err := m.Fiat.Rational()
+	if err != nil || minimum.Sign() <= 0 {
 		return ErrEvidence
 	}
-	amount, err := Decimal(input.AmountMinor).Rational()
+	crypto, err := m.Crypto.Rational()
+	if err != nil || crypto.Sign() <= 0 {
+		return ErrEvidence
+	}
+	amount, err := Decimal(amountMinor).Rational()
 	if err != nil {
 		return ErrInvalid
 	}

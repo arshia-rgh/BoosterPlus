@@ -15565,6 +15565,49 @@
         ]
       }
     },
+    "/api/v1/orders/{id}/payments/options": {
+      "get": {
+        "operationId": "customerPaymentOptions",
+        "summary": "Read minimum-payment eligibility for approved routes and the owned immutable contract; never creates a payment",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentOptions"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/api/v1/admin/orders/{id}/payments": {
       "get": {
         "operationId": "adminPaymentHistory",
@@ -26448,6 +26491,78 @@
   },
   "components": {
     "schemas": {
+      "PaymentOption": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "status",
+          "minimum_crypto",
+          "minimum_fiat",
+          "checked_at",
+          "valid_until"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["available", "below_minimum", "unavailable"]
+          },
+          "minimum_crypto": {
+            "type": "string"
+          },
+          "minimum_fiat": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "valid_until": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        }
+      },
+      "PaymentOptions": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contract_id",
+          "policy_id",
+          "currency",
+          "amount_minor",
+          "server_time",
+          "routes"
+        ],
+        "properties": {
+          "contract_id": {
+            "type": "string"
+          },
+          "policy_id": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "routes": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/PaymentOption"
+            }
+          }
+        }
+      },
       "Health": {
         "type": "object",
         "additionalProperties": false,

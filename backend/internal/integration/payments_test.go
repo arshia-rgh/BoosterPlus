@@ -36,6 +36,8 @@ type paymentProvider struct {
 	calls          int
 	ambiguous      bool
 	preflightError error
+	minimumCalls   int
+	minimumFiat    nowpayments.Decimal
 	legacyNative   bool
 	readError      error
 	block          chan struct{}
@@ -53,6 +55,16 @@ func newPaymentProvider(t *testing.T) *paymentProvider {
 		t.Fatal(err)
 	}
 	return &paymentProvider{verifier: verifier, rows: map[string]nowpayments.Payment{}}
+}
+func (p *paymentProvider) MinimumInvoice(_ context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Minimum, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.minimumCalls++
+	fiat := p.minimumFiat
+	if fiat == "" {
+		fiat = "1"
+	}
+	return nowpayments.Minimum{Crypto: fiat, Fiat: fiat}, p.preflightError
 }
 func (p *paymentProvider) CheckInvoice(_ context.Context, _ nowpayments.InvoiceRequest) error {
 	p.mu.Lock()

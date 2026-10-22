@@ -224,3 +224,56 @@
 .manual-payout-form fieldset {
   min-width: 0;
 }
+
+.payment-choices {
+  min-width: 0;
+}
+.payment-choice-list {
+  display: grid;
+  gap: 0.65rem;
+}
+.payment-choice {
+  display: flex;
+  align-items: start;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid #416452;
+  border-radius: 0.8rem;
+  background: #10261c;
+  cursor: pointer;
+}
+.payment-choice input {
+  flex: 0 0 auto;
+  margin-top: 0.3rem;
+  accent-color: #8be6b2;
+}
+.payment-choice > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.payment-choice-network,
+.payment-choice small {
+  display: block;
+  margin-top: 0.2rem;
+}
+.payment-choice small {
+  color: #cbd8d0;
+  line-height: 1.5;
+}
+.payment-choice[data-selected="true"] {
+  border-color: #8be6b2;
+  background: #173a29;
+}
+.payment-choice[data-disabled="true"] {
+  cursor: default;
+}
+.payment-choice[data-disabled="true"] small {
+  color: #dccba9;
+}
+.payment-choice:focus-within {
+  outline: 2px solid #8be6b2;
+  outline-offset: 3px;
+}
+.payment-choice-feedback p {
+  margin-block: 0.8rem;
+}

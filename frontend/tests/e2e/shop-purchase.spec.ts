@@ -200,9 +200,7 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       .click();
     await expect(buyer).toHaveURL(/\/orders\/[^/]+\?section=payment$/);
     const order = new URL(buyer.url()).pathname.split("/").at(-1) ?? "";
-    await buyer
-      .getByLabel("Payment asset and network")
-      .selectOption("usdttrc20");
+    await buyer.getByRole("radio", { name: /USDT.*TRON|USDT.*trx/i }).check();
     await buyer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();

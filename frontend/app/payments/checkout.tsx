@@ -1,7 +1,7 @@
 import { ActionFields } from "../ui/action-fields";
 import { useEffect, useRef, useState } from "react";
 import { Anchor } from "../portal-router";
-import { Action, Check, ErrorNotice, Select } from "../catalog/controls";
+import { Action, Check, ErrorNotice } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { APIError, post } from "../identity/api";
 import { focusValidationTarget } from "../ui/form-validation";
@@ -16,6 +16,8 @@ import {
 } from "./model";
 import { continueToProvider } from "./provider-navigation";
 import { paymentTitle } from "./presentation";
+import { usePaymentOptions } from "./options";
+import PaymentChoices from "./payment-choices";
 import DepositInstructions from "./deposit-instructions";
 import {
   effectiveInstructionStatus,
@@ -90,9 +92,38 @@ export default function Checkout({
       focusValidationTarget(paymentHeading.current);
     }
   }, [latest]);
-  const selectedRoute = policy?.data.routes.find(
-    (value) => value.code === route,
-  );
+  const optionsBinding =
+    !admin &&
+    data?.enabled &&
+    !latest &&
+    policy &&
+    detail.contract &&
+    detail.order.state === "awaiting_payment"
+      ? `${policy.id}:${detail.contract.id}`
+      : null;
+  const options = usePaymentOptions(base, optionsBinding);
+  const optionsMatch =
+    !!options.data &&
+    options.data.policy_id === policy?.id &&
+    options.data.contract_id === detail.contract?.id &&
+    options.data.currency === detail.contract.data.currency &&
+    options.data.amount_minor === detail.contract.data.amount_minor;
+  const optionsReady =
+    optionsMatch && !options.loading && !options.error && !options.expired;
+  const selectedRoute =
+    optionsReady &&
+    options.data?.routes.some(
+      (v) => v.code === route && v.status === "available",
+    )
+      ? policy.data.routes.find((v) => v.code === route)
+      : undefined;
+  const [selectionNotice, setSelectionNotice] = useState("");
+  // Adjust this component's selection before rendering stale consent/choices.
+  if (route && !options.loading && !selectedRoute) {
+    setRoute("");
+    setAcceptedPolicy("");
+    setSelectionNotice("Your previous payment option is no longer available.");
+  }
   const deadline = latest ? Date.parse(latest.expires_at) : NaN;
   const expired = !!latest && (!Number.isFinite(deadline) || deadline <= now);
   const polling =
@@ -197,6 +228,22 @@ export default function Checkout({
       changed();
     } catch (cause) {
       setError(cause);
+      if (
+        cause instanceof APIError &&
+        [
+          "payment_below_minimum",
+          "payments_unavailable",
+          "payment_conflict",
+        ].includes(cause.code)
+      ) {
+        setRoute("");
+        setAcceptedPolicy("");
+        options.reload();
+        if (cause.code === "payment_conflict") {
+          resource.reload();
+          changed();
+        }
+      }
     } finally {
       lock.current = false;
       setBusy(false);
@@ -278,21 +325,28 @@ export default function Checkout({
                   {minorDisplay(detail.contract.data.amount_minor)}
                 </p>
               )}
-              <Select
-                name="route"
-                label="Payment asset and network"
-                value={route}
+              <PaymentChoices
+                routes={policy.data.routes}
+                data={optionsMatch ? options.data : null}
+                loading={options.loading}
+                error={
+                  options.error ||
+                  (!options.loading && !optionsMatch) ||
+                  options.expired
+                }
+                route={route}
                 change={(value) => {
                   setRoute(value);
                   setAcceptedPolicy("");
+                  setSelectionNotice("");
                 }}
-                options={[
-                  ["", "Choose an asset and network"],
-                  ...policy.data.routes.map(
-                    (v) => [v.code, `${v.label} · ${v.network}`] as const,
-                  ),
-                ]}
+                retry={() => {
+                  resource.reload();
+                  options.reload();
+                }}
+                support={`/orders/${detail.order.id}?section=help`}
               />
+              {selectionNotice && <p role="status">{selectionNotice}</p>}
               {selectedRoute && (
                 <p className="payment-route-note">
                   Use {selectedRoute.label} on {selectedRoute.network} only. The
@@ -344,6 +398,7 @@ export default function Checkout({
               )}
               <Check
                 name="accept_policy"
+                disabled={!selectedRoute || busy}
                 label="I accept this payment policy and the agreed order price"
                 value={accepted}
                 change={(value) => {

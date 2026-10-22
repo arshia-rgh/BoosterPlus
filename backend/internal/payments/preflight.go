@@ -56,6 +56,9 @@ func (s *Store) preflight(ctx context.Context, p *identity.Principal, id string,
 		return ErrConflict
 	}
 	err = s.provider.CheckInvoice(ctx, nowpayments.InvoiceRequest{OrderID: id, AmountMinor: commercial.AmountMinor, Currency: commercial.Currency, PayCurrency: input.Route, FixedRate: policy.Data.RateMode == "fixed", FeePaidByUser: policy.Data.FeeMode == "customer"})
+	if err != nil {
+		s.minimums.invalidate(routeMinimumKey(policy, commercial.Currency, input.Route))
+	}
 	if errors.Is(err, nowpayments.ErrBelowMinimum) {
 		return nowpayments.ErrBelowMinimum
 	}
