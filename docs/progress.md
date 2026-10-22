@@ -8,7 +8,7 @@ A worker job checks published/paused Nexus shop products every 8 hours (configur
 
 ## WANTED174 — request an account (22 October 2026)
 
-Each game's Accounts section now offers “Request an account” beside the wanted accounts (or a small section when none are shown), opening the existing pre-sales support start with the subject “Account request — {game}” and the game recorded for staff; customers write their own first message. Frontend only, schema48 unchanged. Designer decisions and a round-1 PASS, focused component tests and 36 fixture browser cases passed; no full gate. Signed release, preflight and the owner's exact approval follow. See [scope and evidence](wanted-accounts-2026-10-22.md#wanted174--request-an-account-22-october-2026).
+Each game's Accounts section now offers “Request an account” beside the wanted accounts (or a small section when none are shown), opening the existing pre-sales support start with the subject “Account request — {game}” and the game recorded for staff; customers write their own first message. Frontend only, schema48 unchanged. Designer decisions and a round-1 PASS, focused component tests and 36 fixture browser cases passed; no full gate. Signed `0be12a0` is deployed and verified at schema49 after the owner's exact approval; exact CI39765120405, image release39767737906, preflight, eight-service checks and eleven live read-only browser cases passed. See [scope and evidence](wanted-accounts-2026-10-22.md#wanted174--request-an-account-22-october-2026).
 
 ## WANTED173 — wanted accounts (22 October 2026)
 
