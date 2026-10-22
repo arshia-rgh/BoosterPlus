@@ -23,6 +23,7 @@ export default [
   route("admin?/privacy", "../app/routes/privacy-admin.tsx"),
   route("admin?/accounts", "../app/routes/accounts-admin.tsx"),
   route("admin?/accounts/:id", "../app/routes/account-listing-admin.tsx"),
+  route("admin?/wanted-accounts", "../app/routes/wanted-accounts-admin.tsx"),
   route("admin?/finance", "../app/routes/finance-admin.tsx"),
   route("admin?/reports", "../app/routes/reports-admin.tsx"),
   route("admin?/jobs", "../app/routes/jobs-admin.tsx"),

@@ -1,0 +1,217 @@
+.wanted-admin .wanted-game {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+  max-width: 36rem;
+}
+.wanted-admin .wanted-game > .catalog-label {
+  flex: 1 1 16rem;
+}
+.wanted-workspace {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.wanted-workspace > p {
+  margin: 0;
+}
+.wanted-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+.wanted-live:empty {
+  display: none;
+}
+.wanted-closed,
+.wanted-stale {
+  padding: 0.75rem 1rem;
+  border: 1px solid #5b4f2e;
+  border-radius: 0.75rem;
+  background: #2a2617;
+}
+.wanted-stale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.wanted-stale p {
+  margin: 0;
+}
+.wanted-add p {
+  margin: 0.5rem 0 0;
+}
+.wanted-admin-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wanted-row {
+  display: grid;
+  gap: 0.75rem 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #2f4a3b;
+  border-radius: 0.875rem;
+  background: #13291e;
+}
+@media (min-width: 900px) {
+  .wanted-row:not(.is-editing) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+}
+.wanted-row-text {
+  min-width: 0;
+}
+.wanted-row-text p {
+  margin: 0;
+}
+.wanted-row-text p + p {
+  margin-top: 0.4rem;
+}
+.wanted-row-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+}
+.wanted-row-heading strong {
+  overflow-wrap: anywhere;
+}
+.wanted-row-heading strong:focus {
+  outline: none;
+}
+.wanted-row-heading strong:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+.wanted-chip {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid #4b6b58;
+  color: #c7d8cc;
+}
+.wanted-chip[data-state="shown"] {
+  border-color: #7fc48f;
+  background: #1f4a30;
+  color: #d8f5dd;
+}
+.wanted-row-description {
+  color: #bcd1c1;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.wanted-row-date {
+  font-size: 0.85rem;
+  color: #9fb7a7;
+}
+.wanted-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.wanted-confirm p {
+  margin: 0 0 0.5rem;
+}
+/* The admin app has no shared secondary/destructive button variants yet;
+   mirror the storefront form system for this workspace only. */
+.wanted-admin .button.secondary {
+  border: 1px solid #718562;
+  background: transparent;
+  color: var(--accent);
+}
+.wanted-admin .button.secondary:hover:not(:disabled) {
+  background: #263d30;
+  color: #d2f3bf;
+}
+.wanted-admin .button[data-variant="destructive"] {
+  border: 1px solid #bc6574;
+  background: #53232c;
+  color: #ffe5e9;
+}
+.wanted-admin .button[data-variant="destructive"]:hover:not(:disabled) {
+  background: #6a2c37;
+}
+.wanted-admin .button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Round 1 (W1-02, W1-03, W1-05). */
+.wanted-admin fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.wanted-admin legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.wanted-new {
+  padding: 1rem 1.25rem;
+  border: 1px solid #2f4a3b;
+  border-radius: 0.875rem;
+  background: #13291e;
+}
+.wanted-form .form-grid {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+  margin-bottom: 1rem;
+}
+.wanted-form .catalog-check {
+  margin: 0;
+}
+.wanted-form .check-hint {
+  margin-top: 0.25rem;
+}
+.wanted-form .form-actions {
+  margin-top: 1.25rem;
+}
+.wanted-row-actions,
+.wanted-confirm .form-actions {
+  gap: 0.5rem;
+}
+.wanted-row-actions .button,
+.wanted-confirm .button {
+  margin: 0;
+}
+.wanted-row-actions .wanted-visibility {
+  min-width: 4.75rem;
+}
+.wanted-confirm {
+  justify-self: start;
+  max-width: 28rem;
+  text-align: left;
+}
+.wanted-confirm .form-actions {
+  margin-top: 0.5rem;
+}
+.wanted-error:focus {
+  outline: none;
+}
+/* Round 2 (W2-02, W2-03). Errors follow the legend on the form's edge. */
+.wanted-form [role="alert"] {
+  margin: 0 0 0.5rem;
+}
+.wanted-form .catalog-issues {
+  margin: 0 0 0.75rem;
+}
+/* Centre the 44 px checkbox target so its hint sits under the text. */
+.wanted-admin .wanted-form .catalog-check {
+  align-content: center;
+  align-items: center;
+}
+.wanted-admin .wanted-form .catalog-check > input {
+  margin: 0;
+}
+.wanted-admin .wanted-form .check-hint {
+  margin-top: -0.375rem;
+}

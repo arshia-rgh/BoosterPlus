@@ -5,7 +5,7 @@ import MarketFilters from "./market-filters";
 import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { z } from "../validation";
 import {
   Link,
@@ -41,17 +41,46 @@ import {
   AccountTitle,
 } from "./account-presentation";
 export { ProductTerms } from "./account-presentation";
+import {
+  useWantedAccounts,
+  useWantedSection,
+  WantedAccounts,
+  WantedTeaser,
+} from "./wanted";
 import "./marketplace.css";
 export function AccountMarket({ gameSlug }: { gameSlug?: string | undefined }) {
   const [params] = useSearchParams();
+  return gameSlug ? (
+    <GameMarket gameSlug={gameSlug} />
+  ) : (
+    <MarketResults key={params.toString()} />
+  );
+}
+// Wanted accounts load once per game, independent of filters and pagination.
+function GameMarket({ gameSlug }: { gameSlug: string }) {
+  const [params] = useSearchParams();
+  const wanted = useWantedAccounts(gameSlug);
+  const section = useWantedSection();
   return (
     <MarketResults
-      key={(gameSlug ?? "") + params.toString()}
+      key={gameSlug + params.toString()}
       gameSlug={gameSlug}
+      teaser={wanted.length > 0 && <WantedTeaser section={section} />}
+      footer={
+        <WantedAccounts slug={gameSlug} items={wanted} section={section} />
+      }
     />
   );
 }
-function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
+function MarketResults({
+  gameSlug,
+  teaser,
+  footer,
+}: {
+  gameSlug?: string | undefined;
+  teaser?: ReactNode;
+  footer?: ReactNode;
+}) {
   const Container = gameSlug ? "section" : "main";
   const Heading = gameSlug ? "h2" : "h1";
   const CardHeading = gameSlug ? "h3" : "h2";
@@ -102,13 +131,18 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
         Compare rank, region and price. Open an account for screenshots and
         delivery terms.
       </p>
-      <Link
-        to={
-          gameSlug ? `/sell/new?slug=${encodeURIComponent(gameSlug)}` : "/sell"
-        }
-      >
-        Sell an account →
-      </Link>
+      <p className="market-sell-links">
+        <Link
+          to={
+            gameSlug
+              ? `/sell/new?slug=${encodeURIComponent(gameSlug)}`
+              : "/sell"
+          }
+        >
+          Sell an account →
+        </Link>
+        {teaser}
+      </p>
       <details className="market-alerts">
         <summary>Get notified about accounts</summary>
         <AccountAlerts {...(gameSlug ? { slug: gameSlug } : {})} />
@@ -248,6 +282,7 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
           First accounts
         </Action>
       )}
+      {footer}
     </Container>
   );
 }

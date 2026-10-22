@@ -97,6 +97,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/wantedaccount"
 
 	stdsql "database/sql"
 )
@@ -272,6 +273,8 @@ type Client struct {
 	TransferRecord *TransferRecordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// WantedAccount is the client for interacting with the WantedAccount builders.
+	WantedAccount *WantedAccountClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -366,6 +369,7 @@ func (c *Client) init() {
 	c.TransferObservation = NewTransferObservationClient(c.config)
 	c.TransferRecord = NewTransferRecordClient(c.config)
 	c.User = NewUserClient(c.config)
+	c.WantedAccount = NewWantedAccountClient(c.config)
 }
 
 type (
@@ -541,6 +545,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TransferObservation:      NewTransferObservationClient(cfg),
 		TransferRecord:           NewTransferRecordClient(cfg),
 		User:                     NewUserClient(cfg),
+		WantedAccount:            NewWantedAccountClient(cfg),
 	}, nil
 }
 
@@ -643,6 +648,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TransferObservation:      NewTransferObservationClient(cfg),
 		TransferRecord:           NewTransferRecordClient(cfg),
 		User:                     NewUserClient(cfg),
+		WantedAccount:            NewWantedAccountClient(cfg),
 	}, nil
 }
 
@@ -692,7 +698,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.SupplierBinding, c.SupplierConnection, c.SupplierImport, c.SupplierItem,
 		c.SupplierPrice, c.SupplierPurchase, c.SupplierQuote, c.SupplierSignal,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
-		c.User,
+		c.User, c.WantedAccount,
 	} {
 		n.Use(hooks...)
 	}
@@ -722,7 +728,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.SupplierBinding, c.SupplierConnection, c.SupplierImport, c.SupplierItem,
 		c.SupplierPrice, c.SupplierPurchase, c.SupplierQuote, c.SupplierSignal,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
-		c.User,
+		c.User, c.WantedAccount,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -897,6 +903,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.TransferRecord.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
+	case *WantedAccountMutation:
+		return c.WantedAccount.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -11941,6 +11949,139 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 	}
 }
 
+// WantedAccountClient is a client for the WantedAccount schema.
+type WantedAccountClient struct {
+	config
+}
+
+// NewWantedAccountClient returns a client for the WantedAccount from the given config.
+func NewWantedAccountClient(c config) *WantedAccountClient {
+	return &WantedAccountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `wantedaccount.Hooks(f(g(h())))`.
+func (c *WantedAccountClient) Use(hooks ...Hook) {
+	c.hooks.WantedAccount = append(c.hooks.WantedAccount, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `wantedaccount.Intercept(f(g(h())))`.
+func (c *WantedAccountClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WantedAccount = append(c.inters.WantedAccount, interceptors...)
+}
+
+// Create returns a builder for creating a WantedAccount entity.
+func (c *WantedAccountClient) Create() *WantedAccountCreate {
+	mutation := newWantedAccountMutation(c.config, OpCreate)
+	return &WantedAccountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WantedAccount entities.
+func (c *WantedAccountClient) CreateBulk(builders ...*WantedAccountCreate) *WantedAccountCreateBulk {
+	return &WantedAccountCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WantedAccountClient) MapCreateBulk(slice any, setFunc func(*WantedAccountCreate, int)) *WantedAccountCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WantedAccountCreateBulk{err: fmt.Errorf("calling to WantedAccountClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WantedAccountCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WantedAccountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WantedAccount.
+func (c *WantedAccountClient) Update() *WantedAccountUpdate {
+	mutation := newWantedAccountMutation(c.config, OpUpdate)
+	return &WantedAccountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WantedAccountClient) UpdateOne(_m *WantedAccount) *WantedAccountUpdateOne {
+	mutation := newWantedAccountMutation(c.config, OpUpdateOne, withWantedAccount(_m))
+	return &WantedAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WantedAccountClient) UpdateOneID(id string) *WantedAccountUpdateOne {
+	mutation := newWantedAccountMutation(c.config, OpUpdateOne, withWantedAccountID(id))
+	return &WantedAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WantedAccount.
+func (c *WantedAccountClient) Delete() *WantedAccountDelete {
+	mutation := newWantedAccountMutation(c.config, OpDelete)
+	return &WantedAccountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WantedAccountClient) DeleteOne(_m *WantedAccount) *WantedAccountDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WantedAccountClient) DeleteOneID(id string) *WantedAccountDeleteOne {
+	builder := c.Delete().Where(wantedaccount.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WantedAccountDeleteOne{builder}
+}
+
+// Query returns a query builder for WantedAccount.
+func (c *WantedAccountClient) Query() *WantedAccountQuery {
+	return &WantedAccountQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWantedAccount},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WantedAccount entity by its id.
+func (c *WantedAccountClient) Get(ctx context.Context, id string) (*WantedAccount, error) {
+	return c.Query().Where(wantedaccount.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WantedAccountClient) GetX(ctx context.Context, id string) *WantedAccount {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *WantedAccountClient) Hooks() []Hook {
+	return c.hooks.WantedAccount
+}
+
+// Interceptors returns the client interceptors.
+func (c *WantedAccountClient) Interceptors() []Interceptor {
+	return c.inters.WantedAccount
+}
+
+func (c *WantedAccountClient) mutate(ctx context.Context, m *WantedAccountMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WantedAccountCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WantedAccountUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WantedAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WantedAccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown WantedAccount mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
@@ -11960,8 +12101,8 @@ type (
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, SupplierBinding, SupplierConnection, SupplierImport,
 		SupplierItem, SupplierPrice, SupplierPurchase, SupplierQuote, SupplierSignal,
-		TransferAttempt, TransferEvent, TransferObservation, TransferRecord,
-		User []ent.Hook
+		TransferAttempt, TransferEvent, TransferObservation, TransferRecord, User,
+		WantedAccount []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
@@ -11980,8 +12121,8 @@ type (
 		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, SupplierBinding, SupplierConnection, SupplierImport,
 		SupplierItem, SupplierPrice, SupplierPurchase, SupplierQuote, SupplierSignal,
-		TransferAttempt, TransferEvent, TransferObservation, TransferRecord,
-		User []ent.Interceptor
+		TransferAttempt, TransferEvent, TransferObservation, TransferRecord, User,
+		WantedAccount []ent.Interceptor
 	}
 )
 

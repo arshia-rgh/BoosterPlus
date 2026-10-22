@@ -89,6 +89,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/wantedaccount"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -3657,4 +3658,62 @@ func init() {
 	user.DefaultID = userDescID.Default.(func() string)
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	user.IDValidator = userDescID.Validators[0].(func(string) error)
+	wantedaccountFields := schema.WantedAccount{}.Fields()
+	_ = wantedaccountFields
+	// wantedaccountDescGameID is the schema descriptor for game_id field.
+	wantedaccountDescGameID := wantedaccountFields[1].Descriptor()
+	// wantedaccount.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	wantedaccount.GameIDValidator = wantedaccountDescGameID.Validators[0].(func(string) error)
+	// wantedaccountDescTitle is the schema descriptor for title field.
+	wantedaccountDescTitle := wantedaccountFields[2].Descriptor()
+	// wantedaccount.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	wantedaccount.TitleValidator = wantedaccountDescTitle.Validators[0].(func(string) error)
+	// wantedaccountDescDescription is the schema descriptor for description field.
+	wantedaccountDescDescription := wantedaccountFields[3].Descriptor()
+	// wantedaccount.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	wantedaccount.DescriptionValidator = wantedaccountDescDescription.Validators[0].(func(string) error)
+	// wantedaccountDescPosition is the schema descriptor for position field.
+	wantedaccountDescPosition := wantedaccountFields[4].Descriptor()
+	// wantedaccount.PositionValidator is a validator for the "position" field. It is called by the builders before save.
+	wantedaccount.PositionValidator = wantedaccountDescPosition.Validators[0].(func(int) error)
+	// wantedaccountDescVisible is the schema descriptor for visible field.
+	wantedaccountDescVisible := wantedaccountFields[5].Descriptor()
+	// wantedaccount.DefaultVisible holds the default value on creation for the visible field.
+	wantedaccount.DefaultVisible = wantedaccountDescVisible.Default.(bool)
+	// wantedaccountDescVersion is the schema descriptor for version field.
+	wantedaccountDescVersion := wantedaccountFields[6].Descriptor()
+	// wantedaccount.DefaultVersion holds the default value on creation for the version field.
+	wantedaccount.DefaultVersion = wantedaccountDescVersion.Default.(int)
+	// wantedaccount.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	wantedaccount.VersionValidator = wantedaccountDescVersion.Validators[0].(func(int) error)
+	// wantedaccountDescRequestKey is the schema descriptor for request_key field.
+	wantedaccountDescRequestKey := wantedaccountFields[7].Descriptor()
+	// wantedaccount.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	wantedaccount.RequestKeyValidator = wantedaccountDescRequestKey.Validators[0].(func(string) error)
+	// wantedaccountDescRequestHash is the schema descriptor for request_hash field.
+	wantedaccountDescRequestHash := wantedaccountFields[8].Descriptor()
+	// wantedaccount.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	wantedaccount.RequestHashValidator = wantedaccountDescRequestHash.Validators[0].(func(string) error)
+	// wantedaccountDescCreatedBy is the schema descriptor for created_by field.
+	wantedaccountDescCreatedBy := wantedaccountFields[9].Descriptor()
+	// wantedaccount.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	wantedaccount.CreatedByValidator = wantedaccountDescCreatedBy.Validators[0].(func(string) error)
+	// wantedaccountDescUpdatedBy is the schema descriptor for updated_by field.
+	wantedaccountDescUpdatedBy := wantedaccountFields[10].Descriptor()
+	// wantedaccount.UpdatedByValidator is a validator for the "updated_by" field. It is called by the builders before save.
+	wantedaccount.UpdatedByValidator = wantedaccountDescUpdatedBy.Validators[0].(func(string) error)
+	// wantedaccountDescCreatedAt is the schema descriptor for created_at field.
+	wantedaccountDescCreatedAt := wantedaccountFields[11].Descriptor()
+	// wantedaccount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	wantedaccount.DefaultCreatedAt = wantedaccountDescCreatedAt.Default.(func() time.Time)
+	// wantedaccountDescUpdatedAt is the schema descriptor for updated_at field.
+	wantedaccountDescUpdatedAt := wantedaccountFields[12].Descriptor()
+	// wantedaccount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	wantedaccount.DefaultUpdatedAt = wantedaccountDescUpdatedAt.Default.(func() time.Time)
+	// wantedaccountDescID is the schema descriptor for id field.
+	wantedaccountDescID := wantedaccountFields[0].Descriptor()
+	// wantedaccount.DefaultID holds the default value on creation for the id field.
+	wantedaccount.DefaultID = wantedaccountDescID.Default.(func() string)
+	// wantedaccount.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	wantedaccount.IDValidator = wantedaccountDescID.Validators[0].(func(string) error)
 }

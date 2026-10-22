@@ -14,6 +14,7 @@ import Market, { meta as marketMeta } from "./accounts";
 import Product, { meta as productMeta } from "./account-product";
 import Inventory, { meta as inventoryMeta } from "./accounts-admin";
 import Editor, { meta as editorMeta } from "./account-listing-admin";
+import Wanted, { meta as wantedMeta } from "./wanted-accounts-admin";
 vi.mock("../identity/identity", () => ({
   default: ({
     children,
@@ -27,12 +28,21 @@ vi.mock("../resale/market", () => ({
   AccountMarket: () => <p>Available account market</p>,
   AccountProduct: () => <p>Public product agreement</p>,
 }));
+vi.mock("../resale/wanted-admin", () => ({
+  WantedAccountsAdmin: () => <p>Wanted accounts workspace</p>,
+}));
 vi.mock("../resale/inventory", () => ({
   AccountInventory: () => <p>Private account inventory</p>,
   InventoryDetail: () => <p>Reviewed listing editor</p>,
 }));
 it("exposes public listings and protects both inventory routes", () => {
-  for (const meta of [marketMeta, productMeta, inventoryMeta, editorMeta])
+  for (const meta of [
+    marketMeta,
+    productMeta,
+    inventoryMeta,
+    editorMeta,
+    wantedMeta,
+  ])
     expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
@@ -40,9 +50,11 @@ it("exposes public listings and protects both inventory routes", () => {
       <Product />
       <Inventory />
       <Editor />
+      <Wanted />
     </>,
   );
-  expect(screen.getAllByRole("region", { name: "admin" })).toHaveLength(2);
+  expect(screen.getAllByRole("region", { name: "admin" })).toHaveLength(3);
+  expect(screen.getByText("Wanted accounts workspace")).toBeVisible();
   expect(screen.getByText("Available account market")).toBeVisible();
   expect(screen.getByText("Public product agreement")).toBeVisible();
   expect(screen.getByText("Reviewed listing editor")).toBeVisible();

@@ -2,6 +2,10 @@
 
 **20 October scope update:** Nexus only. Vendoria work and private credentials remain preserved, but its runtime token/callbacks/purchasing/customer offers are disabled. The owner reports the site is OK and requested no SSH check; no server investigation was resumed. Supplier implementation is local and not deployed. Live remains the previously released schema43 application.
 
+## WANTED173 — wanted accounts (22 October 2026)
+
+Administrators can publish plain-text “wanted accounts” per game; each game's Accounts page shows the shown entries (at most 6) after the listings with one “Sell your account” action into the unchanged sell flow, only while the game accepts account sales. Migration48 adds `wanted_accounts`; staff changes need recent verification and are audited. The independent senior designer decided the list-board presentation and passed it after three rendered review rounds. Focused Go/component/fixture-browser checks and six isolated server TiDB scenarios passed; the new readiness regression caught a startup-blocking index misclassification before commit. No full gate. Release and the owner's exact recovery decision follow. See [scope and evidence](wanted-accounts-2026-10-22.md) and [design review](redesign/reviews/WANTED173_DESIGN.md).
+
 ## SUPPLIER168 — Nexus integration (19–20 October 2026)
 
 Private catalog/pricing stage `ac0e5cc`, durable purchase core `70af0fe` and merchant/runtime checkpoint `f180bbe` are committed and pushed. The merchant checkpoint's corrected normal focused hook passed after preserving its original retry-focus, private-probe security and export-data failures. No scanner exclusion was added. All earlier receipts and details remain in the [implementation ledger](shop-suppliers-2026-10-19.md).

@@ -22,6 +22,7 @@ const groups = [
     items: [
       ["/admin/catalog", "Catalog editor", "◇"],
       ["/admin/accounts", "Account inventory", "▣"],
+      ["/admin/wanted-accounts", "Wanted accounts", "▣"],
       ["/admin/shop", "Shop products", "◇"],
       ["/admin/news", "News & guides", "▤"],
       ["/admin/submissions", "Account submissions", "▣"],

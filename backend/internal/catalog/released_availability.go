@@ -24,3 +24,20 @@ func GameAvailable(ctx context.Context, client *ent.Client, g *ent.Game, service
 	}
 	return Available(c, false, service), nil
 }
+
+// AccountSalesOpen reports whether the released policy currently accepts new
+// seller submissions: an available accounts service with a configured intake.
+func AccountSalesOpen(ctx context.Context, client *ent.Client, g *ent.Game) (bool, error) {
+	if !g.Published || g.Archived || g.Paused || g.CurrentRelease == "" {
+		return false, nil
+	}
+	r, err := client.CatalogRelease.Query().Where(catalogrelease.IDEQ(g.CurrentRelease), catalogrelease.GameIDEQ(g.ID)).Only(ctx)
+	if err != nil {
+		return false, err
+	}
+	c, err := configuration(r.Configuration)
+	if err != nil {
+		return false, err
+	}
+	return c.Intake != nil && Available(c, false, "accounts"), nil
+}

@@ -238,6 +238,13 @@ const messages = new Map([
     "This catalog changed or is unavailable. Reload it before continuing.",
   ],
   ["catalog_invalid", "Review the highlighted catalog issues."],
+  ["wanted_account_invalid", "Check the highlighted fields before continuing."],
+  ["wanted_account_conflict", "This list changed in another session."],
+  [
+    "wanted_account_not_found",
+    "This wanted account no longer exists. Reload the list.",
+  ],
+  ["wanted_accounts_unavailable", "This game isn't available right now."],
   [
     "invalid_verification",
     "Verification failed. Use a fresh code; codes expire and cannot be reused.",

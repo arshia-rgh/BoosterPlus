@@ -5310,6 +5310,92 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/wanted-accounts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List every wanted account for one game in public order */
+    get: operations["getWantedAccountApiV1AdminWantedAccounts"];
+    put?: never;
+    /** Create a wanted account; repeated request keys return the original entry. Requires one recent verification factor. */
+    post: operations["postWantedAccountApiV1AdminWantedAccounts"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wanted-accounts/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Replace one confirmed wanted-account version. Requires one recent verification factor. */
+    post: operations["postWantedAccountApiV1AdminWantedAccountsId"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wanted-accounts/{id}/move": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Swap a wanted account with its neighbour. Requires one recent verification factor. */
+    post: operations["postWantedAccountApiV1AdminWantedAccountsIdMove"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/wanted-accounts/{id}/delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Permanently delete one confirmed wanted-account version. Requires one recent verification factor. */
+    post: operations["postWantedAccountApiV1AdminWantedAccountsIdDelete"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/wanted-accounts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Shown wanted accounts while the game accepts account sales */
+    get: operations["getWantedAccountApiV1GamesSlugWantedAccounts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/games/{slug}/news-sitemap": {
     parameters: {
       query?: never;
@@ -8758,6 +8844,80 @@ export interface components {
       version: number;
       revision_id?: string;
       at?: string;
+    };
+    WantedAccount: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      game_id: string;
+      /** @description One line of plain text; markup is shown literally. */
+      title: string;
+      /** @description Plain text with at most four line breaks; markup is shown literally. */
+      description: string;
+      position: number;
+      visible: boolean;
+      version: number;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    WantedAccountList: {
+      /** Format: uuid */
+      game_id: string;
+      game_name: string;
+      game_slug: string;
+      accepting_sales: boolean;
+      limit: number;
+      shown_limit: number;
+      items: components["schemas"]["WantedAccount"][];
+    };
+    WantedAccountCreate: {
+      /** Format: uuid */
+      request_key: string;
+      /** Format: uuid */
+      game_id: string;
+      /** @description One line of plain text; markup is shown literally. */
+      title: string;
+      /** @description Plain text with at most four line breaks; markup is shown literally. */
+      description: string;
+      visible: boolean;
+    };
+    WantedAccountUpdate: {
+      version: number;
+      /** @description One line of plain text; markup is shown literally. */
+      title: string;
+      /** @description Plain text with at most four line breaks; markup is shown literally. */
+      description: string;
+      visible: boolean;
+    };
+    WantedAccountMove: {
+      version: number;
+      /** @enum {string} */
+      direction: "up" | "down";
+    };
+    WantedAccountVersion: {
+      version: number;
+    };
+    WantedAccountDeleted: {
+      /** @constant */
+      deleted: true;
+    };
+    WantedAccountPublic: {
+      /** Format: uuid */
+      id: string;
+      /** @description One line of plain text; markup is shown literally. */
+      title: string;
+      /** @description Plain text with at most four line breaks; markup is shown literally. */
+      description: string;
+    };
+    WantedAccountPublicList: {
+      items: components["schemas"]["WantedAccountPublic"][];
+    };
+    WantedAccountProblem: {
+      code: string;
+      issues?: {
+        path: string;
+        message: string;
+      }[];
     };
     ArticleProblem: {
       code: string;
@@ -24504,6 +24664,214 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getWantedAccountApiV1AdminWantedAccounts: {
+    parameters: {
+      query: {
+        game: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Wanted-account projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountList"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
+        };
+      };
+    };
+  };
+  postWantedAccountApiV1AdminWantedAccounts: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["WantedAccountCreate"];
+      };
+    };
+    responses: {
+      /** @description Wanted-account projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccount"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
+        };
+      };
+    };
+  };
+  postWantedAccountApiV1AdminWantedAccountsId: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["WantedAccountUpdate"];
+      };
+    };
+    responses: {
+      /** @description Wanted-account projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccount"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
+        };
+      };
+    };
+  };
+  postWantedAccountApiV1AdminWantedAccountsIdMove: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["WantedAccountMove"];
+      };
+    };
+    responses: {
+      /** @description Wanted-account projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountList"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
+        };
+      };
+    };
+  };
+  postWantedAccountApiV1AdminWantedAccountsIdDelete: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["WantedAccountVersion"];
+      };
+    };
+    responses: {
+      /** @description Wanted-account projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountDeleted"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
+        };
+      };
+    };
+  };
+  getWantedAccountApiV1GamesSlugWantedAccounts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Plain-text public projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountPublicList"];
+        };
+      };
+      /** @description Authorization, recent verification, validation, unavailable or version conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["WantedAccountProblem"];
         };
       };
     };

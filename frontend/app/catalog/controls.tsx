@@ -153,11 +153,15 @@ export function Check({
   label,
   value,
   change,
+  disabled = false,
+  hint,
 }: {
   label: string;
   name?: string | undefined;
   value: boolean;
   change: (value: boolean) => void;
+  disabled?: boolean;
+  hint?: string | undefined;
 }) {
   const id = useId();
   const validation = useContext(FieldValidation);
@@ -178,8 +182,13 @@ export function Check({
           name={name}
           type="checkbox"
           checked={value}
+          disabled={disabled}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? id + "-error" : undefined}
+          aria-describedby={
+            [hint ? id + "-hint" : "", error ? id + "-error" : ""]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
           onChange={(event) => {
             change(event.target.checked);
             if (name) validation?.correct(name);
@@ -187,6 +196,11 @@ export function Check({
         />
         {label}
       </label>
+      {hint && (
+        <p className="check-hint" id={id + "-hint"}>
+          {hint}
+        </p>
+      )}
       {error && (
         <p className="field-error" id={id + "-error"}>
           {error}

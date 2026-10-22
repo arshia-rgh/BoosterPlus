@@ -38,6 +38,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/submissions"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/supply"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/wanted"
 )
 
 // Server opens the runtime database without DDL privileges and serves HTTP.
@@ -97,7 +98,7 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if supplierErr != nil {
 		return supplierErr
 	}
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, supplierStore.Register, supplierPurchaser.RegisterCallbacks, news.New(client, auth, nil).Register, shop.New(client, auth, nil).WithSupplier(supplierPurchaser).Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.NewWithVault(client, auth, cfg.Vault, nil).Register, notices.Register, files.Register, artwork.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress}).Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacyStore(client, auth, cfg).Register, sitecontent.New(client, auth, nil).Register))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, supplierStore.Register, supplierPurchaser.RegisterCallbacks, news.New(client, auth, nil).Register, shop.New(client, auth, nil).WithSupplier(supplierPurchaser).Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.NewWithVault(client, auth, cfg.Vault, nil).Register, notices.Register, files.Register, artwork.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress}).Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacyStore(client, auth, cfg).Register, sitecontent.New(client, auth, nil).Register, wanted.New(client, auth, nil).Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

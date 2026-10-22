@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 47
+const SchemaVersion = 48
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"wanted_accounts.game_id": "varchar", "wanted_accounts.title": "varchar", "wanted_accounts.description": "varchar", "wanted_accounts.position": "int", "wanted_accounts.visible": "tinyint", "wanted_accounts.version": "int", "wanted_accounts.request_hash": "varchar", "wanted_accounts.updated_at": "datetime",
 		"supplier_bindings.data": "json", "supplier_quotes.data": "json", "supplier_quotes.expires_at": "datetime",
 		"supplier_connections.merchant_id": "varchar", "supplier_imports.merchant_id": "varchar", "supplier_purchases.merchant_id": "varchar",
 		"supplier_purchases.product": "json", "supplier_purchases.post_claimed": "tinyint", "supplier_purchases.maximum_cost": "varchar", "supplier_purchases.lease_until": "datetime", "supplier_signals.digest": "char",
@@ -117,6 +118,7 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 		"supplier_bindings.supplier_binding_release": "release_id", "supplier_quotes.supplier_quote_order": "order_id",
 		"supplier_purchases.supplier_purchase_order": "order_id", "supplier_purchases.supplier_purchase_contract": "contract_id", "supplier_purchases.supplier_purchase_provider": "connection_id,provider_id", "supplier_signals.supplier_signal_digest": "connection_id,digest",
 		"supplier_items.supplier_import_product": "import_id,product_id", "supplier_prices.supplier_offer_price": "connection_id,product_id,offer_id", "supplier_prices.supplier_bound_product": "shop_product_id",
+		"wanted_accounts.PRIMARY": "id", "wanted_accounts.wanted_account_request": "game_id,request_key",
 		"conversation_forms.PRIMARY": "id", "conversation_forms.conversation_form_request": "conversation_id,created_by,request_key",
 		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",
 		"identity_namespace_splits.PRIMARY": "original_id", "identity_namespace_splits.identity_split_customer": "customer_id", "identity_namespace_splits.identity_split_booster": "booster_id",
@@ -158,6 +160,7 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 
 func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"wanted_accounts.wanted_account_order":    "game_id,position,id",
 		"reviews.review_showcase":                 "state,published_at,id",
 		"payment_receipts.receipt_report_created": "created_at,id", "money_transfers.transfer_report_created": "kind,created_at,id",
 		"orders.orders_discovery_game_state": "game_id,state,id", "order_events.order_events_completion_period": "order_id,action,created_at",

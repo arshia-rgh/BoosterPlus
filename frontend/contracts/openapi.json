@@ -23388,6 +23388,331 @@
         }
       }
     },
+    "/api/v1/admin/wanted-accounts": {
+      "get": {
+        "operationId": "getWantedAccountApiV1AdminWantedAccounts",
+        "summary": "List every wanted account for one game in public order",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "game",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wanted-account projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postWantedAccountApiV1AdminWantedAccounts",
+        "summary": "Create a wanted account; repeated request keys return the original entry. Requires one recent verification factor.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wanted-account projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccount"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WantedAccountCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/wanted-accounts/{id}": {
+      "post": {
+        "operationId": "postWantedAccountApiV1AdminWantedAccountsId",
+        "summary": "Replace one confirmed wanted-account version. Requires one recent verification factor.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wanted-account projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccount"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WantedAccountUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/wanted-accounts/{id}/move": {
+      "post": {
+        "operationId": "postWantedAccountApiV1AdminWantedAccountsIdMove",
+        "summary": "Swap a wanted account with its neighbour. Requires one recent verification factor.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wanted-account projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WantedAccountMove"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/wanted-accounts/{id}/delete": {
+      "post": {
+        "operationId": "postWantedAccountApiV1AdminWantedAccountsIdDelete",
+        "summary": "Permanently delete one confirmed wanted-account version. Requires one recent verification factor.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wanted-account projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountDeleted"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WantedAccountVersion"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/wanted-accounts": {
+      "get": {
+        "operationId": "getWantedAccountApiV1GamesSlugWantedAccounts",
+        "summary": "Shown wanted accounts while the game accepts account sales",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plain-text public projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountPublicList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, recent verification, validation, unavailable or version conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WantedAccountProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/games/{slug}/news-sitemap": {
       "get": {
         "operationId": "getArticleSitemap",
@@ -36102,6 +36427,273 @@
           }
         },
         "required": ["version"]
+      },
+      "WantedAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "game_id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "One line of plain text; markup is shown literally."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Plain text with at most four line breaks; markup is shown literally."
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "title",
+          "description",
+          "position",
+          "visible",
+          "version",
+          "updated_at"
+        ]
+      },
+      "WantedAccountList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "game_id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "game_name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "game_slug": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "accepting_sales": {
+            "type": "boolean"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "shown_limit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/WantedAccount"
+            }
+          }
+        },
+        "required": [
+          "game_id",
+          "game_name",
+          "game_slug",
+          "accepting_sales",
+          "limit",
+          "shown_limit",
+          "items"
+        ]
+      },
+      "WantedAccountCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "game_id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "One line of plain text; markup is shown literally."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Plain text with at most four line breaks; markup is shown literally."
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "request_key",
+          "game_id",
+          "title",
+          "description",
+          "visible"
+        ]
+      },
+      "WantedAccountUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "One line of plain text; markup is shown literally."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Plain text with at most four line breaks; markup is shown literally."
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "title", "description", "visible"]
+      },
+      "WantedAccountMove": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["up", "down"]
+          }
+        },
+        "required": ["version", "direction"]
+      },
+      "WantedAccountVersion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          }
+        },
+        "required": ["version"]
+      },
+      "WantedAccountDeleted": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deleted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": ["deleted"]
+      },
+      "WantedAccountPublic": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "One line of plain text; markup is shown literally."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Plain text with at most four line breaks; markup is shown literally."
+          }
+        },
+        "required": ["id", "title", "description"]
+      },
+      "WantedAccountPublicList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "$ref": "#/components/schemas/WantedAccountPublic"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "WantedAccountProblem": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "issues": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "required": ["path", "message"]
+            }
+          }
+        },
+        "required": ["code"]
       },
       "ArticleProblem": {
         "type": "object",

@@ -254,3 +254,6 @@ type TransferRecord func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// WantedAccount is the predicate function for wantedaccount builders.
+type WantedAccount func(*sql.Selector)

@@ -2681,6 +2681,40 @@ var (
 			},
 		},
 	}
+	// WantedAccountsColumns holds the columns for the "wanted_accounts" table.
+	WantedAccountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "title", Type: field.TypeString, Size: 80},
+		{Name: "description", Type: field.TypeString, Size: 300},
+		{Name: "position", Type: field.TypeInt},
+		{Name: "visible", Type: field.TypeBool, Default: false},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "updated_by", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// WantedAccountsTable holds the schema information for the "wanted_accounts" table.
+	WantedAccountsTable = &schema.Table{
+		Name:       "wanted_accounts",
+		Columns:    WantedAccountsColumns,
+		PrimaryKey: []*schema.Column{WantedAccountsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "wanted_account_request",
+				Unique:  true,
+				Columns: []*schema.Column{WantedAccountsColumns[1], WantedAccountsColumns[7]},
+			},
+			{
+				Name:    "wanted_account_order",
+				Unique:  false,
+				Columns: []*schema.Column{WantedAccountsColumns[1], WantedAccountsColumns[4], WantedAccountsColumns[0]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountDeliveriesTable,
@@ -2766,6 +2800,7 @@ var (
 		TransferObservationsTable,
 		TransferRecordsTable,
 		UsersTable,
+		WantedAccountsTable,
 	}
 )
 

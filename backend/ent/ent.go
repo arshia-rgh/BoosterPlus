@@ -95,6 +95,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/wantedaccount"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -238,6 +239,7 @@ func checkColumn(t, c string) error {
 			transferobservation.Table:      transferobservation.ValidColumn,
 			transferrecord.Table:           transferrecord.ValidColumn,
 			user.Table:                     user.ValidColumn,
+			wantedaccount.Table:            wantedaccount.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

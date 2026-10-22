@@ -180,6 +180,8 @@ type Tx struct {
 	TransferRecord *TransferRecordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// WantedAccount is the client for interacting with the WantedAccount builders.
+	WantedAccount *WantedAccountClient
 
 	// lazily loaded.
 	client     *Client
@@ -394,6 +396,7 @@ func (tx *Tx) init() {
 	tx.TransferObservation = NewTransferObservationClient(tx.config)
 	tx.TransferRecord = NewTransferRecordClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.WantedAccount = NewWantedAccountClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
