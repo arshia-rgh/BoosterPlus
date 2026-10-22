@@ -30,6 +30,10 @@ type Summary struct {
 	Version   int       `json:"version"`
 	State     string    `json:"state"`
 	UpdatedAt time.Time `json:"updated_at"`
+	// Price fields summarize the latest automatic supplier price check.
+	PriceStatus    string     `json:"price_status,omitempty"`
+	PriceAttention string     `json:"price_attention,omitempty"`
+	RepricedAt     *time.Time `json:"repriced_at,omitempty"`
 }
 
 // Products is a bounded staff catalog page.
@@ -76,8 +80,23 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, filter Filters)
 			out.Next = rows[49].ID
 			rows = rows[:50]
 		}
+		ids := make([]string, 0, len(rows))
 		for _, row := range rows {
-			out.Items = append(out.Items, Summary{row.Draft["supplier"] != nil, row.ID, row.GameID, row.GameName, row.Slug, row.Title, row.Version, row.State, row.UpdatedAt})
+			ids = append(ids, row.ID)
+		}
+		prices, e := productPrices(ctx, tx, ids)
+		if e != nil {
+			return e
+		}
+		for _, row := range rows {
+			item := Summary{Supplier: row.Draft["supplier"] != nil, ID: row.ID, GameID: row.GameID, Game: row.GameName, Slug: row.Slug, Title: row.Title, Version: row.Version, State: row.State, UpdatedAt: row.UpdatedAt}
+			if price := prices[row.ID]; price != nil {
+				item.PriceStatus, item.PriceAttention = price.Status, price.Attention
+				if price.RepricedAt != nil && price.RepricedAt.After(s.now().Add(-recentReprices)) {
+					item.RepricedAt = price.RepricedAt
+				}
+			}
+			out.Items = append(out.Items, item)
 		}
 		return nil
 	})

@@ -25,3 +25,15 @@ func (s *Service) StaffJobTransaction(ctx context.Context, actor string, version
 		return fn(tx)
 	})
 }
+
+// SystemTransaction serializes an owner-authorized automatic maintenance
+// operation with staff authority changes. It grants no portal capability: the
+// caller must attribute its effects to the system and bind reviewed rules.
+func (s *Service) SystemTransaction(ctx context.Context, fn func(*ent.Tx) error) error {
+	return s.transaction(ctx, func(tx *ent.Tx) error {
+		if err := lockSecurity(ctx, tx); err != nil {
+			return err
+		}
+		return fn(tx)
+	})
+}

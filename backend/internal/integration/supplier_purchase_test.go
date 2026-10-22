@@ -35,6 +35,7 @@ type purchaseProvider struct {
 	createWait    chan struct{}
 	calls         atomic.Int32
 	beforeQuote   func()
+	quoteErr      error
 	signal        suppliers.Signal
 }
 
@@ -44,7 +45,7 @@ func (p *purchaseProvider) QuoteOffer(context.Context, suppliers.Product, string
 	if p.beforeQuote != nil {
 		p.beforeQuote()
 	}
-	return p.quote, nil
+	return p.quote, p.quoteErr
 }
 func (p *purchaseProvider) CreateOrder(ctx context.Context, input suppliers.PurchaseRequest) (suppliers.Order, error) {
 	p.calls.Add(1)
@@ -395,7 +396,8 @@ func TestSupplierPurchaseMigrationReadinessAndForwardOnly(t *testing.T) {
 	if err := database.Ready(t.Context(), db); err != nil {
 		t.Fatal(err)
 	}
-	if err := migration.Down(t.Context(), 1); err == nil || !strings.Contains(err.Error(), "forward-only") {
+	// Later reversible migrations must not hide the schema45 forward-only fence.
+	if err := migration.Down(t.Context(), database.SchemaVersion-44); err == nil || !strings.Contains(err.Error(), "forward-only") {
 		t.Fatal("purchase journal downgrade allowed", err)
 	}
 	if _, err := db.ExecContext(t.Context(), "ALTER TABLE supplier_purchases DROP INDEX supplier_purchase_order"); err != nil {

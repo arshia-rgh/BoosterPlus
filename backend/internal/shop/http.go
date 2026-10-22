@@ -17,7 +17,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 	routes := map[string]func(http.ResponseWriter, *http.Request, *identity.Principal) error{
 		"GET /api/v1/admin/shop/products": s.listHTTP, "POST /api/v1/admin/shop/products": s.createHTTP,
 		"POST /api/v1/admin/shop/supplier-listings": s.supplierPrepareHTTP,
-		"GET /api/v1/admin/shop/products/{id}":      s.draftHTTP, "POST /api/v1/admin/shop/products/{id}/draft": s.saveHTTP,
+		"GET /api/v1/admin/shop/price-sync":         s.priceSyncHTTP, "POST /api/v1/admin/shop/price-sync/{id}/acknowledge": s.acknowledgePriceHTTP,
+		"GET /api/v1/admin/shop/products/{id}": s.draftHTTP, "POST /api/v1/admin/shop/products/{id}/draft": s.saveHTTP,
 		"GET /api/v1/admin/shop/products/{id}/preview": s.previewHTTP, "GET /api/v1/admin/shop/products/{id}/releases": s.releasesHTTP,
 		"POST /api/v1/admin/shop/products/{id}/stock": s.stockHTTP, "POST /api/v1/admin/shop/products/{id}/{action}": s.changeHTTP,
 	}
@@ -45,6 +46,26 @@ func (s *Store) supplierPrepareHTTP(w http.ResponseWriter, r *http.Request, p *i
 		return err
 	}
 	out, err := s.PrepareSupplier(r.Context(), p, input)
+	if err != nil {
+		return err
+	}
+	return write(w, http.StatusOK, out)
+}
+func (s *Store) priceSyncHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+	out, err := s.PriceSync(r.Context(), p)
+	if err != nil {
+		return err
+	}
+	return write(w, http.StatusOK, out)
+}
+func (s *Store) acknowledgePriceHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+	var input struct {
+		Version int `json:"version"`
+	}
+	if err := read(r, &input); err != nil {
+		return err
+	}
+	out, err := s.AcknowledgePrice(r.Context(), p, r.PathValue("id"), input.Version)
 	if err != nil {
 		return err
 	}

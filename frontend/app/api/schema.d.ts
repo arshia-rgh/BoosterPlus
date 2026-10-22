@@ -6057,6 +6057,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/shop/price-sync": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Automatic supplier price checks, alerts and recent updates */
+    get: operations["getShopApiV1AdminShopPriceSync"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/price-sync/{id}/acknowledge": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Keep the current selling price after reviewing a supplier price alert */
+    post: operations["postShopApiV1AdminShopPriceSyncIdAcknowledge"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8587,6 +8621,7 @@ export interface components {
       stocks: components["schemas"]["ShopStock"][];
       /** Format: date-time */
       updated_at: string;
+      price_review?: components["schemas"]["ShopPriceReview"];
     };
     ShopProductSummary: {
       /** Format: uuid */
@@ -8601,6 +8636,19 @@ export interface components {
       /** Format: date-time */
       updated_at: string;
       supplier?: boolean;
+      /** @enum {string} */
+      price_status?:
+        | "current"
+        | "repriced"
+        | "override_changed"
+        | "unavailable"
+        | "requirements_changed"
+        | "check_failed"
+        | "needs_refresh";
+      /** @enum {string} */
+      price_attention?: "" | "open" | "acknowledged";
+      /** Format: date-time */
+      repriced_at?: string;
     };
     ShopProducts: {
       items: components["schemas"]["ShopProductSummary"][];
@@ -9431,6 +9479,66 @@ export interface components {
     ShopPublicFilters: {
       regions: string[];
       categories: string[];
+    };
+    /** @description Latest automatic supplier price check. Supplier totals are exact USD decimals for the published quantity; selling amounts are USD cents. */
+    ShopPriceReview: {
+      /** Format: uuid */
+      product_id: string;
+      title: string;
+      game: string;
+      state: string;
+      supplier_product_id: string;
+      /** @enum {string} */
+      status:
+        | "current"
+        | "repriced"
+        | "override_changed"
+        | "unavailable"
+        | "requirements_changed"
+        | "check_failed"
+        | "needs_refresh";
+      /** @enum {string} */
+      attention: "" | "open" | "acknowledged";
+      version: number;
+      quantity: string;
+      baseline_total: string;
+      supplier_total: string;
+      selling_minor: string;
+      failures: number;
+      /** Format: date-time */
+      checked_at: string;
+      /** Format: date-time */
+      detected_at: string | null;
+      /** Format: date-time */
+      repriced_at: string | null;
+      repriced_from_minor: string;
+      repriced_to_minor: string;
+      repriced_from_total: string;
+      repriced_to_total: string;
+    };
+    ShopPriceRun: {
+      /** @enum {string} */
+      state: "running" | "complete" | "failed";
+      /** Format: date-time */
+      started_at: string;
+      /** Format: date-time */
+      finished_at: string | null;
+      checked: number;
+      repriced: number;
+      flagged: number;
+      deferred: number;
+      failed: number;
+      issue: string;
+    };
+    ShopPriceSync: {
+      interval_minutes: number;
+      configured: boolean;
+      last_run: components["schemas"]["ShopPriceRun"] | null;
+      /** Format: date-time */
+      next_check_at: string | null;
+      attention_count: number;
+      attention: components["schemas"]["ShopPriceReview"][];
+      repriced: components["schemas"]["ShopPriceReview"][];
     };
   };
   responses: never;
@@ -26588,6 +26696,72 @@ export interface operations {
         };
       };
       /** @description Unavailable game or catalog */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminShopPriceSync: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded automatic pricing overview */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPriceSync"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopPriceSyncIdAcknowledge: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Acknowledged price review */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPriceReview"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
       default: {
         headers: {
           [name: string]: unknown;

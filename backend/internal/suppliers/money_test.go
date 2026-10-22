@@ -63,3 +63,23 @@ func TestDecimalJSONPreservesExactValues(t *testing.T) {
 		}
 	}
 }
+
+func TestTotalCanonicalAndEqualAreExact(t *testing.T) {
+	if got, err := Total("1.005", "5"); err != nil || got != "5.025" {
+		t.Fatal(got, err)
+	}
+	if got, err := Canonical("1.50e1"); err != nil || got != "15" {
+		t.Fatal(got, err)
+	}
+	if !Equal("1.50", "1.5") || Equal("1.5", "1.51") || Equal("x", "x") {
+		t.Fatal("exact comparison")
+	}
+	for _, pair := range [][2]Decimal{{"0", "1"}, {"1", "0"}, {"-1", "1"}, {"1", "x"}} {
+		if _, err := Total(pair[0], pair[1]); err == nil {
+			t.Fatal("accepted", pair)
+		}
+	}
+	if _, err := Canonical("0"); err == nil {
+		t.Fatal("zero amount canonicalized")
+	}
+}

@@ -56,6 +56,60 @@ export const stockSchema = z.object({
   committed: z.number().int(),
   available: z.number().int(),
 });
+export const priceStatuses = [
+  "current",
+  "repriced",
+  "override_changed",
+  "unavailable",
+  "requirements_changed",
+  "check_failed",
+  "needs_refresh",
+] as const;
+export const priceReviewSchema = z.object({
+  product_id: z.string(),
+  title: z.string(),
+  game: z.string(),
+  state: z.string(),
+  supplier_product_id: z.string(),
+  status: z.enum(priceStatuses),
+  attention: z.enum(["", "open", "acknowledged"]),
+  version: z.number().int(),
+  quantity: z.string(),
+  baseline_total: z.string(),
+  supplier_total: z.string(),
+  selling_minor: z.string(),
+  failures: z.number().int(),
+  checked_at: z.string(),
+  detected_at: z.string().nullable(),
+  repriced_at: z.string().nullable(),
+  repriced_from_minor: z.string(),
+  repriced_to_minor: z.string(),
+  repriced_from_total: z.string(),
+  repriced_to_total: z.string(),
+});
+export type PriceReview = z.infer<typeof priceReviewSchema>;
+export const priceSyncSchema = z.object({
+  interval_minutes: z.number().int(),
+  configured: z.boolean(),
+  last_run: z
+    .object({
+      state: z.enum(["running", "complete", "failed"]),
+      started_at: z.string(),
+      finished_at: z.string().nullable(),
+      checked: z.number().int(),
+      repriced: z.number().int(),
+      flagged: z.number().int(),
+      deferred: z.number().int(),
+      failed: z.number().int(),
+      issue: z.string(),
+    })
+    .nullable(),
+  next_check_at: z.string().nullable(),
+  attention_count: z.number().int(),
+  attention: z.array(priceReviewSchema),
+  repriced: z.array(priceReviewSchema),
+});
+export type PriceSync = z.infer<typeof priceSyncSchema>;
 export const draftSchema = z.object({
   id: z.string(),
   game_id: z.string(),
@@ -67,6 +121,7 @@ export const draftSchema = z.object({
   current_release: z.string(),
   stocks: z.array(stockSchema),
   updated_at: z.string(),
+  price_review: priceReviewSchema.optional(),
 });
 export const productsSchema = z.object({
   items: z.array(
@@ -80,6 +135,9 @@ export const productsSchema = z.object({
       version: z.number().int(),
       state: z.string(),
       updated_at: z.string(),
+      price_status: z.enum(priceStatuses).optional(),
+      price_attention: z.enum(["", "open", "acknowledged"]).optional(),
+      repriced_at: z.string().optional(),
     }),
   ),
   next: z.string(),

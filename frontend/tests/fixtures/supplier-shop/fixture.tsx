@@ -290,6 +290,16 @@ window.fetch = async (input, init) => {
       profile_url: "",
     });
   }
+  if (path === "/api/v1/admin/shop/price-sync")
+    return send({
+      interval_minutes: 480,
+      configured: true,
+      last_run: null,
+      next_check_at: null,
+      attention_count: 0,
+      attention: [],
+      repriced: [],
+    });
   if (path === "/api/v1/admin/shop/suppliers")
     return send({ items: [catalog.connection] });
   if (path.endsWith("/library")) return send(catalog);

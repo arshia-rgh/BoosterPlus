@@ -81,6 +81,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierimport"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplieritem"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierprice"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpricereview"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpricerun"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierpurchase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/supplierquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/suppliersignal"
@@ -3254,6 +3256,168 @@ func init() {
 	supplierprice.DefaultID = supplierpriceDescID.Default.(func() string)
 	// supplierprice.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	supplierprice.IDValidator = supplierpriceDescID.Validators[0].(func(string) error)
+	supplierpricereviewFields := schema.SupplierPriceReview{}.Fields()
+	_ = supplierpricereviewFields
+	// supplierpricereviewDescConnectionID is the schema descriptor for connection_id field.
+	supplierpricereviewDescConnectionID := supplierpricereviewFields[1].Descriptor()
+	// supplierpricereview.ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
+	supplierpricereview.ConnectionIDValidator = supplierpricereviewDescConnectionID.Validators[0].(func(string) error)
+	// supplierpricereviewDescVersion is the schema descriptor for version field.
+	supplierpricereviewDescVersion := supplierpricereviewFields[2].Descriptor()
+	// supplierpricereview.DefaultVersion holds the default value on creation for the version field.
+	supplierpricereview.DefaultVersion = supplierpricereviewDescVersion.Default.(int)
+	// supplierpricereviewDescStatus is the schema descriptor for status field.
+	supplierpricereviewDescStatus := supplierpricereviewFields[3].Descriptor()
+	// supplierpricereview.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	supplierpricereview.StatusValidator = supplierpricereviewDescStatus.Validators[0].(func(string) error)
+	// supplierpricereviewDescAttention is the schema descriptor for attention field.
+	supplierpricereviewDescAttention := supplierpricereviewFields[4].Descriptor()
+	// supplierpricereview.DefaultAttention holds the default value on creation for the attention field.
+	supplierpricereview.DefaultAttention = supplierpricereviewDescAttention.Default.(string)
+	// supplierpricereview.AttentionValidator is a validator for the "attention" field. It is called by the builders before save.
+	supplierpricereview.AttentionValidator = supplierpricereviewDescAttention.Validators[0].(func(string) error)
+	// supplierpricereviewDescReleaseID is the schema descriptor for release_id field.
+	supplierpricereviewDescReleaseID := supplierpricereviewFields[5].Descriptor()
+	// supplierpricereview.ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	supplierpricereview.ReleaseIDValidator = supplierpricereviewDescReleaseID.Validators[0].(func(string) error)
+	// supplierpricereviewDescQuantity is the schema descriptor for quantity field.
+	supplierpricereviewDescQuantity := supplierpricereviewFields[6].Descriptor()
+	// supplierpricereview.DefaultQuantity holds the default value on creation for the quantity field.
+	supplierpricereview.DefaultQuantity = supplierpricereviewDescQuantity.Default.(string)
+	// supplierpricereview.QuantityValidator is a validator for the "quantity" field. It is called by the builders before save.
+	supplierpricereview.QuantityValidator = supplierpricereviewDescQuantity.Validators[0].(func(string) error)
+	// supplierpricereviewDescBaselineTotal is the schema descriptor for baseline_total field.
+	supplierpricereviewDescBaselineTotal := supplierpricereviewFields[7].Descriptor()
+	// supplierpricereview.DefaultBaselineTotal holds the default value on creation for the baseline_total field.
+	supplierpricereview.DefaultBaselineTotal = supplierpricereviewDescBaselineTotal.Default.(string)
+	// supplierpricereview.BaselineTotalValidator is a validator for the "baseline_total" field. It is called by the builders before save.
+	supplierpricereview.BaselineTotalValidator = supplierpricereviewDescBaselineTotal.Validators[0].(func(string) error)
+	// supplierpricereviewDescSupplierTotal is the schema descriptor for supplier_total field.
+	supplierpricereviewDescSupplierTotal := supplierpricereviewFields[8].Descriptor()
+	// supplierpricereview.DefaultSupplierTotal holds the default value on creation for the supplier_total field.
+	supplierpricereview.DefaultSupplierTotal = supplierpricereviewDescSupplierTotal.Default.(string)
+	// supplierpricereview.SupplierTotalValidator is a validator for the "supplier_total" field. It is called by the builders before save.
+	supplierpricereview.SupplierTotalValidator = supplierpricereviewDescSupplierTotal.Validators[0].(func(string) error)
+	// supplierpricereviewDescSellingMinor is the schema descriptor for selling_minor field.
+	supplierpricereviewDescSellingMinor := supplierpricereviewFields[9].Descriptor()
+	// supplierpricereview.DefaultSellingMinor holds the default value on creation for the selling_minor field.
+	supplierpricereview.DefaultSellingMinor = supplierpricereviewDescSellingMinor.Default.(string)
+	// supplierpricereview.SellingMinorValidator is a validator for the "selling_minor" field. It is called by the builders before save.
+	supplierpricereview.SellingMinorValidator = supplierpricereviewDescSellingMinor.Validators[0].(func(string) error)
+	// supplierpricereviewDescFailures is the schema descriptor for failures field.
+	supplierpricereviewDescFailures := supplierpricereviewFields[10].Descriptor()
+	// supplierpricereview.DefaultFailures holds the default value on creation for the failures field.
+	supplierpricereview.DefaultFailures = supplierpricereviewDescFailures.Default.(int)
+	// supplierpricereviewDescRunID is the schema descriptor for run_id field.
+	supplierpricereviewDescRunID := supplierpricereviewFields[11].Descriptor()
+	// supplierpricereview.RunIDValidator is a validator for the "run_id" field. It is called by the builders before save.
+	supplierpricereview.RunIDValidator = supplierpricereviewDescRunID.Validators[0].(func(string) error)
+	// supplierpricereviewDescAcknowledgedBy is the schema descriptor for acknowledged_by field.
+	supplierpricereviewDescAcknowledgedBy := supplierpricereviewFields[14].Descriptor()
+	// supplierpricereview.DefaultAcknowledgedBy holds the default value on creation for the acknowledged_by field.
+	supplierpricereview.DefaultAcknowledgedBy = supplierpricereviewDescAcknowledgedBy.Default.(string)
+	// supplierpricereview.AcknowledgedByValidator is a validator for the "acknowledged_by" field. It is called by the builders before save.
+	supplierpricereview.AcknowledgedByValidator = supplierpricereviewDescAcknowledgedBy.Validators[0].(func(string) error)
+	// supplierpricereviewDescRepricedFromMinor is the schema descriptor for repriced_from_minor field.
+	supplierpricereviewDescRepricedFromMinor := supplierpricereviewFields[17].Descriptor()
+	// supplierpricereview.DefaultRepricedFromMinor holds the default value on creation for the repriced_from_minor field.
+	supplierpricereview.DefaultRepricedFromMinor = supplierpricereviewDescRepricedFromMinor.Default.(string)
+	// supplierpricereview.RepricedFromMinorValidator is a validator for the "repriced_from_minor" field. It is called by the builders before save.
+	supplierpricereview.RepricedFromMinorValidator = supplierpricereviewDescRepricedFromMinor.Validators[0].(func(string) error)
+	// supplierpricereviewDescRepricedToMinor is the schema descriptor for repriced_to_minor field.
+	supplierpricereviewDescRepricedToMinor := supplierpricereviewFields[18].Descriptor()
+	// supplierpricereview.DefaultRepricedToMinor holds the default value on creation for the repriced_to_minor field.
+	supplierpricereview.DefaultRepricedToMinor = supplierpricereviewDescRepricedToMinor.Default.(string)
+	// supplierpricereview.RepricedToMinorValidator is a validator for the "repriced_to_minor" field. It is called by the builders before save.
+	supplierpricereview.RepricedToMinorValidator = supplierpricereviewDescRepricedToMinor.Validators[0].(func(string) error)
+	// supplierpricereviewDescRepricedFromTotal is the schema descriptor for repriced_from_total field.
+	supplierpricereviewDescRepricedFromTotal := supplierpricereviewFields[19].Descriptor()
+	// supplierpricereview.DefaultRepricedFromTotal holds the default value on creation for the repriced_from_total field.
+	supplierpricereview.DefaultRepricedFromTotal = supplierpricereviewDescRepricedFromTotal.Default.(string)
+	// supplierpricereview.RepricedFromTotalValidator is a validator for the "repriced_from_total" field. It is called by the builders before save.
+	supplierpricereview.RepricedFromTotalValidator = supplierpricereviewDescRepricedFromTotal.Validators[0].(func(string) error)
+	// supplierpricereviewDescRepricedToTotal is the schema descriptor for repriced_to_total field.
+	supplierpricereviewDescRepricedToTotal := supplierpricereviewFields[20].Descriptor()
+	// supplierpricereview.DefaultRepricedToTotal holds the default value on creation for the repriced_to_total field.
+	supplierpricereview.DefaultRepricedToTotal = supplierpricereviewDescRepricedToTotal.Default.(string)
+	// supplierpricereview.RepricedToTotalValidator is a validator for the "repriced_to_total" field. It is called by the builders before save.
+	supplierpricereview.RepricedToTotalValidator = supplierpricereviewDescRepricedToTotal.Validators[0].(func(string) error)
+	// supplierpricereviewDescUpdatedAt is the schema descriptor for updated_at field.
+	supplierpricereviewDescUpdatedAt := supplierpricereviewFields[21].Descriptor()
+	// supplierpricereview.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	supplierpricereview.DefaultUpdatedAt = supplierpricereviewDescUpdatedAt.Default.(func() time.Time)
+	// supplierpricereviewDescID is the schema descriptor for id field.
+	supplierpricereviewDescID := supplierpricereviewFields[0].Descriptor()
+	// supplierpricereview.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierpricereview.IDValidator = supplierpricereviewDescID.Validators[0].(func(string) error)
+	supplierpricerunFields := schema.SupplierPriceRun{}.Fields()
+	_ = supplierpricerunFields
+	// supplierpricerunDescConnectionID is the schema descriptor for connection_id field.
+	supplierpricerunDescConnectionID := supplierpricerunFields[1].Descriptor()
+	// supplierpricerun.ConnectionIDValidator is a validator for the "connection_id" field. It is called by the builders before save.
+	supplierpricerun.ConnectionIDValidator = supplierpricerunDescConnectionID.Validators[0].(func(string) error)
+	// supplierpricerunDescState is the schema descriptor for state field.
+	supplierpricerunDescState := supplierpricerunFields[3].Descriptor()
+	// supplierpricerun.DefaultState holds the default value on creation for the state field.
+	supplierpricerun.DefaultState = supplierpricerunDescState.Default.(string)
+	// supplierpricerun.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	supplierpricerun.StateValidator = supplierpricerunDescState.Validators[0].(func(string) error)
+	// supplierpricerunDescLeaseOwner is the schema descriptor for lease_owner field.
+	supplierpricerunDescLeaseOwner := supplierpricerunFields[4].Descriptor()
+	// supplierpricerun.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
+	supplierpricerun.DefaultLeaseOwner = supplierpricerunDescLeaseOwner.Default.(string)
+	// supplierpricerun.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
+	supplierpricerun.LeaseOwnerValidator = supplierpricerunDescLeaseOwner.Validators[0].(func(string) error)
+	// supplierpricerunDescCursorID is the schema descriptor for cursor_id field.
+	supplierpricerunDescCursorID := supplierpricerunFields[6].Descriptor()
+	// supplierpricerun.DefaultCursorID holds the default value on creation for the cursor_id field.
+	supplierpricerun.DefaultCursorID = supplierpricerunDescCursorID.Default.(string)
+	// supplierpricerun.CursorIDValidator is a validator for the "cursor_id" field. It is called by the builders before save.
+	supplierpricerun.CursorIDValidator = supplierpricerunDescCursorID.Validators[0].(func(string) error)
+	// supplierpricerunDescBatch is the schema descriptor for batch field.
+	supplierpricerunDescBatch := supplierpricerunFields[7].Descriptor()
+	// supplierpricerun.DefaultBatch holds the default value on creation for the batch field.
+	supplierpricerun.DefaultBatch = supplierpricerunDescBatch.Default.(int)
+	// supplierpricerunDescChecked is the schema descriptor for checked field.
+	supplierpricerunDescChecked := supplierpricerunFields[8].Descriptor()
+	// supplierpricerun.DefaultChecked holds the default value on creation for the checked field.
+	supplierpricerun.DefaultChecked = supplierpricerunDescChecked.Default.(int)
+	// supplierpricerunDescRepriced is the schema descriptor for repriced field.
+	supplierpricerunDescRepriced := supplierpricerunFields[9].Descriptor()
+	// supplierpricerun.DefaultRepriced holds the default value on creation for the repriced field.
+	supplierpricerun.DefaultRepriced = supplierpricerunDescRepriced.Default.(int)
+	// supplierpricerunDescFlagged is the schema descriptor for flagged field.
+	supplierpricerunDescFlagged := supplierpricerunFields[10].Descriptor()
+	// supplierpricerun.DefaultFlagged holds the default value on creation for the flagged field.
+	supplierpricerun.DefaultFlagged = supplierpricerunDescFlagged.Default.(int)
+	// supplierpricerunDescDeferred is the schema descriptor for deferred field.
+	supplierpricerunDescDeferred := supplierpricerunFields[11].Descriptor()
+	// supplierpricerun.DefaultDeferred holds the default value on creation for the deferred field.
+	supplierpricerun.DefaultDeferred = supplierpricerunDescDeferred.Default.(int)
+	// supplierpricerunDescFailed is the schema descriptor for failed field.
+	supplierpricerunDescFailed := supplierpricerunFields[12].Descriptor()
+	// supplierpricerun.DefaultFailed holds the default value on creation for the failed field.
+	supplierpricerun.DefaultFailed = supplierpricerunDescFailed.Default.(int)
+	// supplierpricerunDescIssue is the schema descriptor for issue field.
+	supplierpricerunDescIssue := supplierpricerunFields[13].Descriptor()
+	// supplierpricerun.DefaultIssue holds the default value on creation for the issue field.
+	supplierpricerun.DefaultIssue = supplierpricerunDescIssue.Default.(string)
+	// supplierpricerun.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	supplierpricerun.IssueValidator = supplierpricerunDescIssue.Validators[0].(func(string) error)
+	// supplierpricerunDescCreatedAt is the schema descriptor for created_at field.
+	supplierpricerunDescCreatedAt := supplierpricerunFields[14].Descriptor()
+	// supplierpricerun.DefaultCreatedAt holds the default value on creation for the created_at field.
+	supplierpricerun.DefaultCreatedAt = supplierpricerunDescCreatedAt.Default.(func() time.Time)
+	// supplierpricerunDescUpdatedAt is the schema descriptor for updated_at field.
+	supplierpricerunDescUpdatedAt := supplierpricerunFields[15].Descriptor()
+	// supplierpricerun.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	supplierpricerun.DefaultUpdatedAt = supplierpricerunDescUpdatedAt.Default.(func() time.Time)
+	// supplierpricerunDescID is the schema descriptor for id field.
+	supplierpricerunDescID := supplierpricerunFields[0].Descriptor()
+	// supplierpricerun.DefaultID holds the default value on creation for the id field.
+	supplierpricerun.DefaultID = supplierpricerunDescID.Default.(func() string)
+	// supplierpricerun.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	supplierpricerun.IDValidator = supplierpricerunDescID.Validators[0].(func(string) error)
 	supplierpurchaseFields := schema.SupplierPurchase{}.Fields()
 	_ = supplierpurchaseFields
 	// supplierpurchaseDescOrderID is the schema descriptor for order_id field.

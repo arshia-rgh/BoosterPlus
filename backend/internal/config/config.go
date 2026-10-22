@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net"
 	"strconv"
+	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
@@ -24,6 +25,7 @@ type Config struct {
 	Crypto         Crypto
 	PrivacyJournal *privacyjournal.Journal
 	Suppliers      []suppliers.Config
+	PriceSync      time.Duration
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -73,5 +75,10 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, supplierErr
 	}
 	cfg.Suppliers = connections
+	interval, intervalErr := SupplierPriceSync(getenv)
+	if intervalErr != nil {
+		return Config{}, intervalErr
+	}
+	cfg.PriceSync = interval
 	return cfg, nil
 }

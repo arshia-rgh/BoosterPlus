@@ -1,7 +1,7 @@
 import { PurchasingControl } from "./purchasing";
 import { PrepareListing } from "./prepare";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Link } from "../portal-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { get, post } from "../identity/api";
 import { AuthorizedIdentity } from "../identity/frame";
@@ -75,6 +75,10 @@ export function SupplierLibrary() {
 }
 function LibrarySession({ accessLost }: { accessLost: () => void }) {
   const resource = useResource("/admin/shop/suppliers", connectionsSchema);
+  // Price alerts link here with the supplier product reference to review.
+  const [params] = useSearchParams(),
+    search = params.get("q")?.trim().slice(0, 240) ?? "",
+    initialQuery = search ? new URLSearchParams({ q: search }).toString() : "";
   const [selected, setSelected] = useState<string | null>(null);
   useEffect(() => {
     if (denied(resource.error)) accessLost();
@@ -110,6 +114,7 @@ function LibrarySession({ accessLost }: { accessLost: () => void }) {
         <ConnectionLibrary
           key={id}
           id={id}
+          initialQuery={initialQuery}
           select={setSelected}
           accessLost={accessLost}
         />
@@ -119,15 +124,19 @@ function LibrarySession({ accessLost }: { accessLost: () => void }) {
 }
 function ConnectionLibrary({
   id,
+  initialQuery = "",
   select,
   accessLost,
 }: {
   id: string;
+  initialQuery?: string;
   select: (id: string) => void;
   accessLost: () => void;
 }) {
-  const [query, setQuery] = useState(""),
-    [search, setSearch] = useState(""),
+  const [query, setQuery] = useState(initialQuery),
+    [search, setSearch] = useState(
+      new URLSearchParams(initialQuery).get("q") ?? "",
+    ),
     [edit, setEdit] = useState<{
       product: Product;
       offer: Offer;

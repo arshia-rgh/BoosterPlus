@@ -909,6 +909,30 @@ func (f SupplierPriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPriceMutation", m)
 }
 
+// The SupplierPriceReviewFunc type is an adapter to allow the use of ordinary
+// function as SupplierPriceReview mutator.
+type SupplierPriceReviewFunc func(context.Context, *ent.SupplierPriceReviewMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierPriceReviewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierPriceReviewMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPriceReviewMutation", m)
+}
+
+// The SupplierPriceRunFunc type is an adapter to allow the use of ordinary
+// function as SupplierPriceRun mutator.
+type SupplierPriceRunFunc func(context.Context, *ent.SupplierPriceRunMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SupplierPriceRunFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SupplierPriceRunMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SupplierPriceRunMutation", m)
+}
+
 // The SupplierPurchaseFunc type is an adapter to allow the use of ordinary
 // function as SupplierPurchase mutator.
 type SupplierPurchaseFunc func(context.Context, *ent.SupplierPurchaseMutation) (ent.Value, error)

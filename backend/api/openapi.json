@@ -26280,6 +26280,103 @@
           }
         }
       }
+    },
+    "/api/v1/admin/shop/price-sync": {
+      "get": {
+        "operationId": "getShopApiV1AdminShopPriceSync",
+        "summary": "Automatic supplier price checks, alerts and recent updates",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded automatic pricing overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPriceSync"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/price-sync/{id}/acknowledge": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopPriceSyncIdAcknowledge",
+        "summary": "Keep the current selling price after reviewing a supplier price alert",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Acknowledged price review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPriceReview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -35337,6 +35434,9 @@
             "type": "string",
             "maxLength": 40,
             "format": "date-time"
+          },
+          "price_review": {
+            "$ref": "#/components/schemas/ShopPriceReview"
           }
         },
         "required": [
@@ -35394,6 +35494,29 @@
           },
           "supplier": {
             "type": "boolean"
+          },
+          "price_status": {
+            "type": "string",
+            "maxLength": 32,
+            "enum": [
+              "current",
+              "repriced",
+              "override_changed",
+              "unavailable",
+              "requirements_changed",
+              "check_failed",
+              "needs_refresh"
+            ]
+          },
+          "price_attention": {
+            "type": "string",
+            "maxLength": 16,
+            "enum": ["", "open", "acknowledged"]
+          },
+          "repriced_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
           }
         },
         "required": [
@@ -38747,6 +38870,249 @@
             }
           }
         }
+      },
+      "ShopPriceReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Latest automatic supplier price check. Supplier totals are exact USD decimals for the published quantity; selling amounts are USD cents.",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "game": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "supplier_product_id": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 32,
+            "enum": [
+              "current",
+              "repriced",
+              "override_changed",
+              "unavailable",
+              "requirements_changed",
+              "check_failed",
+              "needs_refresh"
+            ]
+          },
+          "attention": {
+            "type": "string",
+            "maxLength": 16,
+            "enum": ["", "open", "acknowledged"]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "quantity": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "baseline_total": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "supplier_total": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "selling_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "failures": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "checked_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "detected_at": {
+            "type": ["string", "null"],
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "repriced_at": {
+            "type": ["string", "null"],
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "repriced_from_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "repriced_to_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "repriced_from_total": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "repriced_to_total": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "product_id",
+          "title",
+          "game",
+          "state",
+          "supplier_product_id",
+          "status",
+          "attention",
+          "version",
+          "quantity",
+          "baseline_total",
+          "supplier_total",
+          "selling_minor",
+          "failures",
+          "checked_at",
+          "detected_at",
+          "repriced_at",
+          "repriced_from_minor",
+          "repriced_to_minor",
+          "repriced_from_total",
+          "repriced_to_total"
+        ]
+      },
+      "ShopPriceRun": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "type": "string",
+            "maxLength": 16,
+            "enum": ["running", "complete", "failed"]
+          },
+          "started_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": ["string", "null"],
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "checked": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "repriced": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "flagged": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "deferred": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "failed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "issue": {
+            "type": "string",
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "state",
+          "started_at",
+          "finished_at",
+          "checked",
+          "repriced",
+          "flagged",
+          "deferred",
+          "failed",
+          "issue"
+        ]
+      },
+      "ShopPriceSync": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "interval_minutes": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 10080
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "last_run": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ShopPriceRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "next_check_at": {
+            "type": ["string", "null"],
+            "maxLength": 40,
+            "format": "date-time"
+          },
+          "attention_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "attention": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopPriceReview"
+            },
+            "maxItems": 50
+          },
+          "repriced": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopPriceReview"
+            },
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "interval_minutes",
+          "configured",
+          "last_run",
+          "next_check_at",
+          "attention_count",
+          "attention",
+          "repriced"
+        ]
       }
     },
     "securitySchemes": {

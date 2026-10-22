@@ -24,6 +24,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shop"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/supply"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
@@ -124,6 +125,13 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	}
 	handlers["supplier.dispatch"] = supplierPurchaser.Handler()
 	handlers["supplier.reconcile"] = supplierPurchaser.ReconcileHandler()
+	// Automatic supplier price checks read catalog prices only; purchasing stays
+	// governed by the separate process switch and connection controls.
+	pricing := shop.New(client, auth, nil).WithSupplier(supplierPurchaser).WithPriceSync(cfg.PriceSync)
+	handlers["supplier.price_sync"] = pricing.PriceSyncHandler()
+	pricingDone := make(chan struct{})
+	go func() { defer close(pricingDone); pricing.RunPriceSchedule(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-pricingDone }()
 	supplierDone := make(chan struct{})
 	go func() { defer close(supplierDone); supplierPurchaser.RunMaintenance(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-supplierDone }()

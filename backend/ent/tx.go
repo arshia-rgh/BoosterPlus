@@ -164,6 +164,10 @@ type Tx struct {
 	SupplierItem *SupplierItemClient
 	// SupplierPrice is the client for interacting with the SupplierPrice builders.
 	SupplierPrice *SupplierPriceClient
+	// SupplierPriceReview is the client for interacting with the SupplierPriceReview builders.
+	SupplierPriceReview *SupplierPriceReviewClient
+	// SupplierPriceRun is the client for interacting with the SupplierPriceRun builders.
+	SupplierPriceRun *SupplierPriceRunClient
 	// SupplierPurchase is the client for interacting with the SupplierPurchase builders.
 	SupplierPurchase *SupplierPurchaseClient
 	// SupplierQuote is the client for interacting with the SupplierQuote builders.
@@ -388,6 +392,8 @@ func (tx *Tx) init() {
 	tx.SupplierImport = NewSupplierImportClient(tx.config)
 	tx.SupplierItem = NewSupplierItemClient(tx.config)
 	tx.SupplierPrice = NewSupplierPriceClient(tx.config)
+	tx.SupplierPriceReview = NewSupplierPriceReviewClient(tx.config)
+	tx.SupplierPriceRun = NewSupplierPriceRunClient(tx.config)
 	tx.SupplierPurchase = NewSupplierPurchaseClient(tx.config)
 	tx.SupplierQuote = NewSupplierQuoteClient(tx.config)
 	tx.SupplierSignal = NewSupplierSignalClient(tx.config)

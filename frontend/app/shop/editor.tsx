@@ -34,6 +34,7 @@ import {
   type Stock,
 } from "./model";
 import "../orders/admin-workspace.css";
+import { EditorPriceNotice } from "./price-alerts";
 import "./shop.css";
 
 const sections = [
@@ -373,6 +374,10 @@ function Editor({
                       </Action>
                     </section>
                   )}
+                  <EditorPriceNotice
+                    review={row.price_review}
+                    onChanged={changed}
+                  />
                   <div className="shop-toolbar">
                     <span role="status">
                       {dirty

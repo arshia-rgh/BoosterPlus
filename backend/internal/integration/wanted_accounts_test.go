@@ -39,7 +39,7 @@ func TestWantedAccountMigrationStartupReadiness(t *testing.T) {
 		t.Fatal("migrated wanted accounts must pass actual API/worker startup readiness:", err)
 	}
 	// The CLI may step back over 48: it removes only staff-authored notices.
-	if err := r.Down(t.Context(), 1); err != nil {
+	if err := r.Down(t.Context(), database.SchemaVersion-47); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.Ready(t.Context(), db); err == nil {

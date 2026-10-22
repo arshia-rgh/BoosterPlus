@@ -2407,6 +2407,87 @@ var (
 			},
 		},
 	}
+	// SupplierPriceReviewsColumns holds the columns for the "supplier_price_reviews" table.
+	SupplierPriceReviewsColumns = []*schema.Column{
+		{Name: "shop_product_id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "status", Type: field.TypeString, Size: 32},
+		{Name: "attention", Type: field.TypeString, Size: 16, Default: ""},
+		{Name: "release_id", Type: field.TypeString, Size: 36},
+		{Name: "quantity", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "baseline_total", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "supplier_total", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "selling_minor", Type: field.TypeString, Size: 12, Default: ""},
+		{Name: "failures", Type: field.TypeInt, Default: 0},
+		{Name: "run_id", Type: field.TypeString, Size: 36},
+		{Name: "checked_at", Type: field.TypeTime},
+		{Name: "detected_at", Type: field.TypeTime, Nullable: true},
+		{Name: "acknowledged_by", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "acknowledged_at", Type: field.TypeTime, Nullable: true},
+		{Name: "repriced_at", Type: field.TypeTime, Nullable: true},
+		{Name: "repriced_from_minor", Type: field.TypeString, Size: 12, Default: ""},
+		{Name: "repriced_to_minor", Type: field.TypeString, Size: 12, Default: ""},
+		{Name: "repriced_from_total", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "repriced_to_total", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SupplierPriceReviewsTable holds the schema information for the "supplier_price_reviews" table.
+	SupplierPriceReviewsTable = &schema.Table{
+		Name:       "supplier_price_reviews",
+		Columns:    SupplierPriceReviewsColumns,
+		PrimaryKey: []*schema.Column{SupplierPriceReviewsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_price_review_attention",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierPriceReviewsColumns[4], SupplierPriceReviewsColumns[13], SupplierPriceReviewsColumns[0]},
+			},
+			{
+				Name:    "supplier_price_review_repriced",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierPriceReviewsColumns[16], SupplierPriceReviewsColumns[0]},
+			},
+		},
+	}
+	// SupplierPriceRunsColumns holds the columns for the "supplier_price_runs" table.
+	SupplierPriceRunsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "connection_id", Type: field.TypeString, Size: 32},
+		{Name: "window_start", Type: field.TypeTime},
+		{Name: "state", Type: field.TypeString, Size: 16, Default: "running"},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "cursor_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "batch", Type: field.TypeInt, Default: 0},
+		{Name: "checked", Type: field.TypeInt, Default: 0},
+		{Name: "repriced", Type: field.TypeInt, Default: 0},
+		{Name: "flagged", Type: field.TypeInt, Default: 0},
+		{Name: "deferred", Type: field.TypeInt, Default: 0},
+		{Name: "failed", Type: field.TypeInt, Default: 0},
+		{Name: "issue", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "finished_at", Type: field.TypeTime, Nullable: true},
+	}
+	// SupplierPriceRunsTable holds the schema information for the "supplier_price_runs" table.
+	SupplierPriceRunsTable = &schema.Table{
+		Name:       "supplier_price_runs",
+		Columns:    SupplierPriceRunsColumns,
+		PrimaryKey: []*schema.Column{SupplierPriceRunsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "supplier_price_run_window",
+				Unique:  true,
+				Columns: []*schema.Column{SupplierPriceRunsColumns[1], SupplierPriceRunsColumns[2]},
+			},
+			{
+				Name:    "supplier_price_run_recent",
+				Unique:  false,
+				Columns: []*schema.Column{SupplierPriceRunsColumns[1], SupplierPriceRunsColumns[14], SupplierPriceRunsColumns[0]},
+			},
+		},
+	}
 	// SupplierPurchasesColumns holds the columns for the "supplier_purchases" table.
 	SupplierPurchasesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2792,6 +2873,8 @@ var (
 		SupplierImportsTable,
 		SupplierItemsTable,
 		SupplierPricesTable,
+		SupplierPriceReviewsTable,
+		SupplierPriceRunsTable,
 		SupplierPurchasesTable,
 		SupplierQuotesTable,
 		SupplierSignalsTable,

@@ -99,3 +99,25 @@ func Price(cost, quantity Decimal, markupBPS int, overrideMinor string) (string,
 	}
 	return quotient.String(), nil
 }
+
+// Total multiplies an exact unit cost by a quantity without rounding.
+func Total(cost, quantity Decimal) (Decimal, error) {
+	unit, e1 := cost.Rational()
+	amount, e2 := quantity.Rational()
+	if e1 != nil || e2 != nil || unit.Sign() <= 0 || amount.Sign() <= 0 {
+		return "", ErrInvalid
+	}
+	return exactDecimal(new(big.Rat).Mul(unit, amount))
+}
+
+// Canonical rewrites a positive supplier amount as a plain exact decimal.
+func Canonical(value Decimal) (Decimal, error) {
+	amount, err := value.Rational()
+	if err != nil || amount.Sign() <= 0 {
+		return "", ErrInvalid
+	}
+	return exactDecimal(amount)
+}
+
+// Equal compares exact values, so "1.50" and "1.5" are the same amount.
+func Equal(a, b Decimal) bool { return equalDecimal(a, b) }

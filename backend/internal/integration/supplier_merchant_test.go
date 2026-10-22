@@ -142,7 +142,8 @@ func TestSupplierMerchantMigrationStartupAndForwardOnly(t *testing.T) {
 	if err := database.Ready(t.Context(), db); err != nil {
 		t.Fatal("migrated startup failed", err)
 	}
-	if err := migration.Down(t.Context(), 1); err == nil || !strings.Contains(err.Error(), "forward-only") {
+	// Later reversible migrations must not hide the schema46 forward-only fence.
+	if err := migration.Down(t.Context(), database.SchemaVersion-45); err == nil || !strings.Contains(err.Error(), "forward-only") {
 		t.Fatal("merchant evidence downgrade accepted", err)
 	}
 	if _, err := db.ExecContext(t.Context(), "ALTER TABLE supplier_purchases DROP COLUMN merchant_id"); err != nil {

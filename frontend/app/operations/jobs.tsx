@@ -128,6 +128,7 @@ export default function BackgroundJobs() {
             "availability.changed",
             "availability.fanout",
             "availability.email",
+            "supplier.price_sync",
           ].map((value) => [value, kindLabel(value)] as const),
         ]}
       />

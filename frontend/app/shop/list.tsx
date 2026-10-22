@@ -18,6 +18,7 @@ import {
   productsSchema,
   productStates,
 } from "./model";
+import { PriceBadges, PriceChecks } from "./price-alerts";
 import "./shop.css";
 export function ShopProducts() {
   const [params, setParams] = useSearchParams(),
@@ -54,6 +55,7 @@ export function ShopProducts() {
   };
   return (
     <div className="shop-editor">
+      <PriceChecks search={query.toString()} onChanged={resource.reload} />
       <p>
         Manage supplier deliveries and your own staff-delivered products. Drafts
         stay private until reviewed and published.
@@ -147,6 +149,11 @@ export function ShopProducts() {
                 {row.supplier ? "Supplier delivery" : "Manual delivery"} ·{" "}
                 {row.state} · Revision {row.version}
               </p>
+              <PriceBadges
+                status={row.price_status}
+                attention={row.price_attention}
+                repricedAt={row.repriced_at}
+              />
               <Link
                 className="button compact"
                 to={`/admin/shop/${row.id}`}

@@ -11,9 +11,20 @@ import { Articles } from "../news/list";
 import { ShopProducts } from "../shop/list";
 vi.mock("../orders/resource", () => ({
   useResource: (path: string) => ({
-    data: path.startsWith("/admin/catalog")
-      ? { games: [], next: "" }
-      : { items: [], next: "" },
+    data:
+      path === "/admin/shop/price-sync"
+        ? {
+            interval_minutes: 480,
+            configured: true,
+            last_run: null,
+            next_check_at: null,
+            attention_count: 0,
+            attention: [],
+            repriced: [],
+          }
+        : path.startsWith("/admin/catalog")
+          ? { games: [], next: "" }
+          : { items: [], next: "" },
     error: null,
     loading: false,
     reload: vi.fn(),

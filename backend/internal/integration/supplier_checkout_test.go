@@ -372,7 +372,8 @@ func TestSupplierCheckoutMigratedStartupAndForwardOnly(t *testing.T) {
 	if e := database.Ready(t.Context(), db); e != nil {
 		t.Fatal(e)
 	}
-	if e := m.Down(t.Context(), 1); e == nil || !strings.Contains(e.Error(), "forward-only") {
+	// Later reversible migrations must not hide the schema47 forward-only fence.
+	if e := m.Down(t.Context(), database.SchemaVersion-46); e == nil || !strings.Contains(e.Error(), "forward-only") {
 		t.Fatal("unsafe downgrade", e)
 	}
 }

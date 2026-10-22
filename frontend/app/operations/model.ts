@@ -75,6 +75,8 @@ export function kindLabel(kind: string) {
       return "Matching availability alerts";
     case "availability.email":
       return "Availability email";
+    case "supplier.price_sync":
+      return "Supplier price check";
     default:
       return "Unsupported background task";
   }

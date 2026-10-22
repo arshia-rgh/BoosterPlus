@@ -163,7 +163,8 @@ func TestManualPayoutExactTermsAuthorizationAndIdempotentCompletion(t *testing.T
 	if err = database.Ready(ctx, f.base.auth.db); err != nil {
 		t.Fatal("schema42 readiness", err)
 	}
-	if err = runner(t, f.base.auth.db).Down(ctx, 1); err == nil {
+	// Later reversible migrations must not hide the schema42 forward-only fence.
+	if err = runner(t, f.base.auth.db).Down(ctx, database.SchemaVersion-41); err == nil {
 		t.Fatal("manual financial receipts allowed destructive rollback")
 	}
 	if err = runner(t, f.base.auth.db).Apply(ctx, 42); err != nil {

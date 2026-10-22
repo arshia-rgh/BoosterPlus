@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 48
+const SchemaVersion = 49
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,8 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"supplier_price_runs.window_start": "datetime", "supplier_price_runs.lease_until": "datetime", "supplier_price_runs.cursor_id": "varchar", "supplier_price_runs.batch": "int", "supplier_price_runs.state": "varchar",
+		"supplier_price_reviews.status": "varchar", "supplier_price_reviews.attention": "varchar", "supplier_price_reviews.release_id": "varchar", "supplier_price_reviews.baseline_total": "varchar", "supplier_price_reviews.supplier_total": "varchar", "supplier_price_reviews.version": "int", "supplier_price_reviews.repriced_at": "datetime",
 		"wanted_accounts.game_id": "varchar", "wanted_accounts.title": "varchar", "wanted_accounts.description": "varchar", "wanted_accounts.position": "int", "wanted_accounts.visible": "tinyint", "wanted_accounts.version": "int", "wanted_accounts.request_hash": "varchar", "wanted_accounts.updated_at": "datetime",
 		"supplier_bindings.data": "json", "supplier_quotes.data": "json", "supplier_quotes.expires_at": "datetime",
 		"supplier_connections.merchant_id": "varchar", "supplier_imports.merchant_id": "varchar", "supplier_purchases.merchant_id": "varchar",
@@ -119,6 +121,7 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 		"supplier_purchases.supplier_purchase_order": "order_id", "supplier_purchases.supplier_purchase_contract": "contract_id", "supplier_purchases.supplier_purchase_provider": "connection_id,provider_id", "supplier_signals.supplier_signal_digest": "connection_id,digest",
 		"supplier_items.supplier_import_product": "import_id,product_id", "supplier_prices.supplier_offer_price": "connection_id,product_id,offer_id", "supplier_prices.supplier_bound_product": "shop_product_id",
 		"wanted_accounts.PRIMARY": "id", "wanted_accounts.wanted_account_request": "game_id,request_key",
+		"supplier_price_runs.PRIMARY": "id", "supplier_price_runs.supplier_price_run_window": "connection_id,window_start", "supplier_price_reviews.PRIMARY": "shop_product_id",
 		"conversation_forms.PRIMARY": "id", "conversation_forms.conversation_form_request": "conversation_id,created_by,request_key",
 		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",
 		"identity_namespace_splits.PRIMARY": "original_id", "identity_namespace_splits.identity_split_customer": "customer_id", "identity_namespace_splits.identity_split_booster": "booster_id",
@@ -160,9 +163,12 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 
 func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
-		"wanted_accounts.wanted_account_order":    "game_id,position,id",
-		"reviews.review_showcase":                 "state,published_at,id",
-		"payment_receipts.receipt_report_created": "created_at,id", "money_transfers.transfer_report_created": "kind,created_at,id",
+		"wanted_accounts.wanted_account_order":                   "game_id,position,id",
+		"supplier_price_runs.supplier_price_run_recent":          "connection_id,created_at,id",
+		"supplier_price_reviews.supplier_price_review_attention": "attention,detected_at,shop_product_id",
+		"supplier_price_reviews.supplier_price_review_repriced":  "repriced_at,shop_product_id",
+		"reviews.review_showcase":                                "state,published_at,id",
+		"payment_receipts.receipt_report_created":                "created_at,id", "money_transfers.transfer_report_created": "kind,created_at,id",
 		"orders.orders_discovery_game_state": "game_id,state,id", "order_events.order_events_completion_period": "order_id,action,created_at",
 		"orders.orders_report_created": "created_at,id", "games.games_report_created": "created_at,id", "users.users_report_created": "created_at,id"}
 	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=1 GROUP BY table_name,index_name")

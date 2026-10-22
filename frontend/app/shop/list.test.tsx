@@ -17,26 +17,37 @@ vi.mock("../identity/api", async (original) => ({
 }));
 beforeEach(() => {
   vi.mocked(useResource).mockImplementation((path) => ({
-    data: path.startsWith("/admin/catalog")
-      ? {
-          games: [
-            { id: "game-a", name: "Game A", archived: false },
-            { id: "game-b", name: "Game B", archived: false },
-          ],
-          next: "",
-        }
-      : {
-          items: [
-            {
-              id: "item-a",
-              title: "Named item",
-              game: "Game A",
-              state: "draft",
-              version: 1,
+    data:
+      path === "/admin/shop/price-sync"
+        ? {
+            interval_minutes: 480,
+            configured: true,
+            last_run: null,
+            next_check_at: null,
+            attention_count: 0,
+            attention: [],
+            repriced: [],
+          }
+        : path.startsWith("/admin/catalog")
+          ? {
+              games: [
+                { id: "game-a", name: "Game A", archived: false },
+                { id: "game-b", name: "Game B", archived: false },
+              ],
+              next: "",
+            }
+          : {
+              items: [
+                {
+                  id: "item-a",
+                  title: "Named item",
+                  game: "Game A",
+                  state: "draft",
+                  version: 1,
+                },
+              ],
+              next: "",
             },
-          ],
-          next: "",
-        },
     error: null,
     loading: false,
     reload: vi.fn(),

@@ -30,6 +30,8 @@ type Store struct {
 	auth     *identity.Service
 	now      func() time.Time
 	supplier *supply.Purchaser
+	// priceInterval is the automatic supplier price check cadence.
+	priceInterval time.Duration
 }
 
 // New constructs a store without running migrations or seeding commercial terms.
@@ -68,6 +70,8 @@ type Draft struct {
 	CurrentRelease string     `json:"current_release"`
 	Stocks         []Stock    `json:"stocks"`
 	UpdatedAt      time.Time  `json:"updated_at"`
+	// PriceReview is the latest automatic supplier price check, when any.
+	PriceReview *PriceReview `json:"price_review,omitempty"`
 }
 
 func document(value Definition) (map[string]any, error) {
@@ -140,6 +144,19 @@ func draft(ctx context.Context, tx *ent.Tx, row *ent.ShopProduct) (Draft, error)
 			return Draft{}, ErrConflict
 		}
 		out.Stocks = append(out.Stocks, Stock{stock.VariantKey, stock.Version, stock.Total, stock.Reserved, stock.Committed, available})
+	}
+	if value.Supplier != nil {
+		review, e := tx.SupplierPriceReview.Get(ctx, row.ID)
+		if e != nil && !ent.IsNotFound(e) {
+			return Draft{}, e
+		}
+		if review != nil {
+			views, viewErr := priceViews(ctx, tx, []*ent.SupplierPriceReview{review})
+			if viewErr != nil {
+				return Draft{}, viewErr
+			}
+			out.PriceReview = &views[0]
+		}
 	}
 	return out, nil
 }

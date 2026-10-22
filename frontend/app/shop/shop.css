@@ -286,3 +286,144 @@
 .supplier-checkout fieldset {
   max-width: 36rem;
 }
+/* PRICESYNC174: automatic supplier price checks (designer decisions D1–D21). */
+.shop-editor .price-checks {
+  margin-block-end: 1.5rem;
+  overflow-wrap: anywhere;
+}
+.shop-editor .price-checks[data-prominent="true"] {
+  padding: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent);
+  border-left: 4px solid var(--warn);
+  border-radius: 0.75rem;
+}
+.shop-editor .price-checks h2:focus,
+.shop-editor .price-checks h3:focus {
+  outline: none;
+}
+.shop-editor .price-checks h2:focus-visible,
+.shop-editor .price-checks h3:focus-visible,
+.shop-editor .price-error:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+.shop-editor .price-checks .quiet {
+  color: var(--muted);
+}
+.shop-editor .price-run-failed {
+  color: var(--warn);
+}
+.shop-editor .price-feedback:empty {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-height: 0;
+}
+.shop-editor .price-alerts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.shop-editor .price-alerts > li {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  padding-block: 1rem;
+  border-top: 1px solid #395640;
+}
+.shop-editor .price-alerts > li > * {
+  margin: 0;
+  max-width: 100%;
+}
+.shop-editor .price-alerts > li > .price-amounts,
+.shop-editor .price-editor > .price-amounts,
+.shop-editor .price-amounts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0;
+}
+.shop-editor .price-amounts dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.shop-editor .price-amounts dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.shop-editor .price-below-cost {
+  font-weight: 600;
+  color: var(--danger);
+}
+.shop-editor .price-actions,
+.shop-editor .price-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.shop-editor .price-actions > *,
+.shop-editor .price-error > * {
+  margin: 0;
+}
+.shop-editor .price-error {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+}
+.shop-editor .price-checks .price-recent {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid #395640;
+  border-radius: 0;
+  background: none;
+}
+.shop-editor .price-recent summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+.shop-editor .price-recent ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.shop-editor .price-recent li {
+  padding-block: 0.75rem;
+  border-top: 1px solid #395640;
+}
+.shop-editor .price-recent li p {
+  margin: 0.25rem 0 0;
+}
+.shop-editor .price-editor {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+}
+.shop-editor .price-editor > * {
+  margin: 0;
+  max-width: 100%;
+}
+@media (min-width: 480px) {
+  .shop-editor .price-alerts > li > .price-amounts,
+  .shop-editor .price-editor > .price-amounts,
+  .shop-editor .price-amounts {
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  }
+}
+@media (max-width: 479px) {
+  .shop-editor .price-checks[data-prominent="true"] {
+    padding: 1rem;
+  }
+}
+/* Long unbroken product titles wrap inside their row action at 320px. */
+.shop-editor .shop-list .button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
