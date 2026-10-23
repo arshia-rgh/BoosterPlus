@@ -31,3 +31,7 @@ Review also caught a responsive-picture structural issue during engineering insp
 Independent senior designer inspected UI6 production-styled fixtures and confirmed D01–D07 resolved: aligned search at1440/768/390/320, balanced mobile action row, correctly scrolling account filters at320×480, full long titles, manual/multiregion delivery metadata, image frames/fallbacks, shop/news/boost dialogs and navigation/focus/chips. No actionable changed-scope findings remain. The responsive-picture follow-up preserves the approved geometry and passed source review; its targeted engineering test remains separately required. This is server fixture evidence, not live/native-device review. No local tests or edits by the reviewer.
 
 UI8 engineering follow-up passed the actual320px thumb /768px card selection regression and all22 scoped component cases; no rendered geometry change after the final design PASS.
+
+## Deployed verification
+
+Signed4b9296d is live on23 October after the owner's exact recovery approval. Twelve GET/HEAD-only live browser cases passed on public shop/account/news/boost browsing and three sign-in pages, including1440/768/390/320 shop widths. Nine public reads verified all216 catalog products and both quantity/price directions. These engineering smoke checks supplement the independent fixture design PASS; they do not claim native-device or a new independent live design review. No full gate or local tests.
