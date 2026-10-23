@@ -1,0 +1,38 @@
+img[data-image-loading="true"] {
+  opacity: 0;
+}
+.loading-image-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  background: #10271e;
+}
+.loading-image-frame[data-image-state="loading"] {
+  background: linear-gradient(135deg, #122c21, #1a382c, #122c21);
+}
+.loading-image-frame img.loading-image-content {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+}
+.service-tiles .loading-image-frame {
+  aspect-ratio: 1;
+}
+.loading-image-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: #bdccbf;
+  font-size: 0.85rem;
+  text-align: center;
+}

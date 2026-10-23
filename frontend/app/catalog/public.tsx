@@ -1,3 +1,4 @@
+import { ListFilters } from "../ui/list-filters";
 import { PackageContents } from "./package-scope";
 import ShopArtwork from "../shop/artwork";
 import { ArtworkImage } from "../artwork/image";
@@ -46,35 +47,42 @@ function PathPicker() {
   const [params, setParams] = useSearchParams();
   const current = offeringPath(params);
   return (
-    <nav className="offering-paths" aria-label="Boosting type">
-      {[
-        ["all", "All boosting"],
-        ["custom", "Custom boosting"],
-        ["packages", "Fixed packages"],
-      ].map(([key, label]) => (
-        <button
-          type="button"
-          key={key}
-          aria-pressed={key === current}
-          onClick={() => {
-            const next = filterQuery(params, {
-              path: key === "all" ? null : (key ?? null),
-            });
-            next.set("service", "boost");
-            setParams(next, { preventScrollReset: true });
-          }}
-        >
-          {label}
-        </button>
-      ))}
-    </nav>
+    <ListFilters
+      title="Boosting filters"
+      values={{ path: current }}
+      defaults={{ path: "all" }}
+      fields={[
+        {
+          key: "path",
+          label: "Boosting type",
+          options: [
+            ["all", "All boosting"],
+            ["custom", "Custom boosting"],
+            ["packages", "Fixed packages"],
+          ],
+        },
+      ]}
+      apply={(values) => {
+        const next = filterQuery(params, {
+          path: values.path === "all" ? null : (values.path ?? null),
+        });
+        next.set("service", "boost");
+        setParams(next, { preventScrollReset: true });
+      }}
+    />
   );
 }
+
 export function GameCatalog() {
   const listing = useLoaderData<Listing>();
   const [params] = useSearchParams();
   const path = offeringPath(params);
   const [search, setSearch] = useState("");
+  const searchInput = useRef<HTMLInputElement>(null);
+  const clearSearch = () => {
+    setSearch("");
+    searchInput.current?.focus();
+  };
   const games = listing.games.filter((game) =>
     game.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
   );
@@ -94,6 +102,7 @@ export function GameCatalog() {
         Search this game list
         <input
           type="search"
+          ref={searchInput}
           value={search}
           onChange={(event) => {
             setSearch(event.target.value);
@@ -101,6 +110,19 @@ export function GameCatalog() {
           maxLength={100}
         />
       </label>
+      {search && (
+        <div className="list-filter-chips">
+          <button
+            className="list-filter-chip"
+            type="button"
+            aria-label={`Remove search filter: ${search}`}
+            onClick={clearSearch}
+          >
+            <span>Search: {search}</span>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      )}
       <p role="status" className="quiet">
         {games.length} games in this view
         {listing.next ? " · More games on the next page" : ""}
@@ -120,13 +142,7 @@ export function GameCatalog() {
               : "Published games and their available services will appear here."}
           </p>
           {search && (
-            <button
-              className="button"
-              type="button"
-              onClick={() => {
-                setSearch("");
-              }}
-            >
+            <button className="button" type="button" onClick={clearSearch}>
               Clear search
             </button>
           )}

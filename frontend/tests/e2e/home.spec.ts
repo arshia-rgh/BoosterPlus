@@ -121,14 +121,10 @@ test("game discovery keeps the hero through services, account browsing, reload a
   await expect(page.getByRole("main")).toHaveCount(1);
   await expect(hero).toHaveAttribute("data-identity", "preserved");
   await expect(page.locator(".featured-offers")).toHaveCount(0);
-  if (info.project.name === "mobile")
-    await page
-      .getByRole("button", { name: "Filter accounts", exact: true })
-      .click();
   await page
     .getByLabel("Search accounts", { exact: true })
     .fill("no matching fixture");
-  await page.getByRole("button", { name: "Apply account filters" }).click();
+  await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page).toHaveURL(/search=no\+matching\+fixture/);
   await expect(
     page.getByRole("heading", { name: "Find your next account" }),

@@ -1,3 +1,4 @@
+import { LoadingImage } from "../ui/loading-image";
 import { useRef, useState } from "react";
 import { Action } from "../catalog/controls";
 import { ServiceIcon } from "../ui/service-icon";
@@ -20,18 +21,20 @@ export function AccountImagePlaceholder({
   );
 }
 export function AccountImage({ src, title }: { src: string; title: string }) {
-  const [failed, setFailed] = useState(false);
-  return failed ? (
+  const [failed, setFailed] = useState<string | null>(null);
+  return failed === src ? (
     <AccountImagePlaceholder message="Image unavailable" />
   ) : (
-    <img
+    <LoadingImage
+      frame
+      key={src}
       src={src}
       alt={title}
       width={720}
       height={480}
       loading="lazy"
       onError={() => {
-        setFailed(true);
+        setFailed(src);
       }}
     />
   );

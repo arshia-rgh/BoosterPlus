@@ -2,7 +2,6 @@ import { Loading } from "../ui/loading";
 import { BuyerBreakdown } from "./commission-fields";
 import { Anchor } from "../portal-router";
 import MarketFilters from "./market-filters";
-import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
 import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
@@ -50,21 +49,15 @@ import {
 } from "./wanted";
 import "./marketplace.css";
 export function AccountMarket({ gameSlug }: { gameSlug?: string | undefined }) {
-  const [params] = useSearchParams();
-  return gameSlug ? (
-    <GameMarket gameSlug={gameSlug} />
-  ) : (
-    <MarketResults key={params.toString()} />
-  );
+  return gameSlug ? <GameMarket gameSlug={gameSlug} /> : <MarketResults />;
 }
 // Wanted accounts load once per game, independent of filters and pagination.
 function GameMarket({ gameSlug }: { gameSlug: string }) {
-  const [params] = useSearchParams();
   const wanted = useWantedAccounts(gameSlug);
   const section = useWantedSection();
   return (
     <MarketResults
-      key={gameSlug + params.toString()}
+      key={gameSlug}
       gameSlug={gameSlug}
       teaser={wanted.items.length > 0 && <WantedTeaser section={section} />}
       footer={
@@ -160,74 +153,14 @@ function MarketResults({
         params={params}
         gameSlug={gameSlug}
         apply={(values) => {
-          resultSummary.current?.focus();
           setParams(new URLSearchParams({ ...serviceContext, ...values }), {
-            state: { filtersApplied: true },
+            preventScrollReset: true,
           });
         }}
         clear={() => {
           setParams(serviceContext, { state: { filtersApplied: true } });
         }}
       />
-      {[
-        "search",
-        "rank",
-        "region",
-        "slug",
-        "currency",
-        "max_minor",
-        "sort",
-      ].some((key) => params.get(key)) && (
-        <section
-          className="market-applied-filters"
-          aria-label="Applied account filters"
-        >
-          <ul>
-            {(
-              [
-                "search",
-                "rank",
-                "region",
-                "slug",
-                "currency",
-                "max_minor",
-                "sort",
-              ] as const
-            )
-              .filter((key) => params.get(key) && !(gameSlug && key === "slug"))
-              .map((key) => (
-                <li key={key}>
-                  {new Map<string, string>([
-                    ["search", "Search"],
-                    ["rank", "Rank"],
-                    ["region", "Region"],
-                    ["slug", "Game"],
-                    ["currency", "Currency"],
-                    ["max_minor", "Maximum price"],
-                    ["sort", "Sort"],
-                  ]).get(key)}
-                  :{" "}
-                  {key === "max_minor"
-                    ? maximumDisplay(params.get(key) ?? "")
-                    : key === "sort"
-                      ? ({
-                          newest: "Newest first",
-                          price_asc: "Price: low to high",
-                          price_desc: "Price: high to low",
-                        }[params.get(key) ?? ""] ?? params.get(key))
-                      : params.get(key)?.slice(0, 120)}
-                </li>
-              ))}
-          </ul>
-          <Action
-            onClick={() => {
-              setParams(serviceContext, { state: { filtersApplied: true } });
-            }}
-          >
-            Clear all filters
-          </Action>
-        </section>
-      )}
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading available accounts…</p>}
       {!!resource.error && (

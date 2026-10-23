@@ -1,0 +1,252 @@
+.list-filter-bar {
+  margin-block: 1.25rem;
+  min-width: 0;
+}
+.list-filter-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+}
+.list-filter-search {
+  display: flex;
+  align-items: end;
+  flex: 1;
+  gap: 0.65rem;
+  min-width: 0;
+  margin: 0;
+}
+.list-filter-search > .catalog-label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.list-filter-toolbar .button {
+  margin: 0;
+  min-height: 2.8rem;
+  white-space: nowrap;
+}
+.list-filter-trigger {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.list-filter-count {
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+  background: #263f34;
+  color: #f1dfbd;
+}
+.list-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+.list-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  text-align: left;
+  overflow-wrap: anywhere;
+  background: #163529;
+  border: 1px solid #45634d;
+  border-radius: 1rem;
+  color: #e6eedf;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+.list-filter-chip > span:last-child {
+  font-size: 1.2rem;
+  color: #f1dfbd;
+}
+.list-filter-clear {
+  border: 0;
+  background: transparent;
+  color: #e4d1ad;
+  padding: 0.5rem;
+  font: inherit;
+  cursor: pointer;
+  min-height: 44px;
+}
+.list-filter-dialog {
+  width: min(35rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid #45634d;
+  border-radius: 1.25rem;
+  background: #10271e;
+  color: #edf4e9;
+  box-shadow: 0 1.5rem 6rem #0008;
+  overflow: auto;
+}
+.list-filter-dialog::backdrop {
+  background: #020c09b8;
+  backdrop-filter: blur(5px);
+}
+.list-filter-dialog form {
+  margin: 0;
+}
+.list-filter-dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+.list-filter-dialog-heading h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  outline: none;
+}
+.list-filter-close {
+  border: 0;
+  border-radius: 0.65rem;
+  color: #ecf1e9;
+  background: #203d30;
+  font: inherit;
+  font-size: 1.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.list-filter-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 0.25rem 1.5rem 1.5rem;
+}
+.list-filter-fields .catalog-label {
+  margin: 0;
+  min-width: 0;
+}
+.list-filter-fields :is(input, select) {
+  width: 100%;
+  min-width: 0;
+}
+.list-filter-fields > :only-child {
+  grid-column: 1/-1;
+}
+.list-filter-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 0.65rem;
+  position: sticky;
+  bottom: 0;
+  background: #10271e;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #34503e;
+}
+.list-filter-dialog-actions .button {
+  margin: 0;
+}
+.list-filter-dialog-actions .list-filter-clear {
+  margin-right: auto;
+}
+.list-filter-bar button:focus-visible,
+.list-filter-dialog :is(button, input, select):focus-visible {
+  outline: 2px solid #f1dfbd;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .list-filter-toolbar {
+    flex-wrap: wrap;
+  }
+  .list-filter-search {
+    flex-basis: 100%;
+  }
+  .list-filter-trigger {
+    margin-left: auto !important;
+  }
+  .list-filter-fields {
+    grid-template-columns: 1fr;
+    padding-inline: 1rem;
+  }
+  .list-filter-dialog-heading,
+  .list-filter-dialog-actions {
+    padding: 1rem;
+  }
+}
+
+body:has(.list-filter-dialog[open]) {
+  overflow: hidden;
+}
+/* Shared form spacing must not offset the search/action baseline. */
+.list-filter-bar .list-filter-toolbar:has(.list-filter-search) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+}
+.list-filter-toolbar .list-filter-search {
+  display: contents;
+}
+.list-filter-bar .list-filter-toolbar .catalog-label {
+  margin: 0;
+  padding: 0;
+}
+.list-filter-bar .list-filter-toolbar .button {
+  min-height: 3rem;
+  margin: 0;
+}
+/* Only the fields scroll; fixed actions never cover a focused input. */
+.list-filter-dialog {
+  overflow: hidden;
+}
+.list-filter-dialog > form {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  max-height: calc(100dvh - 2rem - 2px);
+}
+.list-filter-fields {
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
+  scroll-padding-block: 0.75rem;
+}
+.list-filter-dialog .list-filter-fields .catalog-label {
+  margin: 0;
+}
+.list-filter-dialog-actions {
+  position: static;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+}
+.list-filter-dialog .list-filter-dialog-actions > button.button {
+  margin: 0;
+  min-height: 2.75rem;
+}
+@media (max-width: 600px) {
+  .list-filter-bar .list-filter-toolbar:has(.list-filter-search) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .list-filter-toolbar .catalog-label {
+    grid-column: 1/-1;
+  }
+  .list-filter-bar .list-filter-toolbar .list-filter-trigger {
+    margin: 0 !important;
+    justify-content: center;
+  }
+  .list-filter-dialog-actions {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .list-filter-dialog-actions .list-filter-clear {
+    grid-column: 1/-1;
+    justify-self: start;
+  }
+  .list-filter-dialog .list-filter-dialog-actions > button.button {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 0.65rem;
+    justify-content: center;
+  }
+}

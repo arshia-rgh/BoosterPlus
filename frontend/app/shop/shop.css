@@ -430,3 +430,41 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* SHOP181: scannable product cards; authored details stay on the product page. */
+.shop-card h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #eff7ef;
+  margin: 0 0 0.75rem;
+  overflow-wrap: anywhere;
+}
+.shop-card > div > p {
+  margin-block: 0.65rem;
+}
+.shop-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  color: #c4d7c8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-block: 0.75rem;
+}
+.shop-card-meta span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.shop-card-meta span + span::before {
+  content: "·";
+  padding-right: 0.75rem;
+  color: #dbc9a5;
+}
+.shop-card .shop-card-availability {
+  font-size: 0.85rem;
+  color: #d9c6a4;
+}
+.shop-card > div > .button {
+  margin-top: 0.5rem;
+}

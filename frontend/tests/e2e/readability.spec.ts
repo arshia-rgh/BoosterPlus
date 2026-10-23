@@ -126,10 +126,6 @@ for (const width of [1440, 390]) {
     const bars = [
       ["Customer ID", ["Apply filters", "Clear filters"]],
       ["Search game or full order ID", ["Filter orders"]],
-      // Narrow layouts move account filters into their drawer.
-      ...(width >= 1024
-        ? [["Search accounts", ["Apply account filters"]] as const]
-        : []),
     ] as const;
     for (const [first, buttons] of bars) {
       const field = await page.getByLabel(first, { exact: true }).boundingBox();

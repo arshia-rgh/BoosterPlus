@@ -436,26 +436,15 @@ test("combined storefront filters preserve manual products and returning shop co
   await expect(
     page.getByRole("heading", { name: "Regional digital code" }),
   ).toBeVisible();
+  await page.getByRole("button", { name: /^Filters/ }).click();
   await page.getByLabel("Region", { exact: true }).selectOption("Türkiye");
   await page.getByLabel("Product type").selectOption("Upgrades");
-  await page.getByLabel("Delivery method").selectOption("account");
-  const viewport = page.viewportSize();
-  if (viewport && viewport.width >= 1024) {
-    // FORMS172: filter actions share one baseline and the field column edge.
-    const search = await page.getByLabel("Search shop").boundingBox();
-    const select = await page.getByLabel("Delivery method").boundingBox();
-    const apply = await page
-      .getByRole("button", { name: "Apply filters" })
-      .boundingBox();
-    const clear = await page
-      .getByRole("link", { name: "Clear filters" })
-      .boundingBox();
-    expect(search && select && apply && clear).toBeTruthy();
-    const bottom = (box: typeof apply) => (box ? box.y + box.height : 0);
-    expect(Math.abs(bottom(apply) - bottom(clear))).toBeLessThan(2);
-    expect(Math.abs((apply?.x ?? 0) - (search?.x ?? 0))).toBeLessThan(2);
-    expect(Math.abs((search?.y ?? 0) - (select?.y ?? 0))).toBeLessThan(2);
-  }
+  await page
+    .getByLabel("Delivery method", { exact: true })
+    .selectOption("account");
+  await expect(
+    page.getByRole("dialog", { name: "Shop filters" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Apply filters" }).click();
   await expect(page.locator(".shop-card")).toHaveCount(1);
   expect(
@@ -469,13 +458,20 @@ test("combined storefront filters preserve manual products and returning shop co
     path: info.outputPath("browse-filtered.png"),
     fullPage: true,
   });
-  await page.getByRole("link", { name: /^View Example game/ }).click();
+  await page
+    .getByRole("link", { name: /^View details for Example game/ })
+    .click();
   await page.getByRole("link", { name: "Back to shop" }).click();
-  await expect(page.getByLabel("Delivery method")).toHaveValue("account");
+  await page.getByRole("button", { name: /^Filters/ }).click();
+  await expect(page.getByLabel("Delivery method", { exact: true })).toHaveValue(
+    "account",
+  );
   await expect(page.getByLabel("Region", { exact: true })).toHaveValue(
     "Türkiye",
   );
-  await page.getByLabel("Delivery method").selectOption("manual");
+  await page
+    .getByLabel("Delivery method", { exact: true })
+    .selectOption("manual");
   await page.getByRole("button", { name: "Apply filters" }).click();
   await expect(page.locator(".shop-card")).toHaveCount(1);
   await expect(

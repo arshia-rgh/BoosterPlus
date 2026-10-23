@@ -1,3 +1,4 @@
+import { ListFilters } from "../ui/list-filters";
 import { SupplierPurchase } from "./supplier-purchase";
 import { instantDeliveryNames, productDeliveryLabel } from "./delivery-method";
 import { Loading } from "../ui/loading";
@@ -16,7 +17,7 @@ import {
 } from "../portal-router";
 import type { Release } from "../catalog/model";
 import { serviceAvailable } from "../catalog/public-discovery";
-import { Action, Check, ErrorNotice, Text, Select } from "../catalog/controls";
+import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { APIError, post, sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -67,94 +68,83 @@ function ShopBrowse({ slug }: { slug: string }) {
     `/games/${slug}/shop?${params.toString()}`,
     publicPageSchema,
   );
-  const [query, setQuery] = useState(params.get("q") ?? "");
-  const [region, setRegion] = useState(params.get("region") ?? "");
-  const [category, setCategory] = useState(params.get("category") ?? "");
-  const [method, setMethod] = useState(params.get("method") ?? "");
-  const [sort, setSort] = useState(params.get("sort") || "diamonds_asc");
-  const filters = params.toString();
-  const [lastFilters, setLastFilters] = useState(filters);
-  if (filters !== lastFilters) {
-    setLastFilters(filters);
-    const current = new URLSearchParams(filters);
-    setQuery(current.get("q") ?? "");
-    setRegion(current.get("region") ?? "");
-    setCategory(current.get("category") ?? "");
-    setMethod(current.get("method") ?? "");
-    setSort(current.get("sort") || "diamonds_asc");
-  }
+  const filterValues = Object.fromEntries(
+    ["q", "region", "category", "method", "sort"].map((key) => [
+      key,
+      params.get(key) ?? (key === "sort" ? "diamonds_asc" : ""),
+    ]),
+  );
+  const { q: query, region, category, method } = filterValues;
   return (
     <>
       <p className="eyebrow">Game shop</p>
       <h2>Choose your next upgrade.</h2>
-      <form
-        className="shop-filters filter-grid"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setParams({ q: query, region, category, method, sort });
+      <ListFilters
+        title="Shop filters"
+        values={filterValues}
+        defaults={{ sort: "diamonds_asc" }}
+        search={{ key: "q", label: "Search shop" }}
+        apply={(values) => {
+          setParams(
+            {
+              ...(params.get("service")
+                ? { service: params.get("service") ?? "" }
+                : {}),
+              ...values,
+            },
+            { preventScrollReset: true },
+          );
         }}
-      >
-        <Text label="Search shop" value={query} change={setQuery} />
-        <Select
-          label="Region"
-          value={region}
-          change={setRegion}
-          options={[
-            ["", "All regions"],
-            ...Array.from(
-              new Set([
-                ...(facets.data?.regions ?? []),
-                ...(region ? [region] : []),
-              ]),
-            ).map((v): [string, string] => [v, v]),
-          ]}
-        />
-        <Select
-          label="Product type"
-          value={category}
-          change={setCategory}
-          options={[
-            ["", "All product types"],
-            ...Array.from(
-              new Set([
-                ...(facets.data?.categories ?? []),
-                ...(category ? [category] : []),
-              ]),
-            ).map((v): [string, string] => [v, v]),
-          ]}
-        />
-        <Select
-          label="Delivery method"
-          value={method}
-          change={setMethod}
-          options={[
-            ["", "All delivery methods"],
-            ["id", instantDeliveryNames.id],
-            ["account", instantDeliveryNames.account],
-            ["code", instantDeliveryNames.code],
-            ["manual", "PLAYORA staff delivery"],
-          ]}
-        />
-        <Select
-          label="Sort by"
-          value={sort}
-          change={setSort}
-          options={[
-            ["diamonds_asc", "Diamonds: low to high"],
-            ["diamonds_desc", "Diamonds: high to low"],
-            ["price_asc", "Price: low to high"],
-            ["price_desc", "Price: high to low"],
-          ]}
-        />
-        <div className="form-actions">
-          <button type="submit" className="button">
-            Apply filters
-          </button>
-          <Link className="button secondary" to={`/games/${slug}/shop`}>
-            Clear filters
-          </Link>
-        </div>
-      </form>
+        fields={[
+          {
+            key: "region",
+            label: "Region",
+            options: [
+              ["", "All regions"],
+              ...Array.from(
+                new Set([
+                  ...(facets.data?.regions ?? []),
+                  ...(region ? [region] : []),
+                ]),
+              ).map((v) => [v, v] as const),
+            ],
+          },
+          {
+            key: "category",
+            label: "Product type",
+            options: [
+              ["", "All product types"],
+              ...Array.from(
+                new Set([
+                  ...(facets.data?.categories ?? []),
+                  ...(category ? [category] : []),
+                ]),
+              ).map((v) => [v, v] as const),
+            ],
+          },
+          {
+            key: "method",
+            label: "Delivery method",
+            options: [
+              ["", "All delivery methods"],
+              ["id", instantDeliveryNames.id],
+              ["account", instantDeliveryNames.account],
+              ["code", instantDeliveryNames.code],
+              ["manual", "PLAYORA staff delivery"],
+            ],
+          },
+          {
+            key: "sort",
+            label: "Sort by",
+            options: [
+              ["diamonds_asc", "Diamonds: low to high"],
+              ["diamonds_desc", "Diamonds: high to low"],
+              ["price_asc", "Price: low to high"],
+              ["price_desc", "Price: high to low"],
+            ],
+          },
+        ]}
+      />
       <ErrorNotice error={facets.error} />
       {!!facets.error && (
         <Action onClick={facets.reload}>Retry filter options</Action>
@@ -190,39 +180,47 @@ function ShopBrowse({ slug }: { slug: string }) {
                       lazy
                     />
                     <div>
-                      <p className="eyebrow">{p.definition.category}</p>
                       <h3>{p.definition.title}</h3>
-                      <p>{p.definition.description}</p>
                       <ProductPrice product={p} />
-                      {p.definition.supplier && (
-                        <p className="supplier-badge">
-                          {productDeliveryLabel(p.definition)}
-                        </p>
-                      )}
-                      <p>
-                        {[
-                          ...new Set(
+                      <div className="shop-card-meta">
+                        <span>{productDeliveryLabel(p.definition)}</span>
+                        {Array.from(
+                          new Set(
                             p.definition.variants
                               .filter((v) => v.enabled)
                               .map((v) => v.region),
                           ),
-                        ].join(" · ")}
-                      </p>
-                      <p>
-                        {p.definition.supplier
-                          ? p.supplier_available
-                            ? "Ready for price review"
-                            : "Ordering temporarily unavailable"
-                          : Object.values(p.available).some((v) => v > 0)
-                            ? "Available variants"
+                        )
+                          .filter(
+                            (region) =>
+                              !p.definition.title
+                                .split("·")
+                                .some(
+                                  (part) =>
+                                    part.trim().toLowerCase() ===
+                                    region.toLowerCase(),
+                                ),
+                          )
+                          .map((region) => (
+                            <span key={region}>{region}</span>
+                          ))}
+                      </div>
+                      {(p.definition.supplier
+                        ? !p.supplier_available
+                        : !Object.values(p.available).some((v) => v > 0)) && (
+                        <p className="shop-card-availability">
+                          {p.definition.supplier
+                            ? "Ordering temporarily unavailable"
                             : "Currently sold out"}
-                      </p>
+                        </p>
+                      )}
                       <Link
                         className="button"
+                        aria-label={`View details for ${p.definition.title}`}
                         to={`/games/${slug}/shop/${p.id}`}
                         state={{ shopSearch: params.toString() }}
                       >
-                        View {p.definition.title}
+                        View details
                       </Link>
                     </div>
                   </article>

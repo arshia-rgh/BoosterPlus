@@ -11,12 +11,11 @@ test("legacy boosting intent survives the game directory, reload and back; form 
     await page.locator(`a[href="/games/${slug}?path=${path}"]`).first().click();
     await expect(page).toHaveURL(`/games/${slug}?path=${path}`);
     await page.reload();
-    const picker = page.getByRole("navigation", { name: "Boosting type" });
-    await expect(
-      picker.getByRole("button", {
-        name: path === "custom" ? "Custom boosting" : "Fixed packages",
-      }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: /^Filters/ }).click();
+    await expect(page.getByLabel("Boosting type", { exact: true })).toHaveValue(
+      path,
+    );
+    await page.getByRole("button", { name: "Cancel" }).click();
     await expect(
       page.getByRole("heading", {
         name: path === "custom" ? "Fixed packages" : "Custom boosting",

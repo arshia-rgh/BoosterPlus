@@ -1,3 +1,4 @@
+import { ListFilters } from "../ui/list-filters";
 import "../catalog/service-tiles.css";
 import {
   useRevalidator,
@@ -6,8 +7,7 @@ import {
   useParams,
   useSearchParams,
 } from "../portal-router";
-import { useState } from "react";
-import { Action, Select, Text } from "../catalog/controls";
+import { Action } from "../catalog/controls";
 import { kinds, articlePath } from "./model";
 import { ArticleContent } from "./content";
 import type { loadArticle, loadNews } from "./loaders.server";
@@ -16,7 +16,6 @@ import "./news.css";
 export function NewsIndex() {
   const { page, slug } = useLoaderData<typeof loadNews>();
   const [params, setParams] = useSearchParams();
-  const [q, setQ] = useState(params.get("q") ?? "");
   const query = new URLSearchParams();
   for (const k of ["q", "kind", "after"]) {
     const v = params.get(k);
@@ -29,31 +28,23 @@ export function NewsIndex() {
         <h2>News & guides</h2>
         <p>Game updates, patch notes and useful reading from PLAYORA staff.</p>
       </header>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const next = new URLSearchParams(query);
-          next.delete("after");
-          if (q) next.set("q", q);
-          else next.delete("q");
-          setParams(next, { preventScrollReset: true });
+      <ListFilters
+        title="News filters"
+        values={{ q: params.get("q") ?? "", kind: params.get("kind") ?? "" }}
+        search={{
+          key: "q",
+          label: "Search news and guides",
+          submit: "Search articles",
         }}
-      >
-        <Text label="Search news and guides" value={q} change={setQ} />
-        <button className="button compact" type="submit">
-          Search articles
-        </button>
-      </form>
-      <Select
-        label="Reading type"
-        value={params.get("kind") ?? ""}
-        options={[["", "All articles"], ...kinds]}
-        change={(v) => {
-          const next = new URLSearchParams(query);
-          next.delete("after");
-          if (v) next.set("kind", v);
-          else next.delete("kind");
-          setParams(next, { preventScrollReset: true });
+        fields={[
+          {
+            key: "kind",
+            label: "Reading type",
+            options: [["", "All articles"], ...kinds],
+          },
+        ]}
+        apply={(values) => {
+          setParams(values, { preventScrollReset: true });
         }}
       />
       {page.items.length === 0 && (
@@ -62,7 +53,6 @@ export function NewsIndex() {
           <p>Try another search or return later for published updates.</p>
           <Action
             onClick={() => {
-              setQ("");
               setParams({});
             }}
           >

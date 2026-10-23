@@ -279,28 +279,26 @@ export async function resaleJourney(
     await accessible(page);
     await buyer.goto("/accounts");
     const filterTrigger = buyer.getByRole("button", {
-      name: "Filter accounts",
-      exact: true,
+      name: /^Filters/,
     });
-    if (info.project.name === "mobile") {
+    {
       await filterTrigger.click();
       await expect(
         buyer.getByRole("dialog", { name: "Account filters" }),
       ).toBeVisible();
       await buyer.keyboard.press("Escape");
       await expect(filterTrigger).toBeFocused();
-      await filterTrigger.click();
     }
     await buyer.getByLabel("Search accounts", { exact: true }).fill(title);
+    await buyer.getByRole("button", { name: "Search", exact: true }).click();
+    await filterTrigger.click();
     await buyer.getByLabel("Game", { exact: true }).selectOption(slug);
     await buyer.getByLabel("Listing currency", { exact: true }).fill("USD");
-    await buyer
-      .getByLabel("Maximum price (USD)", { exact: true })
-      .fill("12.34");
+    await buyer.getByLabel("Maximum price", { exact: true }).fill("12.34");
     await buyer
       .getByLabel("Sort accounts", { exact: true })
       .selectOption("price_asc");
-    await buyer.getByRole("button", { name: "Apply account filters" }).click();
+    await buyer.getByRole("button", { name: "Apply filters" }).click();
     await expect(buyer).toHaveURL(/search=/);
     await expect(buyer).toHaveURL(/max_minor=1234/);
     await expect(buyer).toHaveURL(/sort=price_asc/);
@@ -308,9 +306,9 @@ export async function resaleJourney(
       buyer.getByRole("link", { name: title, exact: true }),
     ).toBeVisible();
     await expect(
-      buyer.getByRole("region", { name: "Applied account filters" }),
+      buyer.getByLabel("Applied filters", { exact: true }),
     ).toContainText(title);
-    await expect(buyer.locator(".market-result-count")).toBeFocused();
+    await expect(filterTrigger).toBeFocused();
     await buyer.screenshot({
       path: `.cache/marketplace-${info.project.name}.png`,
       fullPage: true,
@@ -329,21 +327,20 @@ export async function resaleJourney(
       new RegExp(`/games/${slug}/accounts/${item.id}`),
     );
     await buyer.getByRole("link", { name: "← Account marketplace" }).click();
-    if (info.project.name === "mobile") await filterTrigger.click();
+    await filterTrigger.click();
     await expect(
       buyer.getByLabel("Search accounts", { exact: true }),
     ).toHaveValue(title);
     await expect(buyer.getByLabel("Game", { exact: true })).toHaveValue(slug);
     await expect(
-      buyer.getByLabel("Maximum price (USD)", { exact: true }),
+      buyer.getByLabel("Maximum price", { exact: true }),
     ).toHaveValue("12.34");
     await expect(
       buyer.getByLabel("Sort accounts", { exact: true }),
     ).toHaveValue("price_asc");
-    if (info.project.name === "mobile")
-      await buyer
-        .getByRole("button", { name: "Close filters", exact: true })
-        .click();
+    await buyer
+      .getByRole("button", { name: "Close filters", exact: true })
+      .click();
     await buyer.getByRole("link", { name: title, exact: true }).click();
     await expect(buyer).toHaveURL(
       new RegExp(`/games/${slug}/accounts/${item.id}`),

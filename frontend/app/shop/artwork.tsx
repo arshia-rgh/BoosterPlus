@@ -1,6 +1,6 @@
 import { ArtworkImage } from "../artwork/image";
 import { validArtwork } from "../artwork/model";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 /** One bounded, failure-safe media presentation for released items and private previews. */
 export default function ShopArtwork({
   source,
@@ -16,12 +16,6 @@ export default function ShopArtwork({
   className?: string;
 }) {
   const [failed, setFailed] = useState<string | null>(null);
-  const ready = useCallback(
-    (image: HTMLImageElement | null) => {
-      if (image?.complete && image.naturalWidth === 0) setFailed(source);
-    },
-    [source],
-  );
   if (!validArtwork(source) || failed === source)
     return (
       <div
@@ -37,9 +31,9 @@ export default function ShopArtwork({
     );
   return (
     <ArtworkImage
-      ref={ready}
       className={`shop-artwork ${className}`}
       source={source}
+      loadingFrame
       placement={placement}
       data-placement={placement}
       alt={alt}
