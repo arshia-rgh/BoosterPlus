@@ -1,0 +1,32 @@
+{
+  "mode": "built-in image_gen",
+  "created": "2026-10-23",
+  "preview_only": true,
+  "images": [
+    {
+      "kind": "boost",
+      "prompt": "Use case: stylized-concept. Create one premium cinematic landscape illustration, 1536x1024, for a Mobile Legends: Bang Bang service card on PLAYORA. This must depict the actual MLBB fantasy world and recognizable MLBB subjects, not a generic unrelated game. Elegant polished game key-art rendering, detailed materials, emerald forest shadows, champagne gold highlights with controlled cyan and violet, sophisticated high contrast lighting. Full-bleed picture, no UI, no borders, no words, no invented letters, no watermark. Composition: main subjects in the upper half and center/right, visible even on square crop; lower-left 35 percent is quieter darker environmental scenery where website text will later overlay. Detailed environment fills every edge. Not a collage or icon on solid background. Show Alucard from Mobile Legends in his recognizable blond demon-hunter appearance and dark armored outfit with oversized gleaming greatsword, ascending the stone lane of the Land of Dawn toward a luminous ornate winged Mythic-rank emblem above the far blue base crystal. Hero in upper center/right, profile three-quarter, sword and face clearly distinguishable. Ruined blue-team turrets, mist, tall jungle trees, gold sunrise. Convey rank progression and expert gameplay, not a win guarantee.",
+      "source": "/Users/arshia/.codex/generated_images/01a08256-98cd-71d0-b95a-54bef2366657/exec-cba0bc3e-3acc-4fa1-afbf-ab855903cbc2.png",
+      "preview_file": "assets/mlbb-boost-v1.jpg"
+    },
+    {
+      "kind": "accounts",
+      "prompt": "Use case: stylized-concept. Create one premium cinematic landscape illustration, 1536x1024, for a Mobile Legends: Bang Bang service card on PLAYORA. This must depict the actual MLBB fantasy world and recognizable MLBB subjects, not a generic unrelated game. Elegant polished game key-art rendering, detailed materials, emerald forest shadows, champagne gold highlights with controlled cyan and violet, sophisticated high contrast lighting. Full-bleed picture, no UI, no borders, no words, no invented letters, no watermark. Composition: main subjects in the upper half and center/right, visible even on square crop; lower-left 35 percent is quieter darker environmental scenery where website text will later overlay. Detailed environment fills every edge. Not a collage or icon on solid background. Show an aspirational Mobile Legends hero collection: Miya the silver-haired blue-armored elven archer with elegant blue crescent bow, Gusion the youthful white-haired assassin in white/gold clothing with floating magic daggers, and Kagura the Japanese mage with a violet parasol. Exactly these three distinct recognizable MLBB heroes standing together at an ornate Land of Dawn hero hall, their faces upper center, intricate equipment, collector-display feeling. Sapphire magical highlights and emerald stone. No fake account metrics, screenshots or interface.",
+      "source": "/Users/arshia/.codex/generated_images/01a08256-98cd-71d0-b95a-54bef2366657/exec-da808486-8f6d-40f0-9734-b2cdfce2fe0a.png",
+      "preview_file": "assets/mlbb-accounts-v1.jpg"
+    },
+    {
+      "kind": "shop",
+      "prompt": "Use case: stylized-concept. Create one premium cinematic landscape illustration, 1536x1024, for a Mobile Legends: Bang Bang service card on PLAYORA. This must depict the actual MLBB fantasy world and recognizable MLBB subjects, not a generic unrelated game. Elegant polished game key-art rendering, detailed materials, emerald forest shadows, champagne gold highlights with controlled cyan and violet, sophisticated high contrast lighting. Full-bleed picture, no UI, no borders, no words, no invented letters, no watermark. Composition: main subjects in the upper half and center/right, visible even on square crop; lower-left 35 percent is quieter darker environmental scenery where website text will later overlay. Detailed environment fills every edge. Not a collage or icon on solid background. Show a Mobile Legends in-game treasure display: a beautiful opened dark blue and golden chest filled with the familiar luminous faceted light-blue MLBB diamond currency, a tasteful upright gold-and-violet Starlight-style pass token with star crest but absolutely no lettering, and a Land of Dawn blue crystal turret softly in background. Heroic game-shop still life, premium tactile diamonds in upper/center composition, controlled cyan radiance and emerald shadows. Not cryptocurrency or dollar coins.",
+      "source": "/Users/arshia/.codex/generated_images/01a08256-98cd-71d0-b95a-54bef2366657/exec-a2953444-3395-44a2-bb28-9a007eb371fe.png",
+      "preview_file": "assets/mlbb-shop-v1.jpg"
+    },
+    {
+      "kind": "news",
+      "prompt": "Use case: stylized-concept. Create one premium cinematic landscape illustration, 1536x1024, for a Mobile Legends: Bang Bang service card on PLAYORA. This must depict the actual MLBB fantasy world and recognizable MLBB subjects, not a generic unrelated game. Elegant polished game key-art rendering, detailed materials, emerald forest shadows, champagne gold highlights with controlled cyan and violet, sophisticated high contrast lighting. Full-bleed picture, no UI, no borders, no words, no invented letters, no watermark. Composition: main subjects in the upper half and center/right, visible even on square crop; lower-left 35 percent is quieter darker environmental scenery where website text will later overlay. Detailed environment fills every edge. Not a collage or icon on solid background. Show Miya from Mobile Legends in recognizable silver-haired elf archer form in three-quarter side view at a strategy table overlooking the Land of Dawn battlefield. A luminous small topographic map clearly has three lanes, a winding river, blue and red base crystals and jungle terrain, accompanied by an opened illustrated tactical journal with only diagrams and no legible words. Face upper right, bow nearby, central map upper-middle. A scene about MLBB patches, guides and strategy, not generic newspaper or computer UI.",
+      "source": "/Users/arshia/.codex/generated_images/01a08256-98cd-71d0-b95a-54bef2366657/exec-ca87ffe0-d60a-401e-947c-c66f09ff7e5c.png",
+      "preview_file": "assets/mlbb-news-v1.jpg"
+    }
+  ],
+  "homepage_sources": "Existing approved frontend/public/artwork/service-scenes/*-v1-1200.webp; unchanged"
+}
