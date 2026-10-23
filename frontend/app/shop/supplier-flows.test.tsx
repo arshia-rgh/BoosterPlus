@@ -383,3 +383,13 @@ it.each(["cancelled", "expired", "rejected", "on_hold"])(
     ).not.toBeInTheDocument();
   },
 );
+
+it("shows the published price when supplier ordering is unavailable without requesting a quote", async () => {
+  product.supplier_available = false;
+  const { container } = mount();
+  await screen.findByText(product.definition.title);
+  expect(
+    container.querySelector(".shop-product-intro .shop-published-price strong"),
+  ).toHaveTextContent("USD 5.75");
+  expect(post).not.toHaveBeenCalled();
+});

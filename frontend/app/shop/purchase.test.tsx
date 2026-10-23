@@ -334,3 +334,13 @@ it("counts recipient Unicode characters consistently and allows blank optional f
   ).toHaveFocus();
   expect(screen.getByText("Not provided")).toBeInTheDocument();
 });
+
+it("shows the published price in the manual product introduction before sign-in", async () => {
+  signedIn = false;
+  const { container } = mount();
+  await screen.findByText("Fixture item");
+  expect(
+    container.querySelector(".shop-product-intro .shop-published-price strong"),
+  ).toHaveTextContent("USD 12.34");
+  expect(post).not.toHaveBeenCalled();
+});

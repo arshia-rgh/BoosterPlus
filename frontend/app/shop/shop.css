@@ -468,3 +468,83 @@
 .shop-card > div > .button {
   margin-top: 0.5rem;
 }
+
+/* Published prices remain visible before sign-in or purchase availability. */
+.shop-published-price {
+  display: grid;
+  gap: 0.3rem;
+  margin-block: 0.75rem;
+  overflow-wrap: anywhere;
+}
+.shop-published-price strong {
+  color: #ece0c8;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+.shop-published-price[data-detail="true"] strong {
+  font-size: clamp(1.75rem, 2.5vw, 2rem);
+}
+.shop-published-price small {
+  color: #aec7b9;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Region badges are separate from the original artwork and its loading state. */
+.shop-artwork-frame {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.8rem;
+}
+.shop-card > .shop-artwork-frame {
+  padding: 0;
+}
+.shop-region-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: calc(100% - 1.5rem);
+  min-height: 1.875rem;
+  padding: 0.3rem 0.45rem;
+  box-sizing: border-box;
+  border: 1px solid #6d9c8270;
+  border-radius: 0.5rem;
+  background: #0a1b16e8;
+  box-shadow: 0 2px 8px #0003;
+  color: #ece0c8;
+  pointer-events: none;
+}
+.shop-region-badge svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.shop-artwork-frame .shop-region-badge img {
+  display: block;
+  position: static;
+  width: 1.5rem;
+  height: 1.125rem;
+  aspect-ratio: 4 / 3;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0.15rem;
+  background: none;
+  object-fit: contain;
+}
+@media (min-width: 44rem) {
+  .shop-product-intro .shop-region-badge {
+    top: 1rem;
+    left: 1rem;
+  }
+}

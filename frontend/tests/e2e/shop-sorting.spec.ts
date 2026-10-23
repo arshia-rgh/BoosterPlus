@@ -36,6 +36,28 @@ test("default, filters, all sorts and product return keep context", async ({
   for (const width of [1440, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(page.getByRole("button", { name: /^Filters/ })).toBeVisible();
+    const badge = page.locator(".shop-card .shop-region-badge").first();
+    await expect(badge.locator('svg[data-region="global"]')).toBeVisible();
+    const artBox = await page
+      .locator(".shop-card .shop-artwork-frame")
+      .first()
+      .boundingBox();
+    const badgeBox = await badge.boundingBox();
+    expect(
+      artBox &&
+        badgeBox &&
+        badgeBox.x >= artBox.x &&
+        badgeBox.x - artBox.x <= 16 &&
+        badgeBox.y - artBox.y <= 16,
+    ).toBe(true);
+    const price = page
+      .locator(".shop-card .shop-published-price strong")
+      .first();
+    await expect(price).toBeVisible();
+    await expect(price).not.toContainText("From");
+    expect(
+      Number(await price.evaluate((el) => getComputedStyle(el).fontWeight)),
+    ).toBeGreaterThanOrEqual(650);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

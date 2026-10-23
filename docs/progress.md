@@ -1,5 +1,9 @@
 # Implementation progress
 
+## SHOP182 — shop price and regional artwork hotfix (23 October 2026)
+
+Bold prices without “From” now appear in the prepared card/detail presentation, including unavailable supplier products; manual options retain honest ranges. Existing images receive small explicit-country flags or a Global globe. Fresh Nexus metadata still holds the eight unreleased Global offers, including 86/172/257, so publication starts at 344. Independent senior design review passed; 46 scoped component cases and four distinct responsive browser cases passed on the server. Normal frontend/repository hook and signed release/preflight remain pending; no full gate or local tests. Concurrent discounts are excluded and preserved. Supplier buying stays disabled, prices/markup/publications are unchanged. See [scope and evidence](shop-prices-regions-2026-10-23.md) and [design review](redesign/reviews/SHOP182_DESIGN.md).
+
 **20 October scope update:** Nexus only. Vendoria work and private credentials remain preserved, but its runtime token/callbacks/purchasing/customer offers are disabled. The owner reports the site is OK and requested no SSH check; no server investigation was resumed. Supplier implementation is local and not deployed. Live remains the previously released schema43 application.
 
 ## HOSTED177 — USD hosted checkout (23 October 2026)

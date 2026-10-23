@@ -657,3 +657,113 @@ test("closed and held parent orders override stale supplier availability", async
     }
   }
 });
+
+test("published detail prices stay clear before quote and while buying is unavailable", async ({
+  page,
+}, info) => {
+  for (const [id, stage] of [
+    ["synthetic-product", "unavailable"],
+    ["synthetic-product", "fixed-price"],
+    ["manual-product", "ready"],
+  ] as const) {
+    await page.goto(
+      origin + `/games/example/shop/${id}?stage=${stage}&method=id`,
+    );
+    for (const width of [1440, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      const price = page.locator(
+        ".shop-product-intro .shop-published-price strong",
+      );
+      await expect(price).toHaveText("USD 5.75");
+      const badge = page.locator(".shop-product-intro .shop-region-badge");
+      await expect(badge.locator('[data-region="tr"]')).toBeVisible();
+      expect(
+        await badge
+          .locator("img")
+          .evaluate((el) => (el as HTMLImageElement).naturalWidth > 0),
+      ).toBe(true);
+      const flagBox = await badge.locator("img").boundingBox();
+      expect(flagBox && flagBox.width <= 26 && flagBox.height <= 20).toBe(true);
+      await price.scrollIntoViewIfNeeded();
+      expect(
+        Number(await price.evaluate((el) => getComputedStyle(el).fontWeight)),
+      ).toBeGreaterThanOrEqual(650);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+      await page.screenshot({
+        path: info.outputPath(`price-${stage}-${String(width)}.png`),
+        fullPage: true,
+      });
+    }
+  }
+});
+
+test("region badges retain artwork and readable region names on desktop and phone", async ({
+  page,
+}, info) => {
+  for (const [region, flags] of [
+    ["Global", ["global"]],
+    ["Indonesia", ["id"]],
+    ["Singapore / Malaysia", ["sg", "my"]],
+    ["Europe", []],
+  ] as const) {
+    await page.goto(
+      origin +
+        "/games/example/shop/synthetic-product?stage=unavailable&method=id&badge=" +
+        encodeURIComponent(region),
+    );
+    for (const width of [1440, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      const intro = page.locator(".shop-product-intro");
+      await expect(intro.getByText(region, { exact: true })).toBeVisible();
+      await expect(
+        intro.locator(".shop-region-badge [data-region]"),
+      ).toHaveCount(flags.length);
+      for (const flag of flags)
+        await expect(intro.locator(`[data-region="${flag}"]`)).toBeVisible();
+      const art = intro.getByRole("img", { name: "Mobile Legends artwork" });
+      await expect(art).toBeVisible();
+      await expect
+        .poll(() => art.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+        .toBeGreaterThan(0);
+      const frame = intro.locator(".shop-artwork-frame");
+      await frame.scrollIntoViewIfNeeded();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      await page.screenshot({
+        path: info.outputPath(
+          `region-${region.replaceAll(/[^a-zA-Z]/g, "")}-${String(width)}.png`,
+        ),
+        fullPage: true,
+      });
+    }
+  }
+});
+
+test("manual option price ranges remain readable", async ({ page }, info) => {
+  await page.goto(origin + "/games/example/shop/manual-product?stage=range");
+  for (const width of [1440, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const price = page.locator(".shop-product-intro .shop-published-price");
+    await expect(price.locator("strong")).toHaveText("USD 5.75 – 12.34");
+    await expect(price.locator("small")).toHaveText("By option");
+    await price.scrollIntoViewIfNeeded();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await page.screenshot({
+      path: info.outputPath(`range-${String(width)}.png`),
+      fullPage: true,
+    });
+  }
+});

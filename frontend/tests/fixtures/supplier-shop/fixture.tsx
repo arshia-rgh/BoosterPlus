@@ -40,15 +40,42 @@ const method =
       ? "id"
       : "account";
 const product = supplierProduct(method);
+if (stage === "unavailable") product.supplier_available = false;
+if (stage === "fixed-price" && product.definition.supplier)
+  product.definition.supplier.quantity = {
+    kind: "one",
+    min: "1",
+    max: "1",
+    step: "1",
+  };
 if (params.get("timing") === "instant" && method !== "account") {
   product.definition.policy.delivery_min_hours = 0;
   product.definition.policy.delivery_max_hours = 0;
+}
+const badgeRegion = params.get("badge");
+if (badgeRegion) {
+  for (const variant of product.definition.variants)
+    variant.region = badgeRegion;
+  product.definition.asset = "/catalog-assets/game-mlbb-640.jpg";
+  product.definition.asset_alt = "Mobile Legends artwork";
 }
 const manual = supplierProduct("id");
 delete manual.definition.supplier;
 manual.id = "manual-product";
 manual.definition.title = "PLAYORA manual product";
 manual.available = { supplier: 3 };
+if (stage === "range") {
+  const first = manual.definition.variants[0];
+  if (!first) throw new Error("Missing manual variant fixture");
+  manual.definition.variants.push({
+    ...first,
+    key: "larger",
+    label: "Larger option",
+    unit_amount_minor: "1234",
+  });
+  manual.definition.asset = "/catalog-assets/game-mlbb-640.jpg";
+  manual.definition.asset_alt = "Mobile Legends artwork";
+}
 manual.definition.policy.reservation_minutes = 15;
 manual.definition.policy.delivery_min_hours = 24;
 manual.definition.policy.delivery_max_hours = 48;

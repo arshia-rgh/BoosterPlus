@@ -1,3 +1,4 @@
+import { PublishedPrice } from "./published-price";
 import { ListFilters } from "../ui/list-filters";
 import { SupplierPurchase } from "./supplier-purchase";
 import { instantDeliveryNames, productDeliveryLabel } from "./delivery-method";
@@ -176,12 +177,15 @@ function ShopBrowse({ slug }: { slug: string }) {
                     <ShopArtwork
                       placement="card"
                       source={p.definition.asset}
+                      regions={p.definition.variants
+                        .filter((v) => v.enabled)
+                        .map((v) => v.region)}
                       alt={p.definition.asset_alt}
                       lazy
                     />
                     <div>
                       <h3>{p.definition.title}</h3>
-                      <ProductPrice product={p} />
+                      <PublishedPrice product={p} />
                       <div className="shop-card-meta">
                         <span>{productDeliveryLabel(p.definition)}</span>
                         {Array.from(
@@ -290,24 +294,6 @@ function ShopProduct({ slug }: { slug: string }) {
         )
       )}
     </>
-  );
-}
-function ProductPrice({ product }: { product: PublicProduct }) {
-  const prices = new Map<string, bigint>();
-  for (const v of product.definition.variants.filter((v) => v.enabled)) {
-    const amount = BigInt(v.unit_amount_minor) * BigInt(v.min_quantity);
-    const prior = prices.get(v.currency);
-    if (prior === undefined || amount < prior) prices.set(v.currency, amount);
-  }
-  return (
-    <p>
-      {[...prices]
-        .map(
-          ([currency, amount]) =>
-            `From ${currency} ${minorDisplay(amount.toString())}`,
-        )
-        .join(" · ")}
-    </p>
   );
 }
 function ProductFlow({
@@ -554,11 +540,15 @@ function ProductFlow({
         <div className="shop-product-intro">
           <ShopArtwork
             source={product.definition.asset}
+            regions={product.definition.variants
+              .filter((v) => v.enabled)
+              .map((v) => v.region)}
             alt={product.definition.asset_alt}
           />
           <div>
             <p className="eyebrow">{product.definition.category}</p>
             <h2>{product.definition.title}</h2>
+            <PublishedPrice product={product} detail />
             <p>{product.definition.description}</p>
             <p>Manual delivery by PLAYORA staff after verified payment.</p>
           </div>

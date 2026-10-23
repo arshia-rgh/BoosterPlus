@@ -1,3 +1,4 @@
+import { PublishedPrice } from "./published-price";
 import {
   useCallback,
   useEffect,
@@ -312,11 +313,15 @@ export function SupplierPurchase({
       <div className="shop-product-intro">
         <ShopArtwork
           source={product.definition.asset}
+          regions={product.definition.variants
+            .filter((v) => v.enabled)
+            .map((v) => v.region)}
           alt={product.definition.asset_alt}
         />
         <div>
           <p className="eyebrow">{productDeliveryLabel(product.definition)}</p>
           <h2>{product.definition.title}</h2>
+          <PublishedPrice product={product} detail />
           <p>{product.definition.description}</p>
           <p>{product.definition.variants[0]?.region}</p>
           {source.testing && (
