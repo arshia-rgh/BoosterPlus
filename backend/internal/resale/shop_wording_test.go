@@ -17,3 +17,22 @@ func TestShopDefaultsKeepPricingPrivateAndBuyerProtections(t *testing.T) {
 		t.Fatal("shop wording lost refund or external wallet-fee disclosure")
 	}
 }
+
+func TestShopCancellationAfterPaymentPreservesFailureAndMandatoryRemedies(t *testing.T) {
+	terms := agreementDefaults.Shop["cancellation_terms"]
+	for _, required := range []string{
+		"After payment is confirmed",
+		"cannot be cancelled simply because you change your mind",
+		"full refund for failure of an accepted condition",
+		"incorrect or unusable product",
+		"cancellation, withdrawal or refund right required by law",
+		"paid but unavailable item",
+	} {
+		if !strings.Contains(terms, required) {
+			t.Errorf("cancellation terms lost %q", required)
+		}
+	}
+	if strings.Contains(terms, "Cancel for a full refund before actual fulfillment") {
+		t.Fatal("shop cancellation template still allows change-of-mind cancellation after payment")
+	}
+}
