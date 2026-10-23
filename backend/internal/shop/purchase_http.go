@@ -56,7 +56,7 @@ func (s *Store) registerPurchase(mux *http.ServeMux) {
 	})))
 	mux.HandleFunc("GET /api/v1/games/{slug}/shop", s.auth.Protect("", shopProblem(func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		q := r.URL.Query()
-		out, err := s.Browse(r.Context(), BrowseInput{Slug: r.PathValue("slug"), After: q.Get("after"), Search: q.Get("q"), Region: q.Get("region"), Category: q.Get("category"), Method: q.Get("method")})
+		out, err := s.Browse(r.Context(), BrowseInput{Slug: r.PathValue("slug"), After: q.Get("after"), Search: q.Get("q"), Region: q.Get("region"), Category: q.Get("category"), Method: q.Get("method"), Sort: q.Get("sort")})
 		if err != nil {
 			return err
 		}

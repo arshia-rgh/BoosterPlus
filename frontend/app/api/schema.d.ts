@@ -24079,6 +24079,9 @@ export interface operations {
         region?: string;
         category?: string;
         method?: "" | "manual" | "id" | "account" | "code";
+        /** @description Diamonds first, Global before other regions, quantities ascending by default. Explicit price modes order by the displayed minimum purchase, grouping currencies (USD first) without conversion. */
+        sort?:
+          "" | "diamonds_asc" | "diamonds_desc" | "price_asc" | "price_desc";
       };
       header?: never;
       path: {

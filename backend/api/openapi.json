@@ -22151,7 +22151,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "maxLength": 120
+              "maxLength": 1024
             }
           },
           {
@@ -22184,6 +22184,22 @@
             "schema": {
               "type": "string",
               "enum": ["", "manual", "id", "account", "code"]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Diamonds first, Global before other regions, quantities ascending by default. Explicit price modes order by the displayed minimum purchase, grouping currencies (USD first) without conversion.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "",
+                "diamonds_asc",
+                "diamonds_desc",
+                "price_asc",
+                "price_desc"
+              ],
+              "default": "diamonds_asc"
             }
           }
         ],

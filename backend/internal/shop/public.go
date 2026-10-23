@@ -46,7 +46,7 @@ type PublicPage struct {
 }
 
 // BrowseInput scopes discovery to one game and bounded release-backed filters.
-type BrowseInput struct{ Slug, After, Search, Region, Category, Method string }
+type BrowseInput struct{ Slug, After, Search, Region, Category, Method, Sort string }
 
 func publicProduct(ctx context.Context, c *ent.Client, row *ent.ShopProduct, g *ent.Game) (PublicProduct, error) {
 	release, err := c.ShopProductRelease.Query().Where(shopproductrelease.IDEQ(row.CurrentRelease), shopproductrelease.ProductIDEQ(row.ID)).Only(ctx)
@@ -133,17 +133,14 @@ func (s *Store) Published(ctx context.Context, slug, id string) (PublicProduct, 
 // All filters use released data and apply before stable keyset pagination.
 func (s *Store) Browse(ctx context.Context, input BrowseInput) (PublicPage, error) {
 	out := PublicPage{Items: []PublicProduct{}}
-	if input.After != "" && !validID(input.After) || !text(input.Search, 0, 120) || !text(input.Region, 0, 80) || !text(input.Category, 0, 80) || !validDeliveryFilter(input.Method) {
+	if !input.validSort() || len(input.After) > 1024 || !text(input.Search, 0, 120) || !text(input.Region, 0, 80) || !text(input.Category, 0, 80) || !validDeliveryFilter(input.Method) {
 		return out, ErrInvalid
 	}
 	g, err := publicGame(ctx, s.client, input.Slug)
 	if err != nil {
 		return out, err
 	}
-	q := s.client.ShopProduct.Query().Where(shopproduct.GameIDEQ(g.ID), shopproduct.StateEQ("published")).Order(ent.Asc(shopproduct.FieldID)).Limit(51)
-	if input.After != "" {
-		q.Where(shopproduct.IDGT(input.After))
-	}
+	q := s.client.ShopProduct.Query().Where(shopproduct.GameIDEQ(g.ID), shopproduct.StateEQ("published")).Order(ent.Asc(shopproduct.FieldID))
 	q.Where(func(selector *sql.Selector) {
 		selector.Where(s.visibleSupplierProduct(selector))
 		released := sql.Table(shopproductrelease.Table)
@@ -167,14 +164,11 @@ func (s *Store) Browse(ctx context.Context, input BrowseInput) (PublicPage, erro
 			))
 		}
 	})
-	rows, err := q.All(ctx)
+	rows, next, err := s.orderedShopRows(ctx, q, input)
 	if err != nil {
 		return out, err
 	}
-	if len(rows) > 50 {
-		out.Next = rows[49].ID
-		rows = rows[:50]
-	}
+	out.Next = next
 	for _, row := range rows {
 		allowed, e := s.visibleSupplier(ctx, row)
 		if e != nil {

@@ -71,6 +71,7 @@ function ShopBrowse({ slug }: { slug: string }) {
   const [region, setRegion] = useState(params.get("region") ?? "");
   const [category, setCategory] = useState(params.get("category") ?? "");
   const [method, setMethod] = useState(params.get("method") ?? "");
+  const [sort, setSort] = useState(params.get("sort") || "diamonds_asc");
   const filters = params.toString();
   const [lastFilters, setLastFilters] = useState(filters);
   if (filters !== lastFilters) {
@@ -80,6 +81,7 @@ function ShopBrowse({ slug }: { slug: string }) {
     setRegion(current.get("region") ?? "");
     setCategory(current.get("category") ?? "");
     setMethod(current.get("method") ?? "");
+    setSort(current.get("sort") || "diamonds_asc");
   }
   return (
     <>
@@ -89,7 +91,7 @@ function ShopBrowse({ slug }: { slug: string }) {
         className="shop-filters filter-grid"
         onSubmit={(e) => {
           e.preventDefault();
-          setParams({ q: query, region, category, method });
+          setParams({ q: query, region, category, method, sort });
         }}
       >
         <Text label="Search shop" value={query} change={setQuery} />
@@ -131,6 +133,17 @@ function ShopBrowse({ slug }: { slug: string }) {
             ["account", instantDeliveryNames.account],
             ["code", instantDeliveryNames.code],
             ["manual", "PLAYORA staff delivery"],
+          ]}
+        />
+        <Select
+          label="Sort by"
+          value={sort}
+          change={setSort}
+          options={[
+            ["diamonds_asc", "Diamonds: low to high"],
+            ["diamonds_desc", "Diamonds: high to low"],
+            ["price_asc", "Price: low to high"],
+            ["price_desc", "Price: high to low"],
           ]}
         />
         <div className="form-actions">

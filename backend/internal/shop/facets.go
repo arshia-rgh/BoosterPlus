@@ -72,7 +72,7 @@ func (s *Store) PublicFilters(ctx context.Context, slug string) (out PublicFilte
 	if count > 1000 {
 		return out, ErrConflict
 	}
-	slices.Sort(out.Regions)
+	slices.SortFunc(out.Regions, compareShopRegion)
 	slices.Sort(out.Categories)
 	return out, tx.Commit()
 }

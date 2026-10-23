@@ -72,6 +72,9 @@
   gap: 1rem;
   align-items: end;
 }
+.shop-filters > .form-actions {
+  grid-column: 1 / -1;
+}
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
