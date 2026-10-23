@@ -29,8 +29,13 @@ describe("prelaunch catalog", () => {
       screen.getByRole("heading", { name: /Before you jump in/i }),
     ).toBeVisible();
     expect(
-      screen.queryByRole("button", { name: /buy|pay/i }),
+      screen.queryByRole("button", {
+        name: /^(?:buy|pay|checkout|go to payment|complete payment)\b/i,
+      }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Explore Crypto payment" }),
+    ).toHaveAttribute("type", "button");
     expect(homeMeta()[0]).toEqual({
       title: "PLAYORA — Game boosting & accounts",
     });

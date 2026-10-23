@@ -86,8 +86,15 @@
   padding: 0;
   background: none;
 }
-.explorer-content .service-symbol {
-  height: 135px;
+.explorer-content .service-scene {
+  aspect-ratio: 8 / 5;
+  border: 1px solid #bddbc029;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.service-scene img.loading-image-content {
+  object-fit: cover;
+  transition: opacity 0.18s ease-out;
 }
 .explorer-peek {
   display: flex;
@@ -175,9 +182,6 @@
     grid-template-columns: minmax(0, 1fr);
     padding: 1.25rem;
   }
-  .explorer-content .service-symbol {
-    display: none;
-  }
   .explorer-content .service-caption {
     text-align: left;
     margin-top: 0;
@@ -186,5 +190,8 @@
 @media (prefers-reduced-motion: reduce) {
   .explorer-content.service-introduction {
     animation: none;
+  }
+  .service-scene img.loading-image-content {
+    transition: none;
   }
 }

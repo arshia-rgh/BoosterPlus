@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from "react";
 import type { HomeContent } from "../site/model";
 import { introductionKinds, reviewedIntroduction } from "./introductions";
-import { ServiceSymbol } from "./service-symbol";
+import { ServiceArtwork } from "./service-artwork";
 import { ServiceIcon } from "../ui/service-icon";
 import "./service-explorer.css";
 
@@ -153,7 +153,7 @@ export function ServiceExplorer({
               </a>
             </div>
             <div className="service-visual">
-              <ServiceSymbol kind={kind} />
+              <ServiceArtwork kind={kind} />
               <p className="service-caption">{section.caption}</p>
               {section.features.map(([title, body], index) => (
                 <article className="service-feature" key={title}>

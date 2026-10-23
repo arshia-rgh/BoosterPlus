@@ -3,8 +3,8 @@ export const introductionKinds = [
   "boost",
   "accounts",
   "shop",
-  "payment",
   "news",
+  "payment",
 ] as const;
 export type IntroductionKind = (typeof introductionKinds)[number];
 export const introductions: Record<
@@ -60,7 +60,7 @@ export const introductions: Record<
     ],
   },
   shop: {
-    label: "In-game shop",
+    label: "In-game shops",
     title: "A little more for your next adventure.",
     description:
       "Explore approved in-game goods when your game’s shop is available. Products, regions and delivery details are shown before checkout.",
@@ -81,7 +81,7 @@ export const introductions: Record<
     ],
   },
   payment: {
-    label: "Crypto payments",
+    label: "Crypto payment",
     title: "One clear payment. Every step visible.",
     description:
       "Pay directly for your order with crypto. Follow confirmation in your account, without loading a wallet or managing a balance.",
