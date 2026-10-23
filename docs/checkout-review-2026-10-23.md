@@ -23,3 +23,9 @@ Reviewed scenarios include both closed/expanded policy boxes, consent and USD to
 Current production is signed d768cbd at schema50. This task changes frontend presentation/tests only; no migration, backend, policy publication or runtime-setting change. Checkout stays enabled; supplier purchases, outgoing transfers and customer deletion remain disabled. Private receipts are under `.cache/checkout178/` and `/srv/playora-qualification/checkout178/`.
 
 The signed candidate, exact CI/image scans/signatures and server preflight must pass before requesting the owner's fresh exact no-off-host-backup recovery decision. Earlier release exceptions are consumed.
+
+## Verified deployment
+
+Signed `460a136d4f17ab73d3144569c9c76a966d16f03d` deployed at schema50 after the exact owner recovery decision. The normal server frontend/repository hook, exact CI39871960564, scanned image release39874407818, signature checks and server preflight passed. All eight live services and 14 read-only desktop/mobile browser checks passed after activation. The published policies and protected runtime configuration remained unchanged. No live invoice or payment was created. The current manifest is `/srv/playora/releases/460a136/deployment.env`; d768cbd remains retained. Off-host recovery is still unavailable; this release's one-use exception is consumed.
+
+All original failed qualification rounds remain in the private evidence. GitHub initially blocked both CI and the image build before execution because of billing; the owner resolved access and the existing runs were retried without repeating the already-passed tests. Round4 passed the final test-only correction without repeating the passed round2 browser tests; application hashes match. The normal hook then passed the complete frontend component checks, security audit, three frontend builds and server tests. This is focused release qualification, not a full repository/database suite.
