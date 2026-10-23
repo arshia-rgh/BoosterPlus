@@ -41,6 +41,19 @@ for (const width of [390, 1280])
       page.locator("article.discovery-game-card.is-paused"),
     ).toHaveCount(5);
     await expect(page.locator("a.discovery-game-card")).toHaveCount(1);
+    const firstCard = page.locator(".discovery-game-card").first();
+    await expect(firstCard).toHaveAttribute("href", "/games/mobile-legends");
+    await expect(firstCard.locator(".game-capabilities span")).toHaveText([
+      "Boosting",
+      "Accounts",
+      "Shop",
+      "News",
+    ]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     await expect(
       page.getByText("Services currently unavailable", { exact: true }),
     ).toHaveCount(5);

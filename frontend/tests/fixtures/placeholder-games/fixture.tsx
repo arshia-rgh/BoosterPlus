@@ -50,7 +50,8 @@ const listing: Listing = {
 };
 const firstGame = listing.games[0];
 if (!firstGame) throw new Error("Missing fixture games");
-listing.games.unshift({
+// Keep the active game last in the source to exercise availability ordering.
+listing.games.push({
   ...firstGame,
   id: "synthetic-active",
   slug: "mobile-legends",
@@ -59,6 +60,9 @@ listing.games.unshift({
   asset_alt: "Mobile Legends game artwork",
   capabilities: [
     { service: "boost", state: "active", description: "", reason: "" },
+    { service: "accounts", state: "active", description: "", reason: "" },
+    { service: "shop", state: "active", description: "", reason: "" },
+    { service: "news", state: "active", description: "", reason: "" },
   ],
 });
 function Page() {

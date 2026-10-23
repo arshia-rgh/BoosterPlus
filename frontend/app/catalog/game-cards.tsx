@@ -7,12 +7,34 @@ import { serviceNames } from "./public-discovery";
 import "./artwork-framing.css";
 import "./public-discovery.css";
 
+type Game = Listing["games"][number];
+
+function offeredServices(game: Game) {
+  return (
+    game.capabilities ?? [
+      {
+        service: "boost" as const,
+        state: "active" as const,
+        description: "",
+        reason: "",
+      },
+    ]
+  ).filter((item) => item.state !== "off");
+}
+
+function gameAvailable(game: Game) {
+  return (
+    !game.paused &&
+    offeredServices(game).some((item) => item.state === "active")
+  );
+}
+
 function GameCard({
   game,
   intent,
   headingLevel,
 }: {
-  game: Listing["games"][number];
+  game: Game;
   intent: string;
   headingLevel: 2 | 3;
 }) {
@@ -22,23 +44,8 @@ function GameCard({
     if (image?.complete && image.naturalWidth === 0) setFailed(true);
   }, []);
   const framing = game.hero_layout ?? defaultHeroLayout;
-  const capabilities = game.capabilities ?? [
-    {
-      service: "boost" as const,
-      state: "active" as const,
-      description: "",
-      reason: "",
-    },
-  ];
-  const offered = capabilities.filter(
-    (item) =>
-      (item.service === "boost" ||
-        item.service === "accounts" ||
-        item.service === "shop") &&
-      item.state !== "off",
-  );
-  const paused =
-    game.paused || !offered.some((item) => item.state === "active");
+  const offered = offeredServices(game);
+  const paused = !gameAvailable(game);
   const body = (
     <>
       {game.asset && !failed ? (
@@ -109,9 +116,14 @@ export default function GameCards({
   intent?: string;
   headingLevel?: 2 | 3;
 }) {
+  // Preserve the catalog's order within each availability group without
+  // mutating shared loader data used by the homepage and game directory.
+  const orderedGames = [...games].sort(
+    (a, b) => Number(gameAvailable(b)) - Number(gameAvailable(a)),
+  );
   return (
     <div className="discovery-game-grid">
-      {games.map((game) => (
+      {orderedGames.map((game) => (
         <GameCard
           key={game.id + game.asset}
           game={game}
