@@ -107,3 +107,11 @@ func validateDiscovery(c Configuration, publish bool, add func(string, string)) 
 		}
 	}
 }
+
+// allCapabilitiesDisabled permits a reviewed, visible game before any services
+// are configured. Require explicit policies: legacy absence enables accounts.
+// validateDiscovery independently rejects duplicate or unsupported service keys.
+func allCapabilitiesDisabled(c Configuration) bool {
+	return c.Discovery != nil && len(c.Discovery.Capabilities) == 4 &&
+		!slices.ContainsFunc(c.Discovery.Capabilities, func(p CapabilityPolicy) bool { return p.State != "off" })
+}

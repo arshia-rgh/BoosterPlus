@@ -1,3 +1,4 @@
+import { isPlaceholderGame } from "./placeholder";
 import type { ReactNode } from "react";
 import { Link } from "../portal-router";
 import { useResource } from "../orders/resource";
@@ -11,17 +12,38 @@ import {
 } from "./public-discovery";
 import PublicMetrics, { publicTime, useEvidenceClock } from "./public-metrics";
 
-export function GameDiscovery({
-  release,
-  selected,
-  action,
-  children,
-}: {
+type GameDiscoveryProps = {
   release: Release;
   selected: ServiceKind | null;
   action?: ReactNode;
   children?: ReactNode;
-}) {
+};
+
+export function GameDiscovery(props: GameDiscoveryProps) {
+  if (isPlaceholderGame(props.release)) {
+    return (
+      <div className="game-post-statistics">
+        {props.selected && (
+          <Link
+            className="context-back service-return"
+            to={`/games/${props.release.slug}`}
+          >
+            ← Back to game
+          </Link>
+        )}
+        {props.children}
+      </div>
+    );
+  }
+  return <AvailableGameDiscovery {...props} />;
+}
+
+function AvailableGameDiscovery({
+  release,
+  selected,
+  action,
+  children,
+}: GameDiscoveryProps) {
   const resource = useResource(
     `/catalog/games/${encodeURIComponent(release.slug)}/discovery`,
     discoveryViewSchema,

@@ -1,3 +1,4 @@
+import { isPlaceholderGame } from "./placeholder";
 import { ListFilters } from "../ui/list-filters";
 import { PackageContents } from "./package-scope";
 import ShopArtwork from "../shop/artwork";
@@ -196,6 +197,20 @@ export function GamePage() {
       </section>
     );
   const offered = capabilities.filter((item) => item.state !== "off");
+  if (isPlaceholderGame(release)) {
+    return (
+      <section
+        className="game-panel game-services"
+        aria-labelledby="game-services-coming"
+      >
+        <h2 id="game-services-coming">Services are not available yet</h2>
+
+        <Link className="button secondary" to="/games">
+          Browse all games
+        </Link>
+      </section>
+    );
+  }
   return (
     <section
       className="game-panel game-services"

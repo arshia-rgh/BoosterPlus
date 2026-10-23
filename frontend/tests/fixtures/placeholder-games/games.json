@@ -1,0 +1,262 @@
+[
+  {
+    "id": "6faf485a-eab8-4700-8c87-3e30bf003002",
+    "slug": "world-of-warcraft",
+    "configuration": {
+      "schema_version": 1,
+      "name": "World of Warcraft",
+      "description": "Boosting, accounts, shop items and news are not available for World of Warcraft yet.",
+      "asset": "/catalog-assets/game-wow-1536.jpg",
+      "asset_alt": "World of Warcraft game artwork",
+      "reviewed": true,
+      "hero_layout": {
+        "desktop_x": 18,
+        "desktop_y": 20,
+        "mobile_x": 5,
+        "mobile_y": 20,
+        "copy_side": "right"
+      },
+      "references": [],
+      "services": [],
+      "packages": [],
+      "faqs": [],
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "news",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "promotions": []
+      }
+    }
+  },
+  {
+    "id": "6faf485a-eab8-4700-8c87-3e30bf003003",
+    "slug": "league-of-legends",
+    "configuration": {
+      "schema_version": 1,
+      "name": "League of Legends",
+      "description": "Boosting, accounts, shop items and news are not available for League of Legends yet.",
+      "asset": "/catalog-assets/game-lol-1536.jpg",
+      "asset_alt": "League of Legends game artwork",
+      "reviewed": true,
+      "hero_layout": {
+        "desktop_x": 65,
+        "desktop_y": 20,
+        "mobile_x": 65,
+        "mobile_y": 20,
+        "copy_side": "left"
+      },
+      "references": [],
+      "services": [],
+      "packages": [],
+      "faqs": [],
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "news",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "promotions": []
+      }
+    }
+  },
+  {
+    "id": "6faf485a-eab8-4700-8c87-3e30bf003004",
+    "slug": "valorant",
+    "configuration": {
+      "schema_version": 1,
+      "name": "VALORANT",
+      "description": "Boosting, accounts, shop items and news are not available for VALORANT yet.",
+      "asset": "/catalog-assets/game-valorant-1536.png",
+      "asset_alt": "VALORANT game artwork",
+      "reviewed": true,
+      "hero_layout": {
+        "desktop_x": 57,
+        "desktop_y": 20,
+        "mobile_x": 57,
+        "mobile_y": 20,
+        "copy_side": "left"
+      },
+      "references": [],
+      "services": [],
+      "packages": [],
+      "faqs": [],
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "news",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "promotions": []
+      }
+    }
+  },
+  {
+    "id": "6faf485a-eab8-4700-8c87-3e30bf003005",
+    "slug": "dota-2",
+    "configuration": {
+      "schema_version": 1,
+      "name": "Dota 2",
+      "description": "Boosting, accounts, shop items and news are not available for Dota 2 yet.",
+      "asset": "/catalog-assets/game-dota-1536.jpg",
+      "asset_alt": "Dota 2 game artwork",
+      "reviewed": true,
+      "hero_layout": {
+        "desktop_x": 53,
+        "desktop_y": 20,
+        "mobile_x": 53,
+        "mobile_y": 20,
+        "copy_side": "left"
+      },
+      "references": [],
+      "services": [],
+      "packages": [],
+      "faqs": [],
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "news",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "promotions": []
+      }
+    }
+  },
+  {
+    "id": "6faf485a-eab8-4700-8c87-3e30bf003006",
+    "slug": "wild-rift",
+    "configuration": {
+      "schema_version": 1,
+      "name": "Wild Rift",
+      "description": "Boosting, accounts, shop items and news are not available for Wild Rift yet.",
+      "asset": "/catalog-assets/game-wildrift-1536.jpg",
+      "asset_alt": "Wild Rift game artwork",
+      "reviewed": true,
+      "hero_layout": {
+        "desktop_x": 67,
+        "desktop_y": 20,
+        "mobile_x": 67,
+        "mobile_y": 20,
+        "copy_side": "left"
+      },
+      "references": [],
+      "services": [],
+      "packages": [],
+      "faqs": [],
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "news",
+            "state": "off",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "promotions": []
+      }
+    }
+  }
+]
