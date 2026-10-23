@@ -368,3 +368,71 @@ it("shows API field errors under seller answers and focuses the first editable f
     "Private account",
   );
 });
+
+function optionalSkinsFixture(): Submission {
+  const value = fixture();
+  value.offer.configuration.intake = {
+    name: "Account details",
+    description: "",
+    rules: [],
+    fields: [
+      {
+        ...emptyField("skins"),
+        key: "skins",
+        label: "Skin collection (optional)",
+        type: "cosmetics",
+        stage: "order",
+        required: false,
+        options: [{ key: "Collector", label: "Collector", units: 0 }],
+      },
+    ],
+  };
+  return value;
+}
+it("offers skin groups directly and preserves an omitted optional collection", async () => {
+  const value = optionalSkinsFixture();
+  vi.mocked(post).mockResolvedValue(value);
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  expect(
+    screen.queryByText(/Does this account have skins/),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Add skin group" })).toBeEnabled();
+  expect(screen.queryByLabelText("Skin category 1")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledWith(
+      "/submissions/submission/edit",
+      expect.objectContaining({ answers: {} }),
+      expect.anything(),
+    );
+  });
+});
+it("edits saved skin groups directly and can remove the final optional group", async () => {
+  const value = optionalSkinsFixture();
+  value.answers = {
+    skins: {
+      groups: [
+        { category: "Collector", count: "2", names: ["Aldous", "Yu Zhong"] },
+      ],
+    },
+  };
+  vi.mocked(post).mockResolvedValue({
+    ...value,
+    answers: { skins: { groups: [] } },
+  });
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  expect(screen.getByLabelText("Quantity in group 1")).toHaveValue("2");
+  expect(screen.getByLabelText("Skin or hero names in group 1")).toHaveValue(
+    "Aldous\nYu Zhong",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Remove skin group 1" }));
+  expect(screen.queryByLabelText("Skin category 1")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledWith(
+      "/submissions/submission/edit",
+      expect.objectContaining({ answers: { skins: { groups: [] } } }),
+      expect.anything(),
+    );
+  });
+});

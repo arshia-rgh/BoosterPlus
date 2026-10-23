@@ -1,0 +1,614 @@
+{
+  "intake": {
+    "name": "Selling account form",
+    "description": "Add the account facts and a short reason to choose it. Staff review your submission before creating a public listing.",
+    "fields": [
+      {
+        "key": "attribute_1",
+        "label": "Hero count",
+        "help": "How many heroes are unlocked?",
+        "type": "integer",
+        "stage": "order",
+        "required": true,
+        "reference": "",
+        "options": [],
+        "min": "0",
+        "max": "150",
+        "step": "1",
+        "unit": "",
+        "min_length": 0,
+        "max_length": 100,
+        "min_selections": 0,
+        "max_selections": 10
+      },
+      {
+        "key": "attribute_2",
+        "label": "Highest rank",
+        "help": "what is your account highest rank",
+        "type": "rank",
+        "stage": "order",
+        "required": true,
+        "reference": "ranks",
+        "options": [],
+        "min": "0",
+        "max": "100",
+        "step": "1",
+        "unit": "",
+        "min_length": 0,
+        "max_length": 100,
+        "min_selections": 0,
+        "max_selections": 10
+      },
+      {
+        "key": "attribute_3",
+        "label": "Skin collection (optional)",
+        "help": "Group skins by type, then add the quantity and names.",
+        "type": "cosmetics",
+        "stage": "order",
+        "required": false,
+        "reference": "",
+        "options": [
+          {
+            "key": "option_6",
+            "label": "Legend",
+            "units": 16
+          },
+          {
+            "key": "option_1",
+            "label": "Collector",
+            "units": 200
+          },
+          {
+            "key": "option_2",
+            "label": "Luckybox",
+            "units": 200
+          },
+          {
+            "key": "option_3",
+            "label": "Epic",
+            "units": 200
+          },
+          {
+            "key": "option_4",
+            "label": "Annual Starlight",
+            "units": 20
+          },
+          {
+            "key": "option_5",
+            "label": "Starlight",
+            "units": 200
+          },
+          {
+            "key": "option_7",
+            "label": "ANNIVERSARY",
+            "units": 3
+          },
+          {
+            "key": "option_8",
+            "label": "STREET FIGHTER",
+            "units": 4
+          },
+          {
+            "key": "option_9",
+            "label": "TIDES",
+            "units": 2
+          },
+          {
+            "key": "option_10",
+            "label": "MYTH",
+            "units": 3
+          },
+          {
+            "key": "option_11",
+            "label": "CREATE",
+            "units": 6
+          },
+          {
+            "key": "option_12",
+            "label": "MPL",
+            "units": 11
+          },
+          {
+            "key": "option_13",
+            "label": "MSC",
+            "units": 7
+          },
+          {
+            "key": "option_14",
+            "label": "Summer",
+            "units": 14
+          },
+          {
+            "key": "option_15",
+            "label": "Halloween",
+            "units": 9
+          },
+          {
+            "key": "option_16",
+            "label": "Christmas",
+            "units": 11
+          },
+          {
+            "key": "option_17",
+            "label": "Valentine",
+            "units": 16
+          },
+          {
+            "key": "option_18",
+            "label": "Lunar Fest",
+            "units": 8
+          },
+          {
+            "key": "option_19",
+            "label": "PRIME",
+            "units": 4
+          },
+          {
+            "key": "option_20",
+            "label": "M",
+            "units": 6
+          },
+          {
+            "key": "option_21",
+            "label": "COVENANT",
+            "units": 5
+          },
+          {
+            "key": "option_22",
+            "label": "Eternal Season",
+            "units": 2
+          },
+          {
+            "key": "option_23",
+            "label": "SpongeBob",
+            "units": 3
+          },
+          {
+            "key": "option_24",
+            "label": "Soul Vessels",
+            "units": 5
+          },
+          {
+            "key": "option_25",
+            "label": "Nexus Sea",
+            "units": 4
+          },
+          {
+            "key": "option_26",
+            "label": "P.ACE",
+            "units": 4
+          },
+          {
+            "key": "option_27",
+            "label": "Mystic Meow",
+            "units": 4
+          },
+          {
+            "key": "option_28",
+            "label": "Metro Zero",
+            "units": 3
+          },
+          {
+            "key": "option_29",
+            "label": "NARUTO",
+            "units": 7
+          },
+          {
+            "key": "option_30",
+            "label": "Neobeasts",
+            "units": 5
+          },
+          {
+            "key": "option_31",
+            "label": "Hunter x Hunter",
+            "units": 4
+          },
+          {
+            "key": "option_32",
+            "label": "KISHIN DENSETSU",
+            "units": 3
+          },
+          {
+            "key": "option_33",
+            "label": "EXORCISTS",
+            "units": 4
+          },
+          {
+            "key": "option_34",
+            "label": "KOF",
+            "units": 10
+          },
+          {
+            "key": "option_35",
+            "label": "ALLSTAR",
+            "units": 5
+          },
+          {
+            "key": "option_36",
+            "label": "Attack on Titan",
+            "units": 3
+          },
+          {
+            "key": "option_37",
+            "label": "MISTBENDERS",
+            "units": 2
+          },
+          {
+            "key": "option_38",
+            "label": "CLOUDS",
+            "units": 4
+          },
+          {
+            "key": "option_39",
+            "label": "DUCATI",
+            "units": 3
+          },
+          {
+            "key": "option_40",
+            "label": "ATOMIC",
+            "units": 3
+          },
+          {
+            "key": "option_41",
+            "label": "DAWNING",
+            "units": 5
+          },
+          {
+            "key": "option_42",
+            "label": "ABYSS",
+            "units": 4
+          },
+          {
+            "key": "option_43",
+            "label": "JUJUTSU KAISEN",
+            "units": 4
+          },
+          {
+            "key": "option_44",
+            "label": "Bronze SAINTS",
+            "units": 3
+          },
+          {
+            "key": "option_45",
+            "label": "Gold SAINTS",
+            "units": 3
+          },
+          {
+            "key": "option_46",
+            "label": "KUNG FU PANDA",
+            "units": 3
+          },
+          {
+            "key": "option_47",
+            "label": "TRANSFORMERS",
+            "units": 6
+          },
+          {
+            "key": "option_48",
+            "label": "M-World",
+            "units": 4
+          },
+          {
+            "key": "option_49",
+            "label": "Sanrio",
+            "units": 5
+          },
+          {
+            "key": "option_50",
+            "label": "STAR WARS",
+            "units": 4
+          },
+          {
+            "key": "option_51",
+            "label": "STUN",
+            "units": 4
+          },
+          {
+            "key": "option_52",
+            "label": "BLAZING",
+            "units": 5
+          },
+          {
+            "key": "option_53",
+            "label": "DRAGON TAMER",
+            "units": 6
+          },
+          {
+            "key": "option_54",
+            "label": "LIGHTBORN",
+            "units": 5
+          },
+          {
+            "key": "option_55",
+            "label": "VENOM",
+            "units": 6
+          },
+          {
+            "key": "option_56",
+            "label": "SABER",
+            "units": 6
+          },
+          {
+            "key": "option_57",
+            "label": "ZODIAC",
+            "units": 13
+          }
+        ],
+        "min": "1",
+        "max": "1000000",
+        "step": "1",
+        "unit": "1",
+        "min_length": 0,
+        "max_length": 100,
+        "min_selections": 0,
+        "max_selections": 10
+      },
+      {
+        "key": "attribute_4",
+        "label": "Collector rank",
+        "help": "What is your skin collection",
+        "type": "select",
+        "stage": "order",
+        "required": true,
+        "reference": "collection",
+        "options": [],
+        "min": "0",
+        "max": "100",
+        "step": "1",
+        "unit": "",
+        "min_length": 1,
+        "max_length": 50,
+        "min_selections": 0,
+        "max_selections": 10
+      },
+      {
+        "key": "attribute_5",
+        "label": "Matches",
+        "help": "All your rank matches",
+        "type": "integer",
+        "stage": "order",
+        "required": true,
+        "reference": "",
+        "options": [],
+        "min": "1",
+        "max": "1000000000",
+        "step": "1",
+        "unit": "1",
+        "min_length": 0,
+        "max_length": 100,
+        "min_selections": 0,
+        "max_selections": 10
+      },
+      {
+        "key": "selling_point",
+        "label": "Why choose this account?",
+        "help": "One short, specific reason, for example a strong win rate or rare collection. No contact details or credentials.",
+        "type": "short_text",
+        "stage": "order",
+        "required": true,
+        "reference": "",
+        "options": [],
+        "min": "0",
+        "max": "10000",
+        "step": "1",
+        "unit": "",
+        "min_length": 1,
+        "max_length": 180,
+        "min_selections": 0,
+        "max_selections": 5
+      }
+    ],
+    "rules": [],
+    "summary": {
+      "hero_count": "attribute_1",
+      "skin_collection": "attribute_3",
+      "selling_point": "selling_point",
+      "has_skins": ""
+    }
+  },
+  "references": [
+    {
+      "key": "ranks",
+      "label": "Ranks and divisions",
+      "kind": "rank",
+      "options": [
+        {
+          "key": "option_0",
+          "label": "Warrior III",
+          "units": 3
+        },
+        {
+          "key": "option_1",
+          "label": "Warrior II",
+          "units": 3
+        },
+        {
+          "key": "option_2",
+          "label": "Warrior I",
+          "units": 3
+        },
+        {
+          "key": "option_3",
+          "label": "Elite III",
+          "units": 4
+        },
+        {
+          "key": "option_4",
+          "label": "Elite II",
+          "units": 4
+        },
+        {
+          "key": "option_5",
+          "label": "Elite I",
+          "units": 4
+        },
+        {
+          "key": "option_6",
+          "label": "Master IV",
+          "units": 4
+        },
+        {
+          "key": "option_7",
+          "label": "Master III",
+          "units": 4
+        },
+        {
+          "key": "option_8",
+          "label": "Master II",
+          "units": 4
+        },
+        {
+          "key": "option_9",
+          "label": "Master I",
+          "units": 4
+        },
+        {
+          "key": "option_10",
+          "label": "Grandmaster V",
+          "units": 5
+        },
+        {
+          "key": "option_11",
+          "label": "Grandmaster IV",
+          "units": 5
+        },
+        {
+          "key": "option_12",
+          "label": "Grandmaster III",
+          "units": 5
+        },
+        {
+          "key": "option_13",
+          "label": "Grandmaster II",
+          "units": 5
+        },
+        {
+          "key": "option_14",
+          "label": "Grandmaster I",
+          "units": 5
+        },
+        {
+          "key": "option_15",
+          "label": "Epic V",
+          "units": 5
+        },
+        {
+          "key": "option_16",
+          "label": "Epic IV",
+          "units": 5
+        },
+        {
+          "key": "option_17",
+          "label": "Epic III",
+          "units": 5
+        },
+        {
+          "key": "option_18",
+          "label": "Epic II",
+          "units": 5
+        },
+        {
+          "key": "option_19",
+          "label": "Epic I",
+          "units": 5
+        },
+        {
+          "key": "option_20",
+          "label": "Legend V",
+          "units": 5
+        },
+        {
+          "key": "option_21",
+          "label": "Legend IV",
+          "units": 5
+        },
+        {
+          "key": "option_22",
+          "label": "Legend III",
+          "units": 5
+        },
+        {
+          "key": "option_23",
+          "label": "Legend II",
+          "units": 5
+        },
+        {
+          "key": "option_24",
+          "label": "Legend I",
+          "units": 5
+        },
+        {
+          "key": "option_25",
+          "label": "Mythic",
+          "units": 25,
+          "unit_start": 0
+        },
+        {
+          "key": "option_26",
+          "label": "Mythical Honor",
+          "units": 25,
+          "unit_start": 25
+        },
+        {
+          "key": "option_27",
+          "label": "Mythical Glory",
+          "units": 50,
+          "unit_start": 50
+        },
+        {
+          "key": "option_28",
+          "label": "Mythical Immortal",
+          "units": 9901,
+          "unit_start": 100
+        }
+      ]
+    },
+    {
+      "key": "collection",
+      "label": "Collector Rank",
+      "kind": "choice",
+      "options": [
+        {
+          "key": "option_1",
+          "label": "Amateur",
+          "units": 5
+        },
+        {
+          "key": "option_2",
+          "label": "Junior",
+          "units": 5
+        },
+        {
+          "key": "option_3",
+          "label": "Seasoned",
+          "units": 5
+        },
+        {
+          "key": "option_4",
+          "label": "Expert",
+          "units": 5
+        },
+        {
+          "key": "option_5",
+          "label": "Renowned",
+          "units": 5
+        },
+        {
+          "key": "option_6",
+          "label": "Exalted",
+          "units": 5
+        },
+        {
+          "key": "option_7",
+          "label": "Mega",
+          "units": 5
+        },
+        {
+          "key": "option_8",
+          "label": "World",
+          "units": 5
+        }
+      ]
+    }
+  ]
+}

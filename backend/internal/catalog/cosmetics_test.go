@@ -64,3 +64,18 @@ func TestLargeAndEmptyCosmeticCollectionsRemainBounded(t *testing.T) {
 		t.Fatal("unbounded groups accepted")
 	}
 }
+
+func TestOptionalSellerCosmeticsWithoutBooleanGate(t *testing.T) {
+	t.Parallel()
+	c := fixture()
+	c.Intake = &IntakeForm{Name: "Account details", Fields: []Field{{Key: "skins", Label: "Skin collection (optional)", Type: "cosmetics", Stage: "order", Options: []Option{{Key: "Collector", Label: "Collector"}}}}}
+	for _, answers := range []Answers{{}, {"skins": json.RawMessage(`{"groups":[]}`)}, {"skins": json.RawMessage(`{"groups":[{"category":"Collector","count":"2","names":["Aldous","Yu Zhong"]}]}`)}} {
+		if result := ValidateIntake(c, answers, true); len(result.Issues) != 0 {
+			t.Fatal("optional collection rejected", result.Issues)
+		}
+	}
+	result := ValidateIntake(c, Answers{"skins": json.RawMessage(`{"groups":[{"category":"Collector","count":"2","names":["Aldous"]}]}`)}, true)
+	if !slices.ContainsFunc(result.Issues, func(i Issue) bool { return i.Path == "skins.groups.0.count" }) {
+		t.Fatal("optional collection bypassed group validation", result.Issues)
+	}
+}
