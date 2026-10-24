@@ -13,6 +13,7 @@ import { ArticleContent } from "./content";
 import type { loadArticle, loadNews } from "./loaders.server";
 import ShopArtwork from "../shop/artwork";
 import "./news.css";
+import "../ui/immersive-card.css";
 export function NewsIndex() {
   const { page, slug } = useLoaderData<typeof loadNews>();
   const [params, setParams] = useSearchParams();
@@ -62,30 +63,41 @@ export function NewsIndex() {
       )}
       <div className="news-cards service-tiles">
         {page.items.map((v) => (
-          <article className="news-card" key={v.id}>
-            <ShopArtwork
-              placement="card"
-              source={v.definition.asset}
-              alt={v.definition.asset_alt}
-              lazy
-            />
-            <p className="eyebrow">{v.definition.kind}</p>
-            <h3>
+          <article className="news-card immersive-card" key={v.id}>
+            <div className="immersive-media">
+              <ShopArtwork
+                placement="card"
+                source={v.definition.asset}
+                alt={v.definition.asset_alt}
+                lazy
+              />
+            </div>
+            <div className="immersive-copy">
+              <p className="immersive-kicker">
+                {kinds.find(([key]) => key === v.definition.kind)?.[1] ??
+                  v.definition.kind}
+              </p>
+              <h3 className="immersive-title">{v.definition.title}</h3>
+              <p className="immersive-meta">
+                <time dateTime={v.published_at}>
+                  {v.published_at.slice(0, 10)}
+                </time>
+                {v.definition.game_version && (
+                  <span>{v.definition.game_version}</span>
+                )}
+              </p>
               <Link
+                className="immersive-link"
+                aria-label={`Read ${v.definition.title}`}
                 preventScrollReset
                 to={`${articlePath(slug, v.definition.slug)}${query.size ? `?${query.toString()}` : ""}`}
               >
-                {v.definition.title}
+                Read article{" "}
+                <span className="immersive-arrow" aria-hidden="true">
+                  →
+                </span>
               </Link>
-            </h3>
-            <p>{v.definition.summary}</p>
-            <p className="quiet">
-              {v.definition.author} ·{" "}
-              <time dateTime={v.published_at}>
-                {v.published_at.slice(0, 10)}
-              </time>
-              {v.definition.game_version && ` · ${v.definition.game_version}`}
-            </p>
+            </div>
           </article>
         ))}
       </div>
@@ -168,16 +180,41 @@ export function NewsArticle() {
           <h3>Related reading</h3>
           <div className="news-cards service-tiles">
             {related.map((v) => (
-              <article className="news-card" key={v.id}>
-                <h4>
+              <article className="news-card immersive-card" key={v.id}>
+                <div className="immersive-media">
+                  <ShopArtwork
+                    placement="card"
+                    source={v.definition.asset}
+                    alt={v.definition.asset_alt}
+                    lazy
+                  />
+                </div>
+                <div className="immersive-copy">
+                  <p className="immersive-kicker">
+                    {kinds.find(([key]) => key === v.definition.kind)?.[1] ??
+                      v.definition.kind}
+                  </p>
+                  <h4 className="immersive-title">{v.definition.title}</h4>
+                  <p className="immersive-meta">
+                    <time dateTime={v.published_at}>
+                      {v.published_at.slice(0, 10)}
+                    </time>
+                    {v.definition.game_version && (
+                      <span>{v.definition.game_version}</span>
+                    )}
+                  </p>
                   <Link
+                    className="immersive-link"
+                    aria-label={`Read ${v.definition.title}`}
                     to={`${articlePath(slug, v.definition.slug)}${query.size ? `?${query.toString()}` : ""}`}
                     preventScrollReset
                   >
-                    {v.definition.title}
+                    Read article{" "}
+                    <span className="immersive-arrow" aria-hidden="true">
+                      →
+                    </span>
                   </Link>
-                </h4>
-                <p>{v.definition.summary}</p>
+                </div>
               </article>
             ))}
           </div>

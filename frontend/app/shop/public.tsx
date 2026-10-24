@@ -37,6 +37,7 @@ import {
   type FieldIssue,
 } from "../ui/form-validation";
 import "./shop.css";
+import "../ui/immersive-card.css";
 
 export function GameShop({ detail = false }: { detail?: boolean }) {
   const release = useLoaderData<Release>();
@@ -173,20 +174,22 @@ function ShopBrowse({ slug }: { slug: string }) {
             ) : (
               <div className="shop-grid service-tiles">
                 {resource.data.items.map((p) => (
-                  <article key={p.id} className="shop-card">
-                    <ShopArtwork
-                      placement="card"
-                      source={p.definition.asset}
-                      regions={p.definition.variants
-                        .filter((v) => v.enabled)
-                        .map((v) => v.region)}
-                      alt={p.definition.asset_alt}
-                      lazy
-                    />
-                    <div>
-                      <h3>{p.definition.title}</h3>
+                  <article key={p.id} className="shop-card immersive-card">
+                    <div className="immersive-media">
+                      <ShopArtwork
+                        placement="card"
+                        source={p.definition.asset}
+                        regions={p.definition.variants
+                          .filter((v) => v.enabled)
+                          .map((v) => v.region)}
+                        alt={p.definition.asset_alt}
+                        lazy
+                      />
+                    </div>
+                    <div className="immersive-copy">
+                      <h3 className="immersive-title">{p.definition.title}</h3>
                       <PublishedPrice product={p} />
-                      <div className="shop-card-meta">
+                      <div className="shop-card-meta immersive-meta">
                         <span>{productDeliveryLabel(p.definition)}</span>
                         {Array.from(
                           new Set(
@@ -219,12 +222,15 @@ function ShopBrowse({ slug }: { slug: string }) {
                         </p>
                       )}
                       <Link
-                        className="button"
+                        className="immersive-link"
                         aria-label={`View details for ${p.definition.title}`}
                         to={`/games/${slug}/shop/${p.id}`}
                         state={{ shopSearch: params.toString() }}
                       >
-                        View details
+                        View details{" "}
+                        <span className="immersive-arrow" aria-hidden="true">
+                          →
+                        </span>
                       </Link>
                     </div>
                   </article>

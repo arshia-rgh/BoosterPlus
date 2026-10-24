@@ -1,0 +1,289 @@
+/* Full-image browse cards: normal-flow copy may grow; no clipped titles or prices. */
+html .immersive-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  min-width: 0;
+  min-height: 25rem;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  border: 1px solid #8ba99455;
+  border-radius: 1.25rem;
+  background: #10291f;
+  box-shadow: 0 12px 32px #0002;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+html .immersive-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    #04180ffa 0%,
+    #04180ff0 26%,
+    #04180fbb 48%,
+    #04180f08 85%
+  );
+}
+html .immersive-card > .immersive-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #10291f;
+}
+html
+  .immersive-media
+  :is(
+    .shop-artwork-frame,
+    .shop-artwork,
+    .loading-image-frame,
+    .account-card-media
+  ) {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+html
+  .immersive-media
+  :is(.loading-image-frame, .artwork-picture)
+  > img.loading-image-content {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center 25%;
+  transition:
+    transform 0.55s ease,
+    opacity 0.18s ease;
+}
+html .immersive-media .shop-region-badge {
+  z-index: 2;
+}
+html
+  .immersive-media
+  :is(
+    .loading-image-fallback,
+    .shop-artwork-unavailable,
+    .account-image-placeholder
+  ) {
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 10rem;
+  height: auto;
+  padding: 1.25rem;
+  text-align: center;
+  color: #c0d3c7;
+  font-size: 0.8rem;
+}
+html
+  .immersive-media
+  .account-image-placeholder
+  :is(strong, .account-placeholder-icon) {
+  display: none;
+}
+html .immersive-card > .immersive-copy {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding: 12rem 1.5rem 1.5rem;
+  min-width: 0;
+  flex: 1;
+  background: none;
+}
+html .immersive-card .immersive-title {
+  font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+  font-weight: 650;
+  line-height: 1.28;
+  letter-spacing: -0.025em;
+  margin: 0;
+  color: #f5f7f1;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+html .immersive-card .immersive-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+  color: #d9e5dc;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin: 0;
+}
+html .immersive-card .immersive-kicker {
+  color: #ecd6af;
+  font-size: 0.6875rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 600;
+}
+html .immersive-card .immersive-excerpt {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #d9e5dc;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+html .immersive-card .immersive-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #b4f3cc;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: normal;
+}
+html .immersive-card .immersive-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+}
+html .immersive-card .immersive-link:focus-visible {
+  outline: none;
+}
+html .immersive-card:has(.immersive-link:focus-visible) {
+  outline: 3px solid #f2d59e;
+  outline-offset: 4px;
+}
+html .immersive-card .immersive-arrow {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #bad9b951;
+  border-radius: 50%;
+  background: #c7e7c014;
+  font-size: 1.2rem;
+}
+html .immersive-card :is(.shop-published-price, .package-tile-prices) {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+html
+  .immersive-card
+  :is(
+    .shop-published-price strong,
+    .package-tile-prices strong,
+    .account-total strong
+  ) {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  color: #ece0c8;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+html .immersive-card :is(.shop-published-price small, .account-total small) {
+  color: #c5d7cc;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+html .immersive-card .shop-card-availability {
+  margin: 0;
+  color: #ecd6af;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+html .immersive-card .account-key-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+}
+html .immersive-card .account-key-facts > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+html .immersive-card .account-key-facts :is(dt, dd) {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #d9e5dc;
+}
+html .immersive-card .account-key-facts dd {
+  color: #f1f5ef;
+  font-weight: 600;
+}
+html .immersive-card .account-total {
+  gap: 0.2rem;
+}
+html .immersive-card .account-total > span {
+  display: none;
+}
+html .immersive-card .account-preview-label {
+  font-size: 0.75rem;
+  color: #d9e5dc;
+}
+@media (hover: hover) {
+  html .immersive-card:has(.immersive-link):hover {
+    border-color: #e6c994bf;
+    box-shadow: 0 16px 42px #0005;
+  }
+  html .immersive-card:has(.immersive-link):hover .loading-image-content {
+    transform: scale(1.025);
+  }
+}
+@media (max-width: 650px) {
+  html .immersive-card {
+    min-height: 25rem;
+    aspect-ratio: auto;
+  }
+  html .immersive-card > .immersive-copy {
+    padding: 12rem 1.25rem 1.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .immersive-card,
+  html .immersive-media .loading-image-content {
+    transition: none;
+  }
+  html .immersive-card:has(.immersive-link):hover .loading-image-content {
+    transform: none;
+  }
+}

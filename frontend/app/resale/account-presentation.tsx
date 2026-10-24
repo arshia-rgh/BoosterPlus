@@ -8,11 +8,8 @@ import AccountGallery, {
 } from "./gallery";
 import type { PublicListing } from "./model";
 import "./account-presentation.css";
-import {
-  accountCount,
-  isCountAttribute,
-  supersededCount,
-} from "./account-summary";
+import "../ui/immersive-card.css";
+import { accountCount, supersededCount } from "./account-summary";
 
 export function AccountFacts({ listing }: { listing: PublicListing }) {
   return (
@@ -71,8 +68,8 @@ export function AccountCard({
   const titleID = useId();
   const image = preview ? previewImage : listing.images[0];
   return (
-    <article className="account-card" aria-labelledby={titleID}>
-      <div className="account-card-media">
+    <article className="account-card immersive-card" aria-labelledby={titleID}>
+      <div className="account-card-media immersive-media">
         {image ? (
           <AccountImage
             key={image}
@@ -90,49 +87,34 @@ export function AccountCard({
           />
         )}
       </div>
-      <div className="account-card-body">
+      <div className="account-card-body immersive-copy">
         <p className="account-game-label">{listing.game}</p>
-        <Heading id={titleID}>{listing.product.title}</Heading>
+        <Heading id={titleID} className="immersive-title">
+          {listing.product.title}
+        </Heading>
         <AccountFacts listing={listing} />
-        <div className="account-selling-point">
-          <span>Why choose this account?</span>
-          <p>
-            {listing.product.selling_point || "Selling point not provided yet."}
-          </p>
-        </div>
-        {!!listing.product.attributes
-          .filter((a) => !isCountAttribute(a.label))
-          .slice(0, 2).length && (
-          <dl className="account-card-highlights">
-            {listing.product.attributes
-              .filter((a) => !isCountAttribute(a.label))
-              .slice(0, 2)
-              .map((a) => (
-                <div key={a.label}>
-                  <dt>{a.label}</dt>
-                  <dd>{a.value}</dd>
-                </div>
-              ))}
-          </dl>
+        {listing.product.selling_point && (
+          <p className="immersive-excerpt">{listing.product.selling_point}</p>
         )}
-        <div className="account-card-footer">
-          <AccountPrice listing={listing} />
-          {preview ? (
-            <span className="account-preview-label">
-              Account card preview · private
+        <AccountPrice listing={listing} />
+        {preview ? (
+          <span className="account-preview-label">
+            Account card preview · private
+          </span>
+        ) : (
+          <Link
+            className="immersive-link"
+            preventScrollReset
+            to={`/games/${encodeURIComponent(listing.slug)}/accounts/${listing.id}`}
+            state={{ market, globalMarket }}
+            aria-describedby={titleID}
+          >
+            Review account{" "}
+            <span className="immersive-arrow" aria-hidden="true">
+              →
             </span>
-          ) : (
-            <Link
-              className="button compact"
-              preventScrollReset
-              to={`/games/${encodeURIComponent(listing.slug)}/accounts/${listing.id}`}
-              state={{ market, globalMarket }}
-              aria-describedby={titleID}
-            >
-              Review account <span aria-hidden="true">→</span>
-            </Link>
-          )}
-        </div>
+          </Link>
+        )}
       </div>
     </article>
   );

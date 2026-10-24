@@ -2,7 +2,6 @@ import { useId, useRef, useState } from "react";
 import type { HomeContent } from "../site/model";
 import { introductionKinds, reviewedIntroduction } from "./introductions";
 import { ServiceArtwork } from "./service-artwork";
-import { ServiceIcon } from "../ui/service-icon";
 import "./service-explorer.css";
 
 export function ServiceExplorer({
@@ -113,7 +112,11 @@ export function ServiceExplorer({
             select(adjacent(-1));
           }}
         >
-          <ServiceIcon kind={introductionKinds.at(adjacent(-1)) ?? "boost"} />
+          <ServiceArtwork
+            kind={introductionKinds.at(adjacent(-1)) ?? "boost"}
+            className="peek-scene"
+            peek
+          />
           <span>
             {
               reviewedIntroduction(
@@ -135,6 +138,11 @@ export function ServiceExplorer({
             key={kind}
             data-direction={direction}
           >
+            <ServiceArtwork kind={kind} className="scene-backdrop" />
+            <ServiceArtwork kind={kind} />
+            <span className="scene-counter" aria-hidden="true">
+              0{selected + 1} / 05
+            </span>
             <div className="service-introduction-copy">
               <p className="home-kicker">
                 0{selected + 1} / {section.label}
@@ -152,19 +160,6 @@ export function ServiceExplorer({
                 Choose your game <span aria-hidden="true">↘</span>
               </a>
             </div>
-            <div className="service-visual">
-              <ServiceArtwork kind={kind} />
-              <p className="service-caption">{section.caption}</p>
-              {section.features.map(([title, body], index) => (
-                <article className="service-feature" key={title}>
-                  <span aria-hidden="true">0{index + 1}</span>
-                  <div>
-                    <h4>{title}</h4>
-                    <p>{body}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
           </div>
         </div>
         <button
@@ -175,7 +170,11 @@ export function ServiceExplorer({
             select(adjacent(1));
           }}
         >
-          <ServiceIcon kind={introductionKinds.at(adjacent(1)) ?? "boost"} />
+          <ServiceArtwork
+            kind={introductionKinds.at(adjacent(1)) ?? "boost"}
+            className="peek-scene"
+            peek
+          />
           <span>
             {
               reviewedIntroduction(

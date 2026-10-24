@@ -3,7 +3,9 @@ import { ListFilters } from "../ui/list-filters";
 import { PackageContents } from "./package-scope";
 import ShopArtwork from "../shop/artwork";
 import { ArtworkImage } from "../artwork/image";
-import { ServiceIcon } from "../ui/service-icon";
+import { ServiceScene } from "./service-scene";
+import { PackageTilePrice } from "./package-tile-price";
+import "../ui/immersive-card.css";
 import { GameShop } from "../shop/public";
 import { CursorPagination, filterQuery } from "../ui/list-navigation";
 import GameCards from "./game-cards";
@@ -225,29 +227,32 @@ export function GamePage() {
         {offered.map((item) => {
           const body = (
             <>
-              <span className="game-service-symbol" aria-hidden="true">
-                <ServiceIcon kind={item.service} />
-              </span>
-              <h3>{serviceNames[item.service]}</h3>
-              <p>
-                {item.description ||
-                  (item.service === "boost"
-                    ? "Explore fixed packages and custom goals with clear scope and private updates."
-                    : item.service === "news"
-                      ? "Read staff-written updates, patch notes and guides."
-                      : item.service === "shop"
-                        ? "Browse in-game items with clear terms and staff delivery."
-                        : "Browse reviewed accounts or submit your own for review.")}
-              </p>
-              {item.state === "paused" ? (
-                <p className="status">
-                  {item.reason || "Temporarily unavailable"}
+              <ServiceScene release={release} kind={item.service} />
+              <div className="game-service-copy">
+                <h3>{serviceNames[item.service]}</h3>
+                <p>
+                  {item.description ||
+                    (item.service === "boost"
+                      ? "Explore fixed packages and custom goals with clear scope and private updates."
+                      : item.service === "news"
+                        ? "Read staff-written updates, patch notes and guides."
+                        : item.service === "shop"
+                          ? "Choose diamonds, passes and more for your next game."
+                          : "Browse reviewed accounts or submit your own for review.")}
                 </p>
-              ) : (
-                <span className="service-card-action">
-                  Explore {serviceNames[item.service].toLowerCase()} →
-                </span>
-              )}
+                {item.state === "paused" ? (
+                  <p className="status">
+                    {item.reason || "Temporarily unavailable"}
+                  </p>
+                ) : (
+                  <span className="service-card-action">
+                    Explore {serviceNames[item.service].toLowerCase()}{" "}
+                    <span className="service-card-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </span>
+                )}
+              </div>
             </>
           );
           return item.state === "active" ? (
@@ -297,46 +302,32 @@ export function Offerings({
           )}
           <div className="catalog-cards service-tiles package-tiles">
             {config.packages.map((pack) => (
-              <article className="game-card" key={pack.key}>
-                <ShopArtwork
-                  className="package-card-artwork"
-                  source={pack.asset || config.asset}
-                  alt={pack.asset ? (pack.asset_alt ?? "") : config.asset_alt}
-                  placement="card"
-                  lazy
-                />
-                <span className="status">Fixed scope · fixed price</span>
-                <h3>{pack.name}</h3>
-                <ul className="package-card-prices">
-                  {pack.variants.map((variant) => (
-                    <li key={variant.key}>
-                      <strong className="package-card-price">
-                        {price(variant)}
-                      </strong>
-                      <span>
-                        {variant.name}
-                        {variant.preset_answers === undefined
-                          ? " · Being reviewed"
-                          : variant.capacity === 0
-                            ? " · Unavailable"
-                            : ""}
-                      </span>
-                      <small>
-                        {variant.delivery_min_hours}–
-                        {variant.delivery_max_hours} hours after payment and
-                        access are ready
-                      </small>
-                    </li>
-                  ))}
-                </ul>
-                <p className="package-card-excerpt">{pack.description}</p>
-                <Link
-                  preventScrollReset
-                  className="button"
-                  to={`/games/${release.slug}/packages/${pack.key}`}
-                >
-                  View {pack.name}
-                </Link>
+              <article className="package-card immersive-card" key={pack.key}>
+                <div className="immersive-media">
+                  <ShopArtwork
+                    className="package-card-artwork"
+                    source={pack.asset || config.asset}
+                    alt={pack.asset ? (pack.asset_alt ?? "") : config.asset_alt}
+                    placement="card"
+                    lazy
+                  />
+                </div>
+                <div className="immersive-copy">
+                  <p className="immersive-kicker">Fixed package</p>
+                  <h3 className="immersive-title">{pack.name}</h3>
+                  <PackageTilePrice pack={pack} />
+                  <Link
+                    preventScrollReset
+                    className="immersive-link"
+                    aria-label={`View ${pack.name}`}
+                    to={`/games/${release.slug}/packages/${pack.key}`}
+                  >
+                    View package{" "}
+                    <span className="immersive-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </Link>
+                </div>
               </article>
             ))}
           </div>

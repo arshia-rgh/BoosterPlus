@@ -391,3 +391,194 @@ a.game-service-card:focus-visible {
 html :is(.game-service-symbol, .service-card-action) {
   color: var(--champagne-detail);
 }
+
+/* IMMERSIVE188: one measured rail for the hero, all service content and FAQ. */
+.game-shell {
+  --game-content-width: 1280px;
+}
+.game-shell :is(.game-stage, .game-discovery, .game-local-content, .game-faq) {
+  width: min(var(--game-content-width), calc(100% - var(--game-gutter) * 2));
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+.game-shell .game-stage {
+  margin-top: 0;
+}
+.game-shell .game-stage-copy {
+  padding-inline: 0;
+}
+.game-shell .game-local-content::before,
+.game-shell .game-faq::before {
+  left: 0;
+  right: 0;
+}
+.game-shell .game-faq {
+  margin-inline: auto;
+}
+.game-shell .custom-boost-action {
+  padding-inline: var(--game-gutter);
+}
+.game-shell .custom-boost-action-inner {
+  max-width: var(--game-content-width);
+}
+.game-service-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  min-height: 400px;
+  aspect-ratio: 1.27;
+  padding: 30px 32px;
+  border-color: #c4d6bd38;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px #0002;
+  text-align: left;
+  transition:
+    border-color 0.22s,
+    box-shadow 0.22s;
+}
+.game-service-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    0deg,
+    #04180ff8,
+    #04180fe0 23%,
+    #04180f44 55%,
+    transparent 85%
+  );
+  pointer-events: none;
+}
+.game-service-art {
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+.game-service-art img {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  object-position: 60% 15%;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+}
+.game-service-art .game-service-art-base {
+  filter: blur(10px) brightness(0.63);
+  transform: scale(1.06);
+}
+.game-service-art .game-service-art-scene {
+  transition:
+    transform 0.55s ease,
+    opacity 0.18s ease;
+}
+.game-service-copy {
+  width: 100%;
+  min-width: 0;
+  padding-top: 10rem;
+}
+.game-service-card h3 {
+  font-size: 1.9375rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  margin: 0 0 12px;
+  color: #f4f7f2;
+}
+.game-service-card p {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  max-width: 36ch;
+  color: #e4ede6;
+  margin: 0 0 20px;
+}
+html .game-service-card .service-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 0.75rem;
+  color: #b4f3cc;
+  font-weight: 650;
+  margin: 0;
+}
+.service-card-arrow {
+  height: 38px;
+  width: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  background: #c7e7c014;
+  border: 1px solid #bad9b951;
+  border-radius: 50%;
+  font-size: 1.25rem;
+}
+a.game-service-card:hover {
+  border-color: #e6c994c0;
+  box-shadow: 0 15px 50px #0003;
+  background: #122a20;
+}
+.game-service-card.is-paused .game-service-art {
+  filter: saturate(0.3) brightness(0.65);
+}
+@media (hover: hover) {
+  a.game-service-card:hover .game-service-art-scene {
+    transform: scale(1.025);
+  }
+}
+@media (max-width: 1000px) {
+  .game-service-card {
+    min-height: 395px;
+    aspect-ratio: auto;
+    padding: 25px;
+  }
+  .game-service-card .game-service-art-scene {
+    height: auto;
+    inset: 0 0 auto;
+    object-fit: initial;
+    mask-image: linear-gradient(#000 0%, #000 65%, transparent 100%);
+  }
+  .game-service-card h3 {
+    font-size: 1.75rem;
+  }
+}
+@media (max-width: 700px) {
+  .game-shell .game-stage-copy {
+    padding-inline: 0;
+  }
+  .game-service-card {
+    min-height: 420px;
+    padding: 24px;
+    border-radius: 17px;
+  }
+  .game-service-card::after {
+    background: linear-gradient(
+      0deg,
+      #04180ff2,
+      #04180fe3 22%,
+      #04180f99 44%,
+      transparent 72%
+    );
+  }
+  .game-service-card h3 {
+    font-size: 1.8125rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-service-art .game-service-art-scene {
+    transition: none;
+  }
+  a.game-service-card:hover .game-service-art-scene {
+    transform: none;
+  }
+}

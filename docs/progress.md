@@ -1,5 +1,9 @@
 # Implementation progress
 
+## IMMERSIVE188 — artwork cards and aligned game pages (24 October 2026)
+
+Implemented the owner-approved IMMERSIVE187 preview: five full-image homepage panels and four MLBB service scenes, plus compact full-image shop/package/news/account browse cards. One game rail aligns the hero, statistics, sections, FAQ and separators. Independent senior designer decisions/rendered rounds and focused server-only checks are tracked in [scope and evidence](immersive-cards-2026-10-24.md) and [design review](redesign/reviews/IMMERSIVE188_DESIGN.md). No backend/schema/catalog/policy/runtime change; concurrent discount work is excluded. Independent senior design review passed after two rendered rounds; final server focused checks passed47 component and29 browser/accessibility cases. Normal focused hook, signed release and fresh recovery approval are still pending; no full gate or local tests.
+
 ## SHOP182 — shop price and regional artwork hotfix (23 October 2026)
 
 Bold prices without “From” now appear in the prepared card/detail presentation, including unavailable supplier products; manual options retain honest ranges. Existing images receive small explicit-country flags or a Global globe. Fresh Nexus metadata still holds the eight unreleased Global offers, including 86/172/257, so publication starts at 344. Independent senior design review passed; 46 scoped component cases and four distinct responsive browser cases passed on the server. Normal frontend/repository hook and signed release/preflight remain pending; no full gate or local tests. Concurrent discounts are excluded and preserved. Supplier buying stays disabled, prices/markup/publications are unchanged. See [scope and evidence](shop-prices-regions-2026-10-23.md) and [design review](redesign/reviews/SHOP182_DESIGN.md).

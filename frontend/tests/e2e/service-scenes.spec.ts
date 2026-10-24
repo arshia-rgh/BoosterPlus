@@ -69,9 +69,10 @@ for (const width of [320, 390, 1280]) {
       ).toBe(true);
       const box = await frame.boundingBox();
       expect(box).not.toBeNull();
-      expect(
-        Math.abs((box?.width ?? 0) / (box?.height ?? 1) - 1.6),
-      ).toBeLessThan(0.03);
+      const content = await panel.locator(".explorer-content").boundingBox();
+      expect(box?.width).toBeCloseTo(content?.width ?? 0, 0);
+      expect(box?.y).toBeCloseTo(content?.y ?? 0, 0);
+      expect(box?.height).toBeGreaterThan(290);
       if (width !== 320)
         await panel.screenshot({
           path: info.outputPath(`${kind}-${String(width)}.png`),
@@ -94,7 +95,7 @@ test("failed artwork retains its frame and controls at 320px", async ({
   await page.setViewportSize({ width: 320, height: 900 });
   await page.route("**/artwork/service-scenes/**", (route) => route.abort());
   await page.goto(origin);
-  const frame = page.locator(".service-scene");
+  const frame = page.getByRole("tabpanel").locator(".service-scene");
   await frame.scrollIntoViewIfNeeded();
   await expect(frame).toHaveAttribute("data-image-state", "failed");
   const before = await frame.boundingBox();

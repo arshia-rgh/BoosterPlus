@@ -16,111 +16,211 @@
   color: #b3c7bb;
 }
 .explorer-tabs {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 .explorer-tabs button {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  min-height: 60px;
+  min-height: 52px;
   padding: 0.9rem;
-  background: #0b201acc;
-  color: #c2d2c9;
-  border: 1px solid #bddbc029;
-  border-radius: 0.75rem;
+  background: #0d261bd9;
+  color: #c7d8cc;
+  border: 1px solid #91bba329;
+  border-radius: 0.65rem;
   font: inherit;
+  font-size: 0.85rem;
   text-align: left;
   cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 .explorer-tabs button > span {
   color: var(--champagne-detail);
   font-size: 0.75rem;
 }
 .explorer-tabs button[aria-selected="true"] {
-  background: #193c2d;
-  color: #f3faf5;
-  box-shadow: inset 0 -3px var(--champagne-detail);
-  border-color: #607a65;
+  background: #1c3d2d;
+  color: #fff;
+  box-shadow: inset 0 -2px var(--champagne-detail);
+  border-color: #a5c4a270;
 }
 .explorer-tabs button:hover {
-  background: #214432;
+  background: #214130;
 }
 .explorer-stage {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) 64px;
-  gap: 1rem;
+  grid-template-columns: 54px minmax(0, 1fr) 54px;
+  gap: 12px;
   align-items: stretch;
 }
 .explorer-panel {
   min-width: 0;
-  border: 1px solid #bddbc02e;
-  border-radius: 1.5rem;
-  background: #0a201aee;
+  border: 1px solid #c4d6bd38;
+  border-radius: 22px;
   overflow: hidden;
+  background: #11271c;
+  box-shadow: 0 25px 60px #0003;
 }
 .explorer-content.service-introduction {
-  padding: clamp(1.5rem, 3vw, 3rem);
-  gap: clamp(1.5rem, 3vw, 3rem);
+  display: flex;
+  position: relative;
+  isolation: isolate;
+  min-height: 570px;
+  padding: 0;
   border: 0;
   margin: 0;
   animation: explorer-enter 0.38s ease-out both;
 }
-.explorer-content[data-direction="previous"] {
-  --explorer-shift: -32px;
-}
-.explorer-content h3 {
-  font-size: clamp(1.8rem, 3vw, 3rem);
-  line-height: 1.12;
-  letter-spacing: -0.035em;
-  margin: 0.8rem 0 1.2rem;
-}
-.explorer-content .service-feature h4 {
-  font-size: 1rem;
-  margin: 0 0 0.3rem;
-}
-.explorer-content .service-visual {
-  border: 0;
-  padding: 0;
-  background: none;
-}
-.explorer-content .service-scene {
-  aspect-ratio: 8 / 5;
-  border: 1px solid #bddbc029;
-  border-radius: 0.75rem;
-  margin-bottom: 1.25rem;
-}
-.service-scene img.loading-image-content {
-  object-fit: cover;
-  transition: opacity 0.18s ease-out;
-}
-.explorer-peek {
+.explorer-content .service-introduction-copy {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 570px;
+  padding: 38px 42px;
+}
+.explorer-content::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    #03120bf7 0%,
+    #03120bd6 18%,
+    #03120b94 35%,
+    #03120b14 65%,
+    transparent
+  );
+}
+.explorer-content .service-scene,
+.explorer-content .scene-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  background: transparent;
+}
+.explorer-content .service-scene img {
+  object-fit: cover;
+  object-position: center 43%;
+  transition:
+    transform 0.6s ease,
+    opacity 0.18s ease;
+}
+.explorer-content .scene-backdrop img {
+  object-fit: cover;
+  filter: blur(10px) brightness(0.63);
+  transform: scale(1.06);
+}
+.explorer-content .home-kicker {
+  color: #f4d9a8;
+  margin: 0 0 12px;
+  text-shadow: 0 1px 6px #000;
+}
+.explorer-content h3 {
+  max-width: 22ch;
+  font-size: clamp(1.875rem, 3.3vw, 2.8125rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  margin: 0 0 16px;
+  text-wrap: balance;
+  text-shadow: 0 2px 20px #0005;
+}
+.explorer-content .service-introduction-copy > p:not(.home-kicker) {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  max-width: 53ch;
+  color: #eef4ef;
+  margin: 0 0 24px;
+}
+.explorer-content .home-button {
+  margin: 0;
+  font-size: 0.8125rem;
+  min-height: 49px;
+  padding: 14px 18px;
+  border-radius: 10px;
+}
+.scene-counter {
+  position: absolute;
+  z-index: 1;
+  top: 22px;
+  left: 24px;
+  border: 1px solid #e7eacf29;
+  background: #06261bbf;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: #e9f1e9;
+  padding: 8px 11px;
+  border-radius: 7px;
+}
+.explorer-content .loading-image-fallback {
+  align-items: start;
+  inset: 60px 20px auto;
+  font-size: 0.8rem;
+}
+.explorer-content .scene-backdrop .loading-image-fallback {
+  display: none;
+}
+.explorer-peek {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
   min-width: 0;
   padding: 0.7rem;
-  border: 1px solid #bddbc025;
-  border-radius: 1.5rem;
-  background: #0b201a99;
-  color: var(--champagne-detail);
+  border: 1px solid #adc8af27;
+  border-radius: 21px;
+  background: #0d231a;
+  color: white;
   cursor: pointer;
   font: inherit;
+  opacity: 0.72;
+  transition:
+    opacity 0.2s,
+    border-color 0.2s;
 }
-.explorer-peek svg {
-  width: 28px;
-  height: 28px;
+.explorer-peek .peek-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: transparent;
+  z-index: -1;
 }
-.explorer-peek span {
+.explorer-peek .peek-scene img {
+  object-fit: cover;
+  filter: brightness(0.46);
+}
+.explorer-peek .loading-image-fallback {
+  display: none;
+}
+.explorer-peek > span:last-child {
   writing-mode: vertical-rl;
   text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.045em;
 }
 .explorer-peek:hover {
-  background: #1d3a2e;
+  opacity: 1;
   border-color: #e7c78a66;
 }
 .explorer-controls {
@@ -128,70 +228,163 @@
   justify-content: space-between;
   gap: 1rem;
   align-items: center;
-  margin-block: 0 1rem;
-  color: #c2d2c9;
-  font-size: 0.875rem;
+  margin-block: 0 14px;
+  color: #bdcec4;
+  font-size: 0.8rem;
 }
 .explorer-controls > div {
   display: flex;
-  gap: 0.6rem;
+  gap: 8px;
 }
 .explorer-controls button {
-  width: 48px;
-  height: 48px;
-  border: 1px solid #bddbc055;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #c0d9b83b;
   border-radius: 50%;
   font-size: 1.4rem;
-  background: #133024;
-  color: #e7c78a;
+  background: #133023;
+  color: var(--champagne-detail);
   cursor: pointer;
+  transition: background 0.2s;
+}
+.explorer-controls button:hover {
+  background: #2b4a36;
+}
+@media (hover: hover) {
+  .explorer-panel:hover .service-scene img {
+    transform: scale(1.025);
+  }
 }
 @keyframes explorer-enter {
   from {
-    opacity: 0;
-    transform: translateX(var(--explorer-shift, 32px));
+    opacity: 0.3;
+    translate: 0 8px;
   }
   to {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
   }
 }
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
+  .explorer-stage {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 8px;
+  }
+  .explorer-peek {
+    border-radius: 16px;
+  }
+  .explorer-tabs button {
+    font-size: 0.75rem;
+    padding: 12px 10px;
+    gap: 6px;
+  }
+  .explorer-content.service-introduction,
+  .explorer-content .service-introduction-copy {
+    min-height: 550px;
+  }
+  .explorer-content .service-introduction-copy {
+    padding: 32px;
+  }
+}
+@media (max-width: 650px) {
+  .explorer-heading {
+    display: block;
+  }
+  .explorer-heading > p {
+    font-size: 0.85rem;
+  }
+  .explorer-tabs {
+    overflow-x: auto;
+    padding: 4px 5px 10px;
+    margin-inline: -5px;
+    scroll-padding-inline: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #52715e transparent;
+  }
+  .explorer-tabs button {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 12px;
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
   .explorer-stage {
     grid-template-columns: minmax(0, 1fr);
   }
   .explorer-peek {
     display: none;
   }
-  .explorer-tabs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .explorer-panel {
+    border-radius: 17px;
   }
-  .explorer-heading {
-    display: block;
+  .explorer-content.service-introduction,
+  .explorer-content .service-introduction-copy {
+    min-height: 558px;
+  }
+  .explorer-content .service-introduction-copy {
+    padding: 24px;
+  }
+  .explorer-content h3 {
+    font-size: 1.875rem;
+    line-height: 1.13;
+    max-width: 17ch;
+    margin-bottom: 14px;
+  }
+  .explorer-content .home-kicker {
+    font-size: 0.625rem;
+  }
+  .explorer-content .service-introduction-copy > p:not(.home-kicker) {
+    font-size: 0.8125rem;
+    max-width: 35ch;
+    margin-bottom: 20px;
+  }
+  .explorer-content .service-scene {
+    height: 330px;
+    inset: 0 0 auto;
+    mask-image: linear-gradient(#000 0%, #000 70%, transparent 100%);
+  }
+  .explorer-content .service-scene img {
+    object-position: 50% 16%;
+  }
+  .explorer-content::after {
+    background: linear-gradient(
+      0deg,
+      #04180fef,
+      #04180fe0 23%,
+      #04180fb0 44%,
+      #04180f40 62%,
+      transparent 78%
+    );
+  }
+  .scene-counter {
+    top: 16px;
+    left: 16px;
+    font-size: 0.625rem;
+    padding: 7px 9px;
   }
 }
-@media (max-width: 600px) {
-  .explorer-tabs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 350px) {
+  .explorer-content .service-introduction-copy {
+    padding: 21px;
   }
-  .explorer-tabs button {
-    font-size: 0.85rem;
-    min-height: 54px;
+  .explorer-content h3 {
+    font-size: 1.6875rem;
   }
-  .explorer-content.service-introduction {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 1.25rem;
-  }
-  .explorer-content .service-caption {
-    text-align: left;
-    margin-top: 0;
+  .explorer-content .service-scene {
+    height: 297px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .explorer-content.service-introduction {
     animation: none;
   }
-  .service-scene img.loading-image-content {
+  .explorer-content .service-scene img,
+  .explorer-tabs button,
+  .explorer-peek,
+  .explorer-controls button {
     transition: none;
+  }
+  .explorer-panel:hover .service-scene img {
+    transform: none;
   }
 }

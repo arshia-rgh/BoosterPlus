@@ -59,7 +59,9 @@ it("makes rank, region, selected facts and inclusive total scannable without inv
   expect(within(card).getByText("Heroes").nextElementSibling).toHaveTextContent(
     "120",
   );
-  expect(within(card).queryByText("Exact third attribute")).toBeVisible();
+  expect(
+    within(card).queryByText("Exact third attribute"),
+  ).not.toBeInTheDocument();
   expect(within(card).getByText("USD 105.00")).toBeVisible();
   expect(within(card).getByText("Includes 5% buyer commission")).toBeVisible();
   expect(within(card).getByText("No account screenshot")).toBeVisible();
