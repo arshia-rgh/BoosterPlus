@@ -396,14 +396,46 @@ html :is(.game-service-symbol, .service-card-action) {
 .game-shell {
   --game-content-width: 1280px;
 }
-.game-shell :is(.game-stage, .game-discovery, .game-local-content, .game-faq) {
+.game-shell :is(.game-discovery, .game-local-content, .game-faq) {
   width: min(var(--game-content-width), calc(100% - var(--game-gutter) * 2));
   max-width: none;
   margin-inline: auto;
   padding-inline: 0;
 }
 .game-shell .game-stage {
+  --game-art-inset: max(
+    var(--game-gutter),
+    calc((100% - var(--game-content-width)) / 2)
+  );
+  width: 100%;
+  max-width: none;
   margin-top: 0;
+  padding-inline: var(--game-art-inset);
+}
+/* The artwork bleeds right; the padded content box keeps the established rail. */
+.game-shell .game-stage .game-stage-art {
+  left: var(--game-art-inset);
+  width: calc(100% - var(--game-art-inset));
+}
+.game-shell .game-stage::after {
+  left: var(--game-art-inset);
+}
+@media (min-width: 701px) {
+  .game-shell .game-stage .game-stage-art {
+    mask-image:
+      linear-gradient(to right, transparent, #000 32px, #000 86%, transparent),
+      linear-gradient(to bottom, transparent, #000 9%, #000 72%, transparent);
+    mask-composite: intersect;
+  }
+  .game-shell .game-stage::after {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 32px,
+      #000 86%,
+      transparent
+    );
+  }
 }
 .game-shell .game-stage-copy {
   padding-inline: 0;

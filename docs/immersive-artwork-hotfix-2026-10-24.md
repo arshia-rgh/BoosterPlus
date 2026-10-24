@@ -1,0 +1,11 @@
+# IMMERSIVE189 — artwork coverage hotfix
+
+Scope: correct the five homepage explorer scenes and adjacent artwork previews to match the approved preview; extend only the game hero artwork toward the right viewport edge while preserving the established copy, statistics, content, FAQ and separator alignment. Owner confirmed artwork-only extension. Base: signed `03272006e596a1890dc0e3234cf08b8838426a0e`; source parent `37602454006444031ee0d69fe649a93055972551`.
+
+The shared image loading component had an equally specific `object-fit: contain` rule that won by import order. Explicit scoped cover selectors correct the main scene, full-frame blurred background and adjacent scene crops. Existing small-screen fade, touch controls and reduced-motion behavior remain. The hero uses a full-width artwork container with the same measured inner copy rail, a right-edge fade on desktop and the existing mobile focal placement.
+
+Qualification: independent senior designer rendered rounds;22 scoped component cases and36 distinct browser/accessibility cases passed across retained server runs. The seven homepage cases and five hero cases were rerun after their respective CSS refinements; unrelated passed cases were retained. Type/lint/format pass. Normal staged-change frontend/repository hook follows final designer approval. No full gate, backend/schema/dependency change, runtime-setting change, live transaction/message or publication. Regression coverage checks actual image object-fit/coverage, adjacent image identity, adverse stylesheet ordering, viewport-right artwork bounds, both copy sides and unchanged content rails.
+
+Original type/lint and one tab-name test-selector failure are retained. No product behavior was changed to satisfy those tests. The designer identified a tablet left-edge seam, resolved with a32px artwork/scrim blend. See `docs/redesign/reviews/IMMERSIVE189_DESIGN.md`.
+
+Status: independent senior design review PASS after two rounds. Focused qualification passed; normal commit hook and signed release preparation follow. Signed release and preflight follow passing review. Activation requires fresh exact recovery approval; off-host backup remains unavailable. Concurrent discount/migration51 and prototype work stays excluded.

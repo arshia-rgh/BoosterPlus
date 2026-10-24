@@ -114,15 +114,19 @@
   margin: 0;
   background: transparent;
 }
-.explorer-content .service-scene img {
+/* Override shared loading-image containment without outranking responsive crops. */
+.explorer-content .service-scene img.loading-image-content,
+.explorer-content .scene-backdrop img.loading-image-content,
+.explorer-peek .peek-scene img.loading-image-content {
   object-fit: cover;
+}
+.explorer-content .service-scene img {
   object-position: center 43%;
   transition:
     transform 0.6s ease,
     opacity 0.18s ease;
 }
 .explorer-content .scene-backdrop img {
-  object-fit: cover;
   filter: blur(10px) brightness(0.63);
   transform: scale(1.06);
 }
@@ -207,7 +211,6 @@
   z-index: -1;
 }
 .explorer-peek .peek-scene img {
-  object-fit: cover;
   filter: brightness(0.46);
 }
 .explorer-peek .loading-image-fallback {

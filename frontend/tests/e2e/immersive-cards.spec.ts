@@ -40,10 +40,11 @@ for (const width of [320, 390, 820, 1440])
       await cards.last().scrollIntoViewIfNeeded();
       await expect(page.locator(".game-stage h1")).toHaveText(/Mobile Legends/);
       const rail = await page.locator(".game-local-content").boundingBox();
-      const hero = await page.locator(".game-stage").boundingBox();
+      const hero = await page.locator(".game-stage-copy").boundingBox();
       const faq = await page.locator(".game-faq").boundingBox();
       expect(rail).not.toBeNull();
-      for (const r of [hero, faq]) {
+      expect(hero?.x).toBeCloseTo(rail?.x ?? 0, 0);
+      for (const r of [faq]) {
         expect(r?.x).toBeCloseTo(rail?.x ?? 0, 0);
         expect(r?.width).toBeCloseTo(rail?.width ?? 0, 0);
       }
@@ -179,4 +180,50 @@ for (const width of [390, 1440])
       path: info.outputPath(`multi-price-${String(width)}.png`),
       animations: "disabled",
     });
+  });
+
+for (const width of [320, 390, 820, 1440, 1920])
+  test(`hero artwork bleeds right while copy stays aligned at ${String(width)}`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(`${origin}/games/mobile-legends`);
+    const hero = page.locator(".game-stage"),
+      art = hero.locator(".game-stage-art"),
+      copy = page.locator(".game-stage-copy"),
+      rail = page.locator(".game-local-content");
+    await expect(art).not.toHaveAttribute("data-image-loading", "true");
+    const rb = await rail.boundingBox(),
+      cb = await copy.boundingBox(),
+      ab = await art.boundingBox();
+    expect(cb?.x).toBeCloseTo(rb?.x ?? 0, 0);
+    expect(ab?.x).toBeCloseTo(rb?.x ?? 0, 0);
+    const edge = await page.evaluate(
+      () => document.documentElement.clientWidth,
+    );
+    expect((ab?.x ?? 0) + (ab?.width ?? 0)).toBeCloseTo(edge, 0);
+    expect(ab?.width).toBeGreaterThan(rb?.width ?? 0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await hero.screenshot({
+      path: info.outputPath(`hero-${String(width)}.png`),
+      animations: "disabled",
+    });
+    if (width > 700) {
+      await page.locator(".game-shell").evaluate((e) => {
+        e.setAttribute("data-copy-side", "right");
+      });
+      const right = await copy.boundingBox();
+      expect((right?.x ?? 0) + (right?.width ?? 0)).toBeCloseTo(
+        (rb?.x ?? 0) + (rb?.width ?? 0),
+        0,
+      );
+      await hero.screenshot({
+        path: info.outputPath(`hero-right-copy-${String(width)}.png`),
+        animations: "disabled",
+      });
+    }
   });
