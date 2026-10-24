@@ -1,7 +1,7 @@
 FROM clamav/clamav:1.5.3@sha256:d06c1d6a451d616e1dd79b42f44c8c8c291bba9cf4e75ebc4d0e43c1c6dd87bb
-# Upstream's pinned image predates the OpenSSL and PCRE2 security fixes.
+# Upstream's pinned image predates the OpenSSL, PCRE2 and Brotli security fixes.
 # Keep exact patched package versions and scan the resulting image in every gate.
-RUN apk add --no-cache libcrypto3=3.5.9-r0 libssl3=3.5.9-r0 pcre2=10.49-r0
+RUN apk add --no-cache libcrypto3=3.5.9-r0 libssl3=3.5.9-r0 pcre2=10.49-r0 brotli-libs=1.2.1-r0
 # Normalize upstream's duplicate LocalSocket defaults before its environment
 # overlay runs. Named volumes inherit ownership so clamd can create the socket.
 RUN sed -i '/^LocalSocket /d' /etc/clamav/clamd.conf \
